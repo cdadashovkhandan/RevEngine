@@ -11,7 +11,7 @@ private:
     PointCloud* pointCloud; // Model cannot exist without pcloud.
     Mesh* mesh = nullptr; // Model can exist without mesh.
 public:
-    Model();
+    Model(PointCloud pointCloud);
 };
 
 #endif // MODEL_H

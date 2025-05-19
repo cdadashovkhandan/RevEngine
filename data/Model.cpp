@@ -1,3 +1,5 @@
 #include "Model.h"
 
-Model::Model() {}
+Model::Model(PointCloud pointCloud) {
+    this->pointCloud = &pointCloud;
+}

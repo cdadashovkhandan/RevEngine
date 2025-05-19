@@ -10,11 +10,10 @@
 struct PointCloud
 {
 public:
-    PointCloud();
+    PointCloud(QVector<QVector3D>);
     QVector<QVector3D> points { };
 };
 
-//TODO: parser based on this:
-// https://github.com/chiararomanengo/Fit4CAD/blob/main/dataset/
+
 
 #endif // POINTCLOUD_H

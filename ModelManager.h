@@ -10,10 +10,10 @@ class ModelManager
 
 private:
     QVector<Model> models; // make public?
-    PointCloud parsePointCloud(QString filename);
+    PointCloud parsePointCloud(QString fileName);
 public:
     ModelManager();
-    Model createModel(QString filename);
+    Model createModel(QString fileName);
 };
 
 #endif // MODELMANAGER_H

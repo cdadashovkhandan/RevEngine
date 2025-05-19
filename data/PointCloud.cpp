@@ -1,3 +1,5 @@
 #include "PointCloud.h"
 
-PointCloud::PointCloud() {}
+PointCloud::PointCloud(QVector<QVector3D> points) {
+    this->points = points;
+}

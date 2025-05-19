@@ -50,7 +50,7 @@
      <string>Info</string>
     </property>
    </widget>
-   <widget class="QCheckBox" name="checkBox">
+   <widget class="QCheckBox" name="togglePointCloudCheckBox">
     <property name="geometry">
      <rect>
       <x>540</x>
@@ -63,7 +63,7 @@
      <string>Show Point Cloud</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton">
+   <widget class="QPushButton" name="importModelButton">
     <property name="geometry">
      <rect>
       <x>550</x>
@@ -76,7 +76,7 @@
      <string>Import</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton_2">
+   <widget class="QPushButton" name="exportModelButton">
     <property name="geometry">
      <rect>
       <x>550</x>
