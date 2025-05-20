@@ -15,7 +15,16 @@ PointCloud ModelManager::parsePointCloud(QString fileName)
         QTextStream fileText(&cloudFile);
         while (!fileText.atEnd())
         {
-            QStringList line = fileText.readLine().split(",");
+            QString rawLine = fileText.readLine();
+            rawLine = rawLine.trimmed().replace("[", "").replace("]",""); // remove excess chars
+            QStringList line = rawLine.split(",");
+
+            if (line.size() == 1) // Either a beginning or end line
+                continue;
+
+            QVector3D newPoint(line[0].toFloat(), line[1].toFloat(),line[2].toFloat());
+
+            verts.push_back(newPoint);
         }
     }
 
