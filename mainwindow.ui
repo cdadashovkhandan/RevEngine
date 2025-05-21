@@ -14,7 +14,7 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QOpenGLWidget" name="viewport">
+   <widget class="Viewport" name="viewport">
     <property name="geometry">
      <rect>
       <x>20</x>
@@ -108,6 +108,13 @@
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>Viewport</class>
+   <extends>QOpenGLWidget</extends>
+   <header>Viewport.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

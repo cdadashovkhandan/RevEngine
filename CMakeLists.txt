@@ -20,15 +20,20 @@ set(PROJECT_SOURCES
         mainwindow.ui
 )
 
+include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(RevEngine
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
-
+        Viewport.h Viewport.cpp
         data/Model.h data/Model.cpp
         data/Mesh.h data/Mesh.cpp
         data/PointCloud.h data/PointCloud.cpp
         ModelManager.h ModelManager.cpp
+        Scene.h Scene.cpp
+        renderers/Renderer.h renderers/Renderer.cpp
+        Camera.h Camera.cpp
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET RevEngine APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
