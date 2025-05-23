@@ -5,8 +5,11 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
+    , settings()
 {
     ui->setupUi(this);
+    ui->viewport->settings = &settings;
+    modelManager.settings = &settings;
 }
 
 MainWindow::~MainWindow()
@@ -21,6 +24,7 @@ void MainWindow::on_importModelButton_clicked()
     QString fileName = "/home/chingiz/Documents/uni/intproj/Fit4CAD/dataset/training_set/PC1.txt";
     if (fileName.isEmpty())
         return;
-    modelManager.createModel(fileName);
+    Model* model = modelManager.createModel(fileName);
+    ui->viewport->showModel(model);
 }
 

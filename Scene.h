@@ -5,12 +5,12 @@
 #include <qlist.h>
 
 struct Camera;
-class Mesh;
+class Model;
 
 struct Scene
 {
     Camera* camera { nullptr };
-    Mesh* mesh { nullptr };
+    Model* model { nullptr };
 
     Scene();
 };

@@ -7,11 +7,11 @@
 class Model
 {
 
-private:
+public:
     PointCloud* pointCloud; // Model cannot exist without pcloud.
     Mesh* mesh = nullptr; // Model can exist without mesh.
-public:
-    Model(PointCloud pointCloud);
+
+    Model(PointCloud* pointCloud);
 };
 
 #endif // MODEL_H

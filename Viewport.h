@@ -6,7 +6,9 @@
 #include <QOpenGLWidget>
 #include <QOpenGLFunctions_4_1_Core>
 
-// #include "Settings.h"
+#include <data/Model.h>
+
+#include "Settings.h"
 #include "data/Mesh.h"
 
 class Renderer;
@@ -25,10 +27,10 @@ public:
     explicit Viewport(QWidget* parent);
     ~Viewport() override;
 
-    void showMesh(Mesh *mesh);
+    void showModel(Model *model);
     void resetCamera();
 
-    // Settings* settings{ nullptr };
+    Settings* settings{ nullptr };
 
   protected:
     void initializeGL() override;

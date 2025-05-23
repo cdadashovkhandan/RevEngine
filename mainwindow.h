@@ -4,6 +4,7 @@
 #include "ModelManager.h"
 
 #include <QMainWindow>
+#include "Settings.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -25,5 +26,6 @@ private slots:
 private:
     Ui::MainWindow *ui;
     ModelManager modelManager;
+    Settings settings;
 };
 #endif // MAINWINDOW_H

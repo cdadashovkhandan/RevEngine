@@ -5,7 +5,7 @@
 
 ModelManager::ModelManager() {}
 
-PointCloud ModelManager::parsePointCloud(QString fileName)
+PointCloud* ModelManager::parsePointCloud(QString fileName) const
 {
     QFile cloudFile(fileName);
     Mesh newMesh;
@@ -28,15 +28,15 @@ PointCloud ModelManager::parsePointCloud(QString fileName)
         }
     }
 
-    PointCloud pointCloud(verts);
-    return pointCloud;
+    return new PointCloud(verts);
 }
 
 
-Model ModelManager::createModel(QString filename)
+Model* ModelManager::createModel(QString filename)
 {
-    PointCloud pointCloud = parsePointCloud(filename);
+    PointCloud* pointCloud = parsePointCloud(filename);
     Model model(pointCloud);
     models.push_back(model);
+    return &models.last();
 }
 

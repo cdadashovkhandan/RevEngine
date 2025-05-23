@@ -10,6 +10,8 @@
 #include "Scene.h"
 #include "renderers/Renderer.h"
 
+#include <renderers/ModelRenderer.h>
+
 Viewport::Viewport(QWidget* parent) : QOpenGLWidget(parent)
 {
     scene = new Scene();
@@ -24,12 +26,12 @@ Viewport::~Viewport()
  * @brief Viewport::showMesh Display a given mesh in the viewport by feeding it into the buffers.
  * @param mesh The mesh to be displayed.
  */
-void Viewport::showMesh(Mesh *mesh)
+void Viewport::showModel(Model *model)
 {
     renderer->update_uniforms();
-    renderer->update_buffers(mesh);
+    renderer->update_buffers(model);
     update();
-    scene->mesh = mesh;
+    scene->model = model;
 }
 
 /**
@@ -50,8 +52,8 @@ void Viewport::initializeGL()
     QOpenGLWidget::initializeGL();
     gl = QOpenGLVersionFunctionsFactory::get<QOpenGLFunctions_4_1_Core>(this->context());
 
-    // renderer = new MeshRenderer(gl, scene);
-    // renderer->init(gl, settings);
+    renderer = new ModelRenderer(gl, scene);
+    renderer->init(gl, settings);
 }
 
 void Viewport::resizeGL(const int w, const int h)
@@ -65,7 +67,7 @@ void Viewport::resizeGL(const int w, const int h)
 
 void Viewport::paintGL()
 {
-    if (scene->mesh != nullptr)
+    if (scene->model != nullptr)
     {
         QOpenGLWidget::paintGL();
         renderer->render();

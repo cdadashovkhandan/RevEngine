@@ -4,6 +4,8 @@
 
 #include <QOpenGLFunctions_4_1_Core>
 
+#include <data/Model.h>
+
 #include "../data/Mesh.h"
 
 struct Settings;
@@ -15,7 +17,7 @@ public:
     Renderer(QOpenGLFunctions_4_1_Core* gl, Scene* scene, Settings* settings);
     virtual ~Renderer();
 
-    virtual void update_buffers(Mesh* mesh) = 0;
+    virtual void update_buffers(Model* mesh) = 0;
     virtual void update_uniforms() = 0;
     virtual void render() = 0;
 
