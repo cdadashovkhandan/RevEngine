@@ -61,8 +61,8 @@ void Viewport::resizeGL(const int w, const int h)
     QOpenGLWidget::resizeGL(w, h);
     scene->camera->aspect_ratio = (float)w / (float)h;
 
-    // renderer->update_uniforms();
-    // update();
+    renderer->update_uniforms();
+    update();
 }
 
 void Viewport::paintGL()
@@ -86,6 +86,7 @@ void Viewport::mousePressEvent(QMouseEvent* event)
 {
     mouse_buttons = event->buttons();
     mouse_position = event->pos();
+    qDebug() << "Mouse click at (" << mouse_position.x() << ", " << mouse_position.y() << ")";
 }
 
 void Viewport::mouseMoveEvent(QMouseEvent* event)

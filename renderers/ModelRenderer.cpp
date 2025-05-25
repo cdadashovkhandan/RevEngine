@@ -66,6 +66,7 @@ void ModelRenderer::update_buffers(Model* model)
         gl->glBufferData(GL_ARRAY_BUFFER, points.size() * sizeof(QVector3D), points.data(), GL_STATIC_DRAW);
 
         gl->glBindVertexArray(0);
+        render_size = points.size();
     }
 
     //TODO: I'm not sure if showing both at the same time is a good idea. Think about it further.
@@ -114,17 +115,28 @@ void ModelRenderer::update_uniforms()
  */
 void ModelRenderer::render()
 {
-    gl->glClearColor(0, 0, 0, 1.0f);
-    gl->glClear(GL_COLOR_BUFFER_BIT);
-    gl->glEnable(GL_PROGRAM_POINT_SIZE);
+    // gl->glClearColor(0, 0, 0, 1.0f);
+    // gl->glClear(GL_COLOR_BUFFER_BIT);
+    // gl->glEnable(GL_PROGRAM_POINT_SIZE);
 
     gl->glDepthFunc(GL_LEQUAL);
-    gl->glPolygonMode(GL_POINTS, GL_FILL);
+    // gl->glPolygonMode(GL_POINT, GL_FILL);
+    gl->glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    gl->glEnable(GL_POLYGON_OFFSET_FILL);
     gl->glPolygonOffset(1, 1);
+    // gl->glPolygonOffset(1, 1);
+    drawMaterial(*pointCloudMat);
+    // gl->glDisable(GL_POLYGON_OFFSET_FILL);
+
+    // gl->glClearColor(0, 0, 0, 1.0f);
+    // gl->glClear(GL_COLOR_BUFFER_BIT);
+
+    // gl->glDepthFunc(GL_LEQUAL);
+
     // gl->glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     // gl->glEnable(GL_POLYGON_OFFSET_FILL);
     // gl->glPolygonOffset(1, 1);
-    drawMaterial(*pointCloudMat);
+    // drawMaterial(*pointCloudMat);
     // gl->glDisable(GL_POLYGON_OFFSET_FILL);
 
     // if (settings->showWireframe)
@@ -143,7 +155,7 @@ void ModelRenderer::drawMaterial(Material &material)
     material.bind();
     {
         gl->glBindVertexArray(vao);
-        gl->glDrawElements(GL_QUADS, render_size, GL_UNSIGNED_INT, nullptr);
+        gl->glDrawArrays(GL_POINTS, render_size, GL_UNSIGNED_INT);
         gl->glBindVertexArray(0);
     }
     material.release();
