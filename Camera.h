@@ -17,7 +17,7 @@ struct Camera
     QVector3D target{ 0, 0, 0 };
     QVector3D up{ 0, 1, 0 };
 
-    Projection projection{ Projection::Perspective };
+    Projection projection{ Projection::Orthographic };
 
     [[nodiscard]] QMatrix4x4 viewMatrix() const;
     [[nodiscard]] QMatrix4x4 projectionMatrix() const;

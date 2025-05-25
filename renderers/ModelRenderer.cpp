@@ -115,16 +115,16 @@ void ModelRenderer::update_uniforms()
  */
 void ModelRenderer::render()
 {
-    // gl->glClearColor(0, 0, 0, 1.0f);
-    // gl->glClear(GL_COLOR_BUFFER_BIT);
-    // gl->glEnable(GL_PROGRAM_POINT_SIZE);
+    gl->glClearColor(0, 0, 0, 1.0f);
+    gl->glClear(GL_COLOR_BUFFER_BIT);
+    gl->glEnable(GL_PROGRAM_POINT_SIZE);
 
-    gl->glDepthFunc(GL_LEQUAL);
-    // gl->glPolygonMode(GL_POINT, GL_FILL);
-    gl->glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    gl->glEnable(GL_POLYGON_OFFSET_FILL);
-    gl->glPolygonOffset(1, 1);
+    // gl->glDepthFunc(GL_LEQUAL);
+    gl->glPolygonMode(GL_POINT, GL_FILL);
+    // gl->glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    // gl->glEnable(GL_POLYGON_OFFSET_FILL);
     // gl->glPolygonOffset(1, 1);
+    gl->glPolygonOffset(1, 1);
     drawMaterial(*pointCloudMat);
     // gl->glDisable(GL_POLYGON_OFFSET_FILL);
 
@@ -155,7 +155,7 @@ void ModelRenderer::drawMaterial(Material &material)
     material.bind();
     {
         gl->glBindVertexArray(vao);
-        gl->glDrawArrays(GL_POINTS, render_size, GL_UNSIGNED_INT);
+        gl->glDrawArrays(GL_POINTS, 0, render_size);
         gl->glBindVertexArray(0);
     }
     material.release();
