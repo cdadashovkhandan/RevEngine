@@ -3,8 +3,16 @@
 #include <QDir>
 #include <QFile>
 
-ModelManager::ModelManager() {}
+ModelManager::ModelManager()
+{
+    cadConverter = new CADConverter();
+}
 
+/**
+ * @brief ModelManager::parsePointCloud Parse a point cloud from file.
+ * @param fileName
+ * @return
+ */
 PointCloud* ModelManager::parsePointCloud(QString fileName) const
 {
     QFile cloudFile(fileName);
@@ -33,12 +41,26 @@ PointCloud* ModelManager::parsePointCloud(QString fileName) const
     return new PointCloud(verts);
 }
 
-
+/**
+ * @brief ModelManager::createModel Parse a point cloud from a File and generate a point cloud from it
+ * @param filename
+ * @return
+ */
 Model* ModelManager::createModel(QString filename)
 {
     PointCloud* pointCloud = parsePointCloud(filename);
     Model model(pointCloud);
     models.push_back(model);
     return &models.last();
+}
+
+/**
+ * @brief ModelManager::generateMesh Generate a B-Rep representation out of a Model's Point Cloud.
+ * @param model
+ * @return
+ */
+Mesh *ModelManager::generateMesh(Model *model) const
+{
+    cadConverter->convertModel(model);
 }
 

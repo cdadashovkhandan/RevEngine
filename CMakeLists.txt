@@ -41,6 +41,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         materials/Material.cpp materials/Material.h materials/Phong.cpp materials/Phong.h materials/Wireframe.cpp materials/Wireframe.h
         materials/PointCloudMaterial.h materials/PointCloudMaterial.cpp
         resources.qrc
+        CADConverter.h CADConverter.cpp
 
     )
 # Define target properties for Android with Qt 6 as:
