@@ -8,6 +8,11 @@ ModelManager::ModelManager()
     cadConverter = new CADConverter();
 }
 
+Model* ModelManager::getActiveModel() const
+{
+    return models.last();
+}
+
 /**
  * @brief ModelManager::parsePointCloud Parse a point cloud from file.
  * @param fileName
@@ -49,9 +54,9 @@ PointCloud* ModelManager::parsePointCloud(QString fileName) const
 Model* ModelManager::createModel(QString filename)
 {
     PointCloud* pointCloud = parsePointCloud(filename);
-    Model model(pointCloud);
-    models.push_back(model);
-    return &models.last();
+    Model* model = new Model(pointCloud);
+    models.append(model);
+    return models.last();
 }
 
 /**
@@ -59,8 +64,10 @@ Model* ModelManager::createModel(QString filename)
  * @param model
  * @return
  */
-Mesh *ModelManager::generateMesh(Model *model) const
+Model *ModelManager::generateMesh(Model& model) const
 {
     cadConverter->convertModel(model);
+
+    return &model;
 }
 

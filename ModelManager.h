@@ -11,15 +11,18 @@ class ModelManager
 {
 
 private:
-    QVector<Model> models; // make public?
+    QVector<Model*> models; // make public?
     PointCloud* parsePointCloud(QString fileName) const;
     CADConverter* cadConverter;
 public:
     ModelManager();
 
+    Model* getActiveModel() const;
+
     Settings* settings;
     Model* createModel(QString fileName);
-    Mesh* generateMesh(Model* model) const;
+    //TODO: return type is questionable
+    Model* generateMesh(Model& model) const;
 };
 
 #endif // MODELMANAGER_H

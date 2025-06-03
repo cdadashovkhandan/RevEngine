@@ -23,6 +23,8 @@ public:
 private slots:
     void on_importModelButton_clicked();
 
+    void on_convertModelButton_clicked();
+
 private:
     Ui::MainWindow *ui;
     ModelManager modelManager;
