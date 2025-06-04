@@ -31,6 +31,7 @@ void MainWindow::on_importModelButton_clicked()
 
 void MainWindow::on_convertModelButton_clicked()
 {
-    modelManager.generateMesh(*modelManager.getActiveModel());
+    Model* model = modelManager.generateMesh(*modelManager.getActiveModel());
+    ui->viewport->showModel(model);
 }
 

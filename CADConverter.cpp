@@ -28,7 +28,7 @@ QVector3D CADConverter::getCentroid(QVector<QVector3D> &points) const
  */
 QVector<QVector3D>* CADConverter::transform(QVector<QVector3D>& points, QMatrix4x4 tMatrix) const
 {
-    for (QVector3D point : points)
+    for (QVector3D& point : points)
     {
         QVector4D hPoint = QVector4D(point.x(), point.y(), point.z(), 1);
         hPoint = tMatrix * hPoint;
@@ -52,6 +52,8 @@ Model* CADConverter::convertModel(Model& model) const
 
     PointCloud* pCloud = model.pointCloud;
 
+    qDebug("Centering Point Cloud...");
+
     QVector3D centroid = getCentroid(pCloud->points);
 
     // build transformation matrix to translate the entire damn thing (basically subtract centroid from every point)
@@ -63,10 +65,21 @@ Model* CADConverter::convertModel(Model& model) const
         );
 
     transform(pCloud->points, tMatrix);
-    qDebug("Translated to origin");
     // maybe create basic transform-rotate-whatever helper functions to make things easier?
 
+    qDebug("Calculating normals...");
+
+    // Find normals of points, vote for major normal direction
+
+    // Align major normal direction with z-axis
+
     //II. Recognition
+
+    //Initialize hough space
+
+    // segment and express space as discrete matrix.
+
+
 
     //III. Postprocessing
 
