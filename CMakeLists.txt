@@ -42,6 +42,10 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         materials/PointCloudMaterial.h materials/PointCloudMaterial.cpp
         resources.qrc
         CADConverter.h CADConverter.cpp
+        HoughTransformer.h HoughTransformer.cpp
+        primitives/PrimitiveShape.cpp primitives/PrimitiveShape.h
+        primitives/PrimitiveType.h
+
 
     )
 # Define target properties for Android with Qt 6 as:
