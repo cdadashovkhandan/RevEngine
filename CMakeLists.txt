@@ -45,6 +45,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         HoughTransformer.h HoughTransformer.cpp
         primitives/PrimitiveShape.cpp primitives/PrimitiveShape.h
         primitives/PrimitiveType.h
+        primitives/NormalPlane.h primitives/NormalPlane.cpp
 
 
     )

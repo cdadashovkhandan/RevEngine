@@ -8,16 +8,23 @@ QList<PrimitiveShape> HoughTransformer::applyTransform(QVector<QVector3D> points
     QList<PrimitiveShape> output;
     for (PrimitiveType type : types)
     {
-        // Apply hough transform for type
+        // Instantiate//Retrieve shape by enum
 
-        // filter votes
 
-        // pick best one(s)?
+
+
+
+        // Build hough space
+
+
+
+        // vote for hough space
+
+
 
         for (QVector3D point : points)
         {
             // go through all possible parameter combos and see if they satisfy the equation
-
 
         }
     }
