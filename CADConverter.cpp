@@ -1,7 +1,10 @@
 #include "CADConverter.h"
 
 
-CADConverter::CADConverter() {}
+CADConverter::CADConverter()
+{
+    houghTransformer = new HoughTransformer();
+}
 
 /**
  * @brief CADConverter::getCentroid Return the center point of the point cloud, AKA the average.

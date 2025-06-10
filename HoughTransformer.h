@@ -11,9 +11,13 @@ class HoughTransformer
 public:
     HoughTransformer();
 
-    //QMap<PrimitiveType, PrimitiveShape>
+    //TODO: rethink this. Template magic can probably remove the need for this and the enum entirely.
+    QMap<PrimitiveType, PrimitiveShape> shapes;
 
     QList<PrimitiveShape> applyTransform(QVector<QVector3D> points, QList<PrimitiveType> types) const;
+private:
+
+    PrimitiveShape* getShape(PrimitiveType const type);
 };
 
 #endif // HOUGHTRANSFORMER_H

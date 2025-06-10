@@ -1,6 +1,7 @@
 #ifndef CADCONVERTER_H
 #define CADCONVERTER_H
 
+#include "HoughTransformer.h"
 #include "data/Model.h"
 
 #include <QMatrix4x4>
@@ -8,6 +9,7 @@ class CADConverter
 {
 public:
     CADConverter();
+    HoughTransformer houghTransformer;
     friend class ModelManager; //TODO maybe not necessary
     Model* convertModel(Model& model) const;
 
