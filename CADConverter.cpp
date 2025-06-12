@@ -29,7 +29,7 @@ QVector3D CADConverter::getCentroid(QVector<QVector3D> &points) const
  * @param tMatrix The transformation matrix.
  * @return
  */
-QVector<QVector3D>* CADConverter::transform(QVector<QVector3D>& points, QMatrix4x4 tMatrix) const
+QVector<QVector3D>* CADConverter::transform(QVector<QVector3D>& points, QMatrix4x4 const tMatrix) const
 {
     for (QVector3D& point : points)
     {
@@ -72,6 +72,18 @@ Model* CADConverter::convertModel(Model& model) const
 
     qDebug("Calculating normals...");
 
+    QVector<QVector3D> normals;
+
+
+    for (QVector3D point : pCloud->points)
+    {
+        QVector<QVector3D> neighbors = getNeighbors(point, pCloud->points);
+
+        houghTransformer->applyTransform(neighbors, {PrimitiveType::NORMALPLANE});
+
+
+    }
+
     // Find normals of points, vote for major normal direction
 
     // Align major normal direction with z-axis
@@ -87,4 +99,19 @@ Model* CADConverter::convertModel(Model& model) const
     //III. Postprocessing
 
     return &model;
+}
+
+QVector<QVector3D> CADConverter::getNeighbors(QVector3D const target, QVector<QVector3D> const points) const
+{
+    QVector<QVector3D> result;
+    for (QVector3D point : points)
+    {
+        float distance = target.distanceToPoint(point);
+        if (distance <= maxDistance && distance > 0)
+        {
+            result.append(point);
+        }
+    }
+
+    return result;
 }

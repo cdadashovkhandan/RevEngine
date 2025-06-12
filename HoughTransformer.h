@@ -14,10 +14,10 @@ public:
     //TODO: rethink this. Template magic can probably remove the need for this and the enum entirely.
     QMap<PrimitiveType, PrimitiveShape> shapes;
 
-    QList<PrimitiveShape> applyTransform(QVector<QVector3D> points, QList<PrimitiveType> types) const;
+    QList<PrimitiveShape> applyTransform(QVector<QVector3D> const points, QList<PrimitiveType> const types) const;
 private:
 
-    PrimitiveShape* getShape(PrimitiveType const type);
+    PrimitiveShape* getShape(PrimitiveType const type) const;
 };
 
 #endif // HOUGHTRANSFORMER_H

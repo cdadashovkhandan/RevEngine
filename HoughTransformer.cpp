@@ -6,17 +6,18 @@ HoughTransformer::HoughTransformer()
 {
     //TODO: actually implement populating the map
     shapes = QMap<PrimitiveType, PrimitiveShape>();
-    // shapes.insert(PrimitiveType::NORM/ALPLANE, NormalPlane)
+    // shapes.insert(PrimitiveType::NORMALPLANE, NormalPlane)
 }
 
 
-QList<PrimitiveShape> HoughTransformer::applyTransform(QVector<QVector3D> points, QList<PrimitiveType> types) const
+QList<PrimitiveShape> HoughTransformer::applyTransform(QVector<QVector3D> const points, QList<PrimitiveType> const types) const
 {
     QList<PrimitiveShape> output;
     for (PrimitiveType type : types)
     {
         PrimitiveShape* shape = getShape(type);
         shape->getBestFit(points);
+        output.append(*shape);
     }
     return output;
 }
