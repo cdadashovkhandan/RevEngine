@@ -1,5 +1,7 @@
 #include "CADConverter.h"
 
+#include <primitives/NormalPlane.h>
+
 
 CADConverter::CADConverter()
 {
@@ -70,19 +72,7 @@ Model* CADConverter::convertModel(Model& model) const
     transform(pCloud->points, tMatrix);
     // maybe create basic transform-rotate-whatever helper functions to make things easier?
 
-    qDebug("Calculating normals...");
-
-    QVector<QVector3D> normals;
-
-
-    for (QVector3D point : pCloud->points)
-    {
-        QVector<QVector3D> neighbors = getNeighbors(point, pCloud->points);
-
-        houghTransformer->applyTransform(neighbors, {PrimitiveType::NORMALPLANE});
-
-
-    }
+    QVector<QVector3D> normals = getNormals(pCloud->points);
 
     // Find normals of points, vote for major normal direction
 
@@ -101,9 +91,34 @@ Model* CADConverter::convertModel(Model& model) const
     return &model;
 }
 
+QVector<QVector3D> CADConverter::getNormals(QVector<QVector3D> const points) const
+{
+    qDebug("Calculating normals...");
+    QVector<QVector3D> normals;
+
+    for (QVector3D const point : points)
+    {
+        QVector<QVector3D> neighbors = getNeighbors(point, points);
+
+        QVector<float> params = houghTransformer->getBestFit<NormalPlane>(neighbors);
+
+        float tht = params[0]; //theta
+        float phi = params[1];
+        float rho = params[2];
+
+        // Build normal vector from chosen parameters
+        QVector3D normal(qCos(tht)*qSin(phi), qSin(phi)*qSin(tht), qCos(phi));
+        normals.append(normal);
+    }
+
+    return normals;
+}
+
+
 QVector<QVector3D> CADConverter::getNeighbors(QVector3D const target, QVector<QVector3D> const points) const
 {
     QVector<QVector3D> result;
+    result.append(target); // TODO: might be unnecessary
     for (QVector3D point : points)
     {
         float distance = target.distanceToPoint(point);

@@ -3,7 +3,7 @@
 
 NormalPlane::NormalPlane() {}
 
-QVector<ParamPair> NormalPlane::buildParameters()
+QVector<ParamPair> NormalPlane::buildParameters() const
 {
     // Three params: theta, phi, rho
     // Theta: [0 , 2pi)
@@ -26,7 +26,7 @@ QVector<ParamPair> NormalPlane::buildParameters()
     return output;
 }
 
-bool NormalPlane::isIntersecting(QVector3D point, QVector<float> params) const
+bool NormalPlane::isIntersecting(QVector3D const point, QVector<float> const params) const
 {
     // Parameters
     float tht = params[0]; //theta
@@ -34,38 +34,35 @@ bool NormalPlane::isIntersecting(QVector3D point, QVector<float> params) const
     float rho = params[2];
 
     // TODO: might need epsilon value
-    return point.x() * qCos(tht) * qSin(phi)
+    return qFuzzyCompare(point.x() * qCos(tht) * qSin(phi)
                + point.y() * qSin(tht) * qSin(phi)
                + point.z() * qCos(phi)
-               - rho
-           == 0;
+                - rho, 0.0f);
 }
 
-void NormalPlane::getBestFit(QVector<QVector3D> points)
-{
-    QVector<ParamPair> params = buildParameters();
+// QVector<float> NormalPlane::getBestFit(QVector<QVector3D> const points) const
+// {
+//     QVector<ParamPair> params = buildParameters();
 
-    // Value for best fit chosen by having max votes
-    // TODO: this is naive.
-    ParamPair* bestFit = nullptr;
+//     // Value for best fit chosen by having max votes
+//     // TODO: this is naive.
+//     ParamPair* bestFit = nullptr;
 
-    for (QVector3D point : points)
-    {
-        for (ParamPair& pair : params)
-        {
-            if (isIntersecting(point, pair.second))
-            {
-                ++pair.first;
-                // Check if this is the best fit.
-                if (bestFit == nullptr || pair.first > bestFit->first)
-                {
-                    bestFit = &pair;
-                }
-            }
-        }
-    }
+//     for (QVector3D point : points)
+//     {
+//         for (ParamPair& pair : params)
+//         {
+//             if (isIntersecting(point, pair.second))
+//             {
+//                 ++pair.first;
+//                 // Check if this is the best fit.
+//                 if (bestFit == nullptr || pair.first > bestFit->first)
+//                 {
+//                     bestFit = &pair;
+//                 }
+//             }
+//         }
+//     }
 
-    // Update position and orientation(?) accordingly
-
-
-}
+//     return bestFit->second;
+// }

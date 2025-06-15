@@ -17,11 +17,10 @@ public:
     QVector3D orientation;
 
     // TODO: return type probably wrong
-    virtual void getBestFit(QVector<QVector3D> points) = 0;
+    // virtual QVector<float> getBestFit(QVector<QVector3D> const points) const = 0;
     // Build the initial matrix of parameters and flatten them to a 2D vector of floats
-protected:
-    virtual QVector<ParamPair> buildParameters() = 0;
-    virtual bool isIntersecting(QVector3D point, QVector<float> params) const = 0;
+    virtual QVector<ParamPair> buildParameters() const = 0;
+    virtual bool isIntersecting(QVector3D const point, QVector<float> const params) const = 0;
 };
 
 #endif // PRIMITIVESHAPE_H
