@@ -19,7 +19,7 @@ public:
     // TODO: return type probably wrong
     // virtual QVector<float> getBestFit(QVector<QVector3D> const points) const = 0;
     // Build the initial matrix of parameters and flatten them to a 2D vector of floats
-    virtual QVector<ParamPair> buildParameters() const = 0;
+    virtual QVector<ParamPair> buildParameters(QVector<QVector3D> const points) const = 0;
     virtual bool isIntersecting(QVector3D const point, QVector<float> const params) const = 0;
 };
 

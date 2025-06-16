@@ -61,7 +61,7 @@ Model* CADConverter::convertModel(Model& model) const
 
     QVector3D centroid = getCentroid(pCloud->points);
 
-    // build transformation matrix to translate the entire damn thing (basically subtract centroid from every point)
+    // build transformation matrix to translate the entire thing (basically subtract centroid from every point)
     QMatrix4x4 tMatrix(
         1.0f, 0.0f, 0.0f, -centroid.x(),
         0.0f, 1.0f, 0.0f, -centroid.y(),

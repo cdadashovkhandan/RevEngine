@@ -20,13 +20,13 @@ public:
     QVector<float> getBestFit(QVector<QVector3D> const points) const
     {
         Shape shape;
-        QVector<ParamPair> params = shape.buildParameters();
+        QVector<ParamPair> params = shape.buildParameters(points);
 
         // Value for best fit chosen by having max votes
         // TODO: this is naive.
         ParamPair* bestFit = nullptr;
 
-        for (QVector3D point : points)
+        for (QVector3D const point : points)
         {
             for (ParamPair& pair : params)
             {
@@ -40,6 +40,15 @@ public:
                 }
             }
         }
+
+        // If no best fit was found
+        if (bestFit == nullptr)
+        {
+            qDebug("Best Hough Transform fit not found");
+            throw; //TODO: proper error handling
+        }
+
+
         return bestFit->second;
     }
 private:

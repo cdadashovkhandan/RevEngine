@@ -1,21 +1,28 @@
 #include "NormalPlane.h"
 #include <QtMath>
+#include <QDebug>
 
 NormalPlane::NormalPlane() {}
 
-QVector<ParamPair> NormalPlane::buildParameters() const
+QVector<ParamPair> NormalPlane::buildParameters(QVector<QVector3D> const points) const
 {
     // Three params: theta, phi, rho
     // Theta: [0 , 2pi)
     // Phi: [0, pi]
-    // Rho: [0, 1], increments of 0.1 (maybe change?)
+    // Rho: from 0 to the largest magnitude across points increments of rho/50
+
+    float maxMagnitude = 0;
+    for(QVector3D const point : points)
+    {
+        maxMagnitude = qMax(point.length(), maxMagnitude);
+    }
 
     QVector<ParamPair> output;
     for (float theta = 0; theta < 2 * M_PI; ++theta)
     {
         for(float phi = 0; phi <= M_PI; ++phi)
         {
-            for(float rho = 0; rho <= 1.0f; rho += 0.1f)
+            for(float rho = 0; rho <= maxMagnitude; rho += maxMagnitude / 50.0f)
             {
                 QVector<float> params({theta, phi, rho});
                 ParamPair entry(0, params);
@@ -33,36 +40,11 @@ bool NormalPlane::isIntersecting(QVector3D const point, QVector<float> const par
     float phi = params[1];
     float rho = params[2];
 
+    float eqn = point.x() * qCos(tht) * qSin(phi)
+                + point.y() * qSin(tht) * qSin(phi)
+                + point.z() * qCos(phi);
+
     // TODO: might need epsilon value
-    return qFuzzyCompare(point.x() * qCos(tht) * qSin(phi)
-               + point.y() * qSin(tht) * qSin(phi)
-               + point.z() * qCos(phi)
-                - rho, 0.0f);
+    // qDebug() << eqn;
+    return qAbs(eqn)< (rho / 2);
 }
-
-// QVector<float> NormalPlane::getBestFit(QVector<QVector3D> const points) const
-// {
-//     QVector<ParamPair> params = buildParameters();
-
-//     // Value for best fit chosen by having max votes
-//     // TODO: this is naive.
-//     ParamPair* bestFit = nullptr;
-
-//     for (QVector3D point : points)
-//     {
-//         for (ParamPair& pair : params)
-//         {
-//             if (isIntersecting(point, pair.second))
-//             {
-//                 ++pair.first;
-//                 // Check if this is the best fit.
-//                 if (bestFit == nullptr || pair.first > bestFit->first)
-//                 {
-//                     bestFit = &pair;
-//                 }
-//             }
-//         }
-//     }
-
-//     return bestFit->second;
-// }

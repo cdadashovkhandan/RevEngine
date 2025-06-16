@@ -7,7 +7,7 @@ class NormalPlane : public PrimitiveShape
 {
 
 public:
-    QVector<ParamPair> buildParameters() const override;
+    QVector<ParamPair> buildParameters(QVector<QVector3D> const points) const override;
     bool isIntersecting(QVector3D const point, QVector<float> const params) const override;
 
     NormalPlane();
