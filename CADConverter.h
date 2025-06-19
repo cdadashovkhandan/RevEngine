@@ -5,6 +5,8 @@
 #include "data/Model.h"
 
 #include <QMatrix4x4>
+
+#include <data/KDTree.h>
 class CADConverter
 {
 public:
@@ -13,7 +15,7 @@ public:
     friend class ModelManager; //TODO maybe not necessary
     Model* convertModel(Model& model) const;
 
-    QVector<QVector3D> getNormals(const QVector<QVector3D> points) const;
+    QVector<QVector3D> getNormals(KDTree& tree) const;
 private:
     /* TODO:
      * Prim families
@@ -24,7 +26,7 @@ private:
     QVector<QVector3D>* transform(QVector<QVector3D>& points, QMatrix4x4 const tMatrix) const;
 
     float maxDistance = 0.15f / 100.0f; // TODO: put this into Settings and make it adjustable
-    QVector<QVector3D> getNeighbors(const QVector3D target, const QVector<QVector3D> points) const;
+    // QVector<QVector3D> getNeighbors(const QVector3D target, const QVector<QVector3D> points) const;
 };
 
 #endif // CADCONVERTER_H

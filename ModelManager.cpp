@@ -37,7 +37,7 @@ PointCloud* ModelManager::parsePointCloud(QString fileName) const
 
             QVector3D newPoint(line[0].toFloat(), line[1].toFloat(),line[2].toFloat());
 
-            newPoint /= 100.0f;
+            //newPoint /= 100.0f;
 
             verts.push_back(newPoint);
         }

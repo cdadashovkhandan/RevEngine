@@ -45,7 +45,8 @@ public:
         if (bestFit == nullptr)
         {
             qDebug("Best Hough Transform fit not found");
-            throw; //TODO: proper error handling
+            return QVector<float>({0,0,0});
+            //throw; //TODO: proper error handling
         }
 
 

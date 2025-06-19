@@ -2,6 +2,8 @@
 
 #include <primitives/NormalPlane.h>
 
+#include <data/KDTree.h>
+
 
 CADConverter::CADConverter()
 {
@@ -70,9 +72,22 @@ Model* CADConverter::convertModel(Model& model) const
         );
 
     transform(pCloud->points, tMatrix);
+
+
+    //build kd tree out of nodes
+    QVector<KDNode> nodes;
+    for (QVector3D point : pCloud -> points)
+    {
+        nodes.push_back(KDNode(point));
+    }
+
+    KDTree cloudTree(&nodes);
+
     // maybe create basic transform-rotate-whatever helper functions to make things easier?
 
-    QVector<QVector3D> normals = getNormals(pCloud->points);
+    // build kdtree
+
+    QVector<QVector3D> normals = getNormals(cloudTree);
 
     // Find normals of points, vote for major normal direction
 
@@ -91,16 +106,20 @@ Model* CADConverter::convertModel(Model& model) const
     return &model;
 }
 
-QVector<QVector3D> CADConverter::getNormals(QVector<QVector3D> const points) const
+QVector<QVector3D> CADConverter::getNormals(KDTree& tree) const
 {
     qDebug("Calculating normals...");
     QVector<QVector3D> normals;
 
-    for (QVector3D const point : points)
+    for (KDNode const node : tree.allnodes)
     {
-        QVector<QVector3D> neighbors = getNeighbors(point, points);
+        size_t neighborCount = 3;
+        QVector<KDNode> neighbors;
+        QVector<QVector3D> points(neighborCount);
+        tree.k_nearest_neighbors(node.point, neighborCount, &neighbors, nullptr);
 
-        QVector<float> params = houghTransformer->getBestFit<NormalPlane>(neighbors);
+        std::transform(neighbors.begin(), neighbors.end(), points.begin(), [](KDNode n) { return n.point; });
+        QVector<float> params = houghTransformer->getBestFit<NormalPlane>(points);
 
         float tht = params[0]; //theta
         float phi = params[1];
@@ -115,18 +134,18 @@ QVector<QVector3D> CADConverter::getNormals(QVector<QVector3D> const points) con
 }
 
 
-QVector<QVector3D> CADConverter::getNeighbors(QVector3D const target, QVector<QVector3D> const points) const
-{
-    QVector<QVector3D> result;
-    result.append(target); // TODO: might be unnecessary
-    for (QVector3D point : points)
-    {
-        float distance = target.distanceToPoint(point);
-        if (distance <= maxDistance && distance > 0)
-        {
-            result.append(point);
-        }
-    }
+// QVector<QVector3D> CADConverter::getNeighbors(QVector3D const target, QVector<QVector3D> const points) const
+// {
+//     QVector<QVector3D> result;
+//     result.append(target); // TODO: might be unnecessary
+//     for (QVector3D point : points)
+//     {
+//         float distance = target.distanceToPoint(point);
+//         if (distance <= maxDistance && distance > 0)
+//         {
+//             result.append(point);
+//         }
+//     }
 
-    return result;
-}
+//     return result;
+// }

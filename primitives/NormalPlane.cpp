@@ -35,6 +35,8 @@ QVector<ParamPair> NormalPlane::buildParameters(QVector<QVector3D> const points)
 
 bool NormalPlane::isIntersecting(QVector3D const point, QVector<float> const params) const
 {
+
+    float threshold = 0.001f;
     // Parameters
     float tht = params[0]; //theta
     float phi = params[1];
@@ -46,5 +48,5 @@ bool NormalPlane::isIntersecting(QVector3D const point, QVector<float> const par
 
     // TODO: might need epsilon value
     // qDebug() << eqn;
-    return qAbs(eqn)< (rho / 2);
+    return qAbs(eqn - rho) < threshold;
 }
