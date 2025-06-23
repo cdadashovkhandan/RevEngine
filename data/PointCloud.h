@@ -7,10 +7,13 @@
 
 // Raw PointCloud data.
 //TODO: should this be a struct or class?
+
 struct PointCloud
 {
 public:
+    [[deprecated]]
     PointCloud(QVector<QVector3D>);
+    [[deprecated]]
     QVector<QVector3D> points { };
 };
 

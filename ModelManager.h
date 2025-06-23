@@ -6,6 +6,8 @@
 #include "Settings.h"
 #include <QString>
 
+using PointCloud = pcl::PointCloud<pcl::PointXYZ>;
+
 // Handle creation and storage of Models
 class ModelManager
 {

@@ -22,7 +22,8 @@ PointCloud* ModelManager::parsePointCloud(QString fileName) const
 {
     QFile cloudFile(fileName);
     Mesh newMesh;
-    QVector<QVector3D> verts{};
+
+    pcl::PointCloud<pcl::PointXYZ>* cloud = new pcl::PointCloud<pcl::PointXYZ>();
     if (cloudFile.open(QIODevice::ReadOnly))
     {
         QTextStream fileText(&cloudFile);
@@ -35,15 +36,16 @@ PointCloud* ModelManager::parsePointCloud(QString fileName) const
             if (line.size() == 1) // Either a beginning or end line
                 continue;
 
-            QVector3D newPoint(line[0].toFloat(), line[1].toFloat(),line[2].toFloat());
 
-            //newPoint /= 100.0f;
+            //TODO: make this neat
+            QVector3D newPoint(line[0].toFloat(), line[1].toFloat(), line[2].toFloat());
 
-            verts.push_back(newPoint);
+            newPoint /= 100.0f;
+
+            cloud->push_back(pcl::PointXYZ(newPoint.x(), newPoint.y(), newPoint.z()));
         }
     }
-
-    return new PointCloud(verts);
+    return cloud;
 }
 
 /**

@@ -1,10 +1,11 @@
 #include "CADConverter.h"
 
 #include <primitives/NormalPlane.h>
+#include <pcl/common/centroid.h>
+#include <pcl/common/transforms.h>
+#include <pcl/kdtree/kdtree_flann.h>
 
-#include <data/KDTree.h>
-
-
+// #include <data/KDTree.h>
 CADConverter::CADConverter()
 {
     houghTransformer = new HoughTransformer();
@@ -15,17 +16,17 @@ CADConverter::CADConverter()
  * @param points
  * @return
  */
-QVector3D CADConverter::getCentroid(QVector<QVector3D> &points) const
-{
-    QVector3D centroid(0,0,0);
+// QVector3D CADConverter::getCentroid(QVector<QVector3D> &points) const
+// {
+//     QVector3D centroid(0,0,0);
 
-    for (QVector3D point : points)
-    {
-        centroid += point;
-    }
+//     for (QVector3D point : points)
+//     {
+//         centroid += point;
+//     }
 
-    return centroid / float(points.size());
-}
+//     return centroid / float(points.size());
+// }
 
 /**
  * @brief CADConverter::transform Apply transformation to entire point cloud.
@@ -61,33 +62,41 @@ Model* CADConverter::convertModel(Model& model) const
 
     qDebug("Centering Point Cloud...");
 
-    QVector3D centroid = getCentroid(pCloud->points);
+    Eigen::Matrix<float, 4, 1> centroid;
 
-    // build transformation matrix to translate the entire thing (basically subtract centroid from every point)
-    QMatrix4x4 tMatrix(
-        1.0f, 0.0f, 0.0f, -centroid.x(),
-        0.0f, 1.0f, 0.0f, -centroid.y(),
-        0.0f, 0.0f, 1.0f, -centroid.z(),
-        0.0f, 0.0f, 0.0f, 1.0f
-        );
+    int result = pcl::compute3DCentroid(*pCloud, centroid);
 
-    transform(pCloud->points, tMatrix);
+    if (result != 0)
+    {
+        Eigen::Matrix4f tMatrix = Eigen::Matrix4f::Identity();
+        tMatrix(0, 3) = -centroid.x();
+        tMatrix(1, 3) = -centroid.y();
+        tMatrix(2, 3) = -centroid.z();
 
+        // tMatrix.translation() << centroid;
+
+        pcl::transformPointCloud(*pCloud, *pCloud, tMatrix);
+        qDebug("Centering successful");
+    }
+    else
+        qDebug("Centering failed, continuing...");
+
+
+    pcl::KdTreeFLANN<pcl::PointXYZ> kdtree;
+    //TODO: I might be better off just storing clouds as shared pointers right off the bat
+    pcl::PointCloud<pcl::PointXYZ>::Ptr cloudPtr(pCloud);
+    kdtree.setInputCloud (cloudPtr);
 
     //build kd tree out of nodes
-    QVector<KDNode> nodes;
-    for (QVector3D point : pCloud -> points)
-    {
-        nodes.push_back(KDNode(point));
-    }
+    // QVector<KDNode> nodes;
+    // for (QVector3D point : pCloud -> points)
+    // {
+    //     nodes.push_back(KDNode(point));
+    // }
 
-    KDTree cloudTree(&nodes);
+    // KDTree cloudTree(&nodes);
 
-    // maybe create basic transform-rotate-whatever helper functions to make things easier?
-
-    // build kdtree
-
-    QVector<QVector3D> normals = getNormals(cloudTree);
+    // QVector<QVector3D> normals = getNormals(cloudTree);
 
     // Find normals of points, vote for major normal direction
 

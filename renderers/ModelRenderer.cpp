@@ -31,12 +31,12 @@ void ModelRenderer::initBuffers()
     gl->glGenBuffers(1, &vbo);
     gl->glBindBuffer(GL_ARRAY_BUFFER, vbo);
     gl->glEnableVertexAttribArray(0);
-    gl->glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
+    gl->glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, nullptr);
 
     gl->glGenBuffers(1, &nbo);
     gl->glBindBuffer(GL_ARRAY_BUFFER, nbo);
     gl->glEnableVertexAttribArray(1);
-    gl->glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
+    gl->glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, nullptr);
 
     gl->glGenBuffers(1, &ibo);
     gl->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
@@ -58,12 +58,14 @@ void ModelRenderer::update_buffers(Model* model)
 
     if (settings->showPointCloud)
     {
-        QVector<QVector3D>& points = model->pointCloud->points;
+        std::vector<pcl::PointXYZ, Eigen::aligned_allocator<pcl::PointXYZ>> points =
+            model->pointCloud->points;
         gl->glBindVertexArray(vao);
 
         // Coords
         gl->glBindBuffer(GL_ARRAY_BUFFER, vbo);
-        gl->glBufferData(GL_ARRAY_BUFFER, points.size() * sizeof(QVector3D), points.data(), GL_STATIC_DRAW);
+        gl->glBufferData(GL_ARRAY_BUFFER, points.size() * sizeof(pcl::PointXYZ),
+                         points.data(), GL_STATIC_DRAW);
 
         gl->glBindVertexArray(0);
         render_size = points.size();

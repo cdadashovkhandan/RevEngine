@@ -7,6 +7,7 @@
 #include <QMatrix4x4>
 
 #include <data/KDTree.h>
+
 class CADConverter
 {
 public:
