@@ -4,7 +4,7 @@
 
 NormalPlane::NormalPlane() {}
 
-QVector<ParamPair> NormalPlane::buildParameters(QVector<QVector3D> const points) const
+std::vector<ParamPair> NormalPlane::buildParameters(std::vector<pcl::PointXYZ> const points) const
 {
     // Three params: theta, phi, rho
     // Theta: [0 , 2pi)
@@ -12,28 +12,29 @@ QVector<ParamPair> NormalPlane::buildParameters(QVector<QVector3D> const points)
     // Rho: from 0 to the largest magnitude across points increments of rho/50
 
     float maxMagnitude = 0;
-    for(QVector3D const point : points)
+    for(pcl::PointXYZ const point : points)
     {
-        maxMagnitude = qMax(point.length(), maxMagnitude);
+        float magnitude = Eigen::Vector3f(point.x, point.y, point.z).norm();
+        maxMagnitude = qMax(magnitude, maxMagnitude);
     }
 
-    QVector<ParamPair> output;
+    std::vector<ParamPair> output;
     for (float theta = 0; theta < 2 * M_PI; ++theta)
     {
         for(float phi = 0; phi <= M_PI; ++phi)
         {
             for(float rho = 0; rho <= maxMagnitude; rho += maxMagnitude / 50.0f)
             {
-                QVector<float> params({theta, phi, rho});
+                std::vector<float> params({theta, phi, rho});
                 ParamPair entry(0, params);
-                output.append(entry);
+                output.push_back(entry);
             }
         }
     }
     return output;
 }
 
-bool NormalPlane::isIntersecting(QVector3D const point, QVector<float> const params) const
+bool NormalPlane::isIntersecting(pcl::PointXYZ const point, std::vector<float> const params) const
 {
 
     float threshold = 0.001f;
@@ -42,9 +43,9 @@ bool NormalPlane::isIntersecting(QVector3D const point, QVector<float> const par
     float phi = params[1];
     float rho = params[2];
 
-    float eqn = point.x() * qCos(tht) * qSin(phi)
-                + point.y() * qSin(tht) * qSin(phi)
-                + point.z() * qCos(phi);
+    float eqn = point.x * qCos(tht) * qSin(phi)
+                + point.y * qSin(tht) * qSin(phi)
+                + point.z * qCos(phi);
 
     // TODO: might need epsilon value
     // qDebug() << eqn;

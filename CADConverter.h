@@ -5,9 +5,6 @@
 #include "data/Model.h"
 
 #include <QMatrix4x4>
-
-#include <data/KDTree.h>
-
 class CADConverter
 {
 public:
@@ -16,7 +13,7 @@ public:
     friend class ModelManager; //TODO maybe not necessary
     Model* convertModel(Model& model) const;
 
-    QVector<QVector3D> getNormals(KDTree& tree) const;
+    std::vector<pcl::PointXYZ> getNormals(pcl::PointCloud<pcl::PointXYZ>::Ptr cloudPtr) const;
 private:
     /* TODO:
      * Prim families

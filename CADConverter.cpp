@@ -79,14 +79,14 @@ Model* CADConverter::convertModel(Model& model) const
         qDebug("Centering successful");
     }
     else
-        qDebug("Centering failed, continuing...");
+        qWarning("Centering failed, continuing...");
 
 
     pcl::KdTreeFLANN<pcl::PointXYZ> kdtree;
     //TODO: I might be better off just storing clouds as shared pointers right off the bat
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloudPtr(pCloud);
-    kdtree.setInputCloud (cloudPtr);
 
+    std::vector<pcl::PointXYZ> normals = getNormals(cloudPtr);
     //build kd tree out of nodes
     // QVector<KDNode> nodes;
     // for (QVector3D point : pCloud -> points)
@@ -115,30 +115,45 @@ Model* CADConverter::convertModel(Model& model) const
     return &model;
 }
 
-QVector<QVector3D> CADConverter::getNormals(KDTree& tree) const
+std::vector<pcl::PointXYZ> CADConverter::getNormals(pcl::PointCloud<pcl::PointXYZ>::Ptr cloudPtr) const
 {
     qDebug("Calculating normals...");
-    QVector<QVector3D> normals;
+    pcl::KdTreeFLANN<pcl::PointXYZ> kdtree;
+    kdtree.setInputCloud (cloudPtr);
 
-    for (KDNode const node : tree.allnodes)
+    size_t neighborCount = 3; //TODO: delegate to Settings
+
+    std::vector<int> neighborIndeces(neighborCount);
+    std::vector<float> neighborDistances(neighborCount);
+    std::vector<pcl::PointXYZ> normals;
+
+
+    for (pcl::PointXYZ const point : cloudPtr->points)
     {
-        size_t neighborCount = 3;
-        QVector<KDNode> neighbors;
-        QVector<QVector3D> points(neighborCount);
-        tree.k_nearest_neighbors(node.point, neighborCount, &neighbors, nullptr);
+        if (kdtree.nearestKSearch(point, neighborCount, neighborIndeces, neighborDistances) > 0)
+        {
+            std::vector<pcl::PointXYZ> neighbors(neighborCount);
+            // QVector<QVector3D> points(neighborCount);
+            // tree.k_nearest_neighbors(node.point, neighborCount, &neighbors, nullptr);
 
-        std::transform(neighbors.begin(), neighbors.end(), points.begin(), [](KDNode n) { return n.point; });
-        QVector<float> params = houghTransformer->getBestFit<NormalPlane>(points);
+            std::transform(neighborIndeces.begin(),
+                           neighborIndeces.end(),
+                           neighbors.begin(),
+                           [&cloudPtr](int const n) { return (*cloudPtr)[n]; });
 
-        float tht = params[0]; //theta
-        float phi = params[1];
-        float rho = params[2];
+            std::vector<float> params = houghTransformer->getBestFit<NormalPlane>(neighbors);
 
-        // Build normal vector from chosen parameters
-        QVector3D normal(qCos(tht)*qSin(phi), qSin(phi)*qSin(tht), qCos(phi));
-        normals.append(normal);
+            float tht = params[0]; //theta
+            float phi = params[1];
+            float rho = params[2];
+
+            // Build normal vector from chosen parameters
+            pcl::PointXYZ normal(qCos(tht)*qSin(phi), qSin(phi)*qSin(tht), qCos(phi));
+            normals.push_back(normal);
+        }
     }
 
+    qDebug("Normals calculated successfully");
     return normals;
 }
 

@@ -6,6 +6,7 @@
 #include <QVector>
 #include <QVector3D>
 #include <QMap>
+#include <pcl/impl/point_types.hpp>
 class HoughTransformer
 {
 public:
@@ -17,16 +18,16 @@ public:
     //TODO: might want to make static?
     //TODO: template might be completely unnecessary, could just feed shape in directly.
     template <typename Shape>
-    QVector<float> getBestFit(QVector<QVector3D> const points) const
+    std::vector<float> getBestFit(std::vector<pcl::PointXYZ> const points) const
     {
         Shape shape;
-        QVector<ParamPair> params = shape.buildParameters(points);
+        std::vector<ParamPair> params = shape.buildParameters(points);
 
         // Value for best fit chosen by having max votes
         // TODO: this is naive.
         ParamPair* bestFit = nullptr;
 
-        for (QVector3D const point : points)
+        for (pcl::PointXYZ const point : points)
         {
             for (ParamPair& pair : params)
             {
@@ -45,7 +46,7 @@ public:
         if (bestFit == nullptr)
         {
             qDebug("Best Hough Transform fit not found");
-            return QVector<float>({0,0,0});
+            return std::vector<float>({0,0,0});
             //throw; //TODO: proper error handling
         }
 
