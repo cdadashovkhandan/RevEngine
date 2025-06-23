@@ -5,28 +5,10 @@
 #include <pcl/common/transforms.h>
 #include <pcl/kdtree/kdtree_flann.h>
 
-// #include <data/KDTree.h>
 CADConverter::CADConverter()
 {
     houghTransformer = new HoughTransformer();
 }
-
-/**
- * @brief CADConverter::getCentroid Return the center point of the point cloud, AKA the average.
- * @param points
- * @return
- */
-// QVector3D CADConverter::getCentroid(QVector<QVector3D> &points) const
-// {
-//     QVector3D centroid(0,0,0);
-
-//     for (QVector3D point : points)
-//     {
-//         centroid += point;
-//     }
-
-//     return centroid / float(points.size());
-// }
 
 /**
  * @brief CADConverter::transform Apply transformation to entire point cloud.
@@ -87,18 +69,8 @@ Model* CADConverter::convertModel(Model& model) const
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloudPtr(pCloud);
 
     std::vector<pcl::PointXYZ> normals = getNormals(cloudPtr);
-    //build kd tree out of nodes
-    // QVector<KDNode> nodes;
-    // for (QVector3D point : pCloud -> points)
-    // {
-    //     nodes.push_back(KDNode(point));
-    // }
 
-    // KDTree cloudTree(&nodes);
-
-    // QVector<QVector3D> normals = getNormals(cloudTree);
-
-    // Find normals of points, vote for major normal direction
+    // vote for major normal direction
 
     // Align major normal direction with z-axis
 

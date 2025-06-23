@@ -47,7 +47,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         primitives/PrimitiveShape.cpp primitives/PrimitiveShape.h
         primitives/PrimitiveType.h
         primitives/NormalPlane.h primitives/NormalPlane.cpp
-        data/KDTree.h data/KDTree.cpp
+
 
 
     )
