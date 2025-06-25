@@ -88,7 +88,7 @@ Model* CADConverter::convertModel(Model& model) const
     // Align major normal direction with z-axis
 
     Eigen::Vector3f zAxis(0.0f, 0.0f, 1.0f);
-    Eigen::Matrix4f rotationMatrix = buildRotationMatrix(zAxis, average);
+    Eigen::Matrix4f rotationMatrix = buildRotationMatrix(average, zAxis);
 
     pcl::transformPointCloud(*pCloud, *pCloud, rotationMatrix);
     qDebug("Alignment complete");
