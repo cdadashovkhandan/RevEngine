@@ -75,7 +75,8 @@ target_link_libraries(RevEngine
     Qt${QT_VERSION_MAJOR}::OpenGLWidgets
     Qt${QT_VERSION_MAJOR}::OpenGL
     ${PCL_COMMON_LIBRARIES}
-    ${PCL_KDTREE_LIBRARIES})
+    ${PCL_KDTREE_LIBRARIES}
+    ${PCL_FILTERS_LIBRARIES})
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
 # If you are developing for iOS or macOS you should consider setting an

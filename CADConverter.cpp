@@ -4,6 +4,7 @@
 #include <pcl/common/centroid.h>
 #include <pcl/common/transforms.h>
 #include <pcl/kdtree/kdtree_flann.h>
+#include <pcl/filters/voxel_grid.h>
 
 CADConverter::CADConverter()
 {
@@ -41,12 +42,24 @@ Model* CADConverter::convertModel(Model& model) const
     // 1. Translate the point cloud to align its center with center of coordinate system
 
     PointCloud* pCloud = model.pointCloud;
+    pcl::PointCloud<pcl::PointXYZ>::Ptr cloudPtrDownsampled(new pcl::PointCloud<pcl::PointXYZ>());
+    //TODO: I might be better off just storing clouds as shared pointers right off the bat
+    pcl::PointCloud<pcl::PointXYZ>::Ptr cloudPtr(pCloud);
+
+    qDebug("Creating downsampled copy...");
+    pcl::VoxelGrid<pcl::PointXYZ> voxelGrid;
+
+    voxelGrid.setInputCloud(cloudPtr);
+    voxelGrid.setLeafSize(0.005f, 0.005f, 0.005f);
+    voxelGrid.filter(*cloudPtrDownsampled);
+
+    qDebug() << "Downsampling complete. Reduced from " << pCloud->size() << " to " << cloudPtrDownsampled->size() << " points.";
 
     qDebug("Centering Point Cloud...");
 
     Eigen::Matrix<float, 4, 1> centroid;
 
-    int result = pcl::compute3DCentroid(*pCloud, centroid);
+    int result = pcl::compute3DCentroid(*cloudPtrDownsampled, centroid);
 
     if (result != 0)
     {
@@ -65,10 +78,8 @@ Model* CADConverter::convertModel(Model& model) const
 
 
     pcl::KdTreeFLANN<pcl::PointXYZ> kdtree;
-    //TODO: I might be better off just storing clouds as shared pointers right off the bat
-    pcl::PointCloud<pcl::PointXYZ>::Ptr cloudPtr(pCloud);
 
-    std::vector<Eigen::Vector3f> normals = getNormals(cloudPtr);
+    std::vector<Eigen::Vector3f> normals = getNormals(cloudPtrDownsampled);
 
     // vote for major normal direction
     qDebug("Aligning with z-axis...");
@@ -154,11 +165,11 @@ std::vector<Eigen::Vector3f> CADConverter::getNormals(pcl::PointCloud<pcl::Point
 
             float tht = params[0]; //theta
             float phi = params[1];
-            float rho = params[2];
+            // float rho = params[2];
 
             // Build normal vector from chosen parameters
             Eigen::Vector3f normal(qCos(tht)*qSin(phi), qSin(phi)*qSin(tht), qCos(phi));
-            normals.push_back(normal);
+            normals.push_back(normal.normalized());
         }
     }
 
