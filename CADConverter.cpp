@@ -68,11 +68,24 @@ Model* CADConverter::convertModel(Model& model) const
     //TODO: I might be better off just storing clouds as shared pointers right off the bat
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloudPtr(pCloud);
 
-    std::vector<pcl::PointXYZ> normals = getNormals(cloudPtr);
+    std::vector<Eigen::Vector3f> normals = getNormals(cloudPtr);
 
     // vote for major normal direction
-
+    qDebug("Aligning with z-axis...");
+    Eigen::Vector3f average = std::accumulate(normals.begin(), normals.end(), Eigen::Vector3f(0.0f, 0.0f, 0.0f));
+    average /= normals.size();
     // Align major normal direction with z-axis
+
+    Eigen::Vector3f zAxis(0.0f, 0.0f, 1.0f);
+    Eigen::Matrix4f rotationMatrix = buildRotationMatrix(zAxis, average);
+
+    pcl::transformPointCloud(*pCloud, *pCloud, rotationMatrix);
+    qDebug("Alignment complete");
+
+
+
+
+
 
     //II. Recognition
 
@@ -80,14 +93,38 @@ Model* CADConverter::convertModel(Model& model) const
 
     // segment and express space as discrete matrix.
 
-
-
     //III. Postprocessing
 
     return &model;
 }
 
-std::vector<pcl::PointXYZ> CADConverter::getNormals(pcl::PointCloud<pcl::PointXYZ>::Ptr cloudPtr) const
+Eigen::Matrix4f CADConverter::buildRotationMatrix(Eigen::Vector3f const target, Eigen::Vector3f const source) const
+{
+    //TODO: proper variable names, this ain't MATLAB
+    Eigen::Matrix3f GG{
+        {target.dot(source),             -target.cross(source).norm(),   0.0f},
+        {target.cross(source).norm(),    target.dot(source),             0.0f},
+        {0.0f,                           0.0f,                           1.0f}
+    };
+
+    Eigen::Matrix3f FFi;
+    FFi << target,
+        source - target.dot(source)*target / (source-target.dot(source)*target).norm(),
+        target.cross(source);
+
+    Eigen::Matrix3f rotation = FFi * GG * FFi.inverse();
+
+    //TODO: maybe there's a way to do this better?
+    // rebuild in homogeneous coordinates
+    Eigen::Matrix4f rotMatrix;
+    rotMatrix.setIdentity();
+    rotMatrix.block<3,3>(0,0) = rotation;
+
+    return rotMatrix;
+
+}
+
+std::vector<Eigen::Vector3f> CADConverter::getNormals(pcl::PointCloud<pcl::PointXYZ>::Ptr const cloudPtr) const
 {
     qDebug("Calculating normals...");
     pcl::KdTreeFLANN<pcl::PointXYZ> kdtree;
@@ -97,7 +134,7 @@ std::vector<pcl::PointXYZ> CADConverter::getNormals(pcl::PointCloud<pcl::PointXY
 
     std::vector<int> neighborIndeces(neighborCount);
     std::vector<float> neighborDistances(neighborCount);
-    std::vector<pcl::PointXYZ> normals;
+    std::vector<Eigen::Vector3f> normals;
 
 
     for (pcl::PointXYZ const point : cloudPtr->points)
@@ -120,7 +157,7 @@ std::vector<pcl::PointXYZ> CADConverter::getNormals(pcl::PointCloud<pcl::PointXY
             float rho = params[2];
 
             // Build normal vector from chosen parameters
-            pcl::PointXYZ normal(qCos(tht)*qSin(phi), qSin(phi)*qSin(tht), qCos(phi));
+            Eigen::Vector3f normal(qCos(tht)*qSin(phi), qSin(phi)*qSin(tht), qCos(phi));
             normals.push_back(normal);
         }
     }
@@ -129,6 +166,27 @@ std::vector<pcl::PointXYZ> CADConverter::getNormals(pcl::PointCloud<pcl::PointXY
     return normals;
 }
 
+
+// std::vector<float> CADConverter::calculateMFE()
+// {
+//     /*
+//     Matlab equivalent:
+//         function mfe=MFE(xyz,dist)
+
+//         base=max(xyz(:,1))-min(xyz(:,1));
+//         h=max(xyz(:,2))-min(xyz(:,2));
+//         diag=sqrt(base^2+h^2);
+//         h=max(xyz(:,3))-min(xyz(:,3));
+//         Fin=sqrt(diag^2+h^2);
+
+//         mfe=mean(dist)/Fin;
+
+//         end
+//     */
+
+//     for ()
+
+// }
 
 // QVector<QVector3D> CADConverter::getNeighbors(QVector3D const target, QVector<QVector3D> const points) const
 // {
