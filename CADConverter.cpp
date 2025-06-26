@@ -49,8 +49,10 @@ Model* CADConverter::convertModel(Model& model) const
     qDebug("Creating downsampled copy...");
     pcl::VoxelGrid<pcl::PointXYZ> voxelGrid;
 
+    float downSampleFactor = 0.005f;
+
     voxelGrid.setInputCloud(cloudPtr);
-    voxelGrid.setLeafSize(0.005f, 0.005f, 0.005f);
+    voxelGrid.setLeafSize(downSampleFactor, downSampleFactor, downSampleFactor);
     voxelGrid.filter(*cloudPtrDownsampled);
 
     qDebug() << "Downsampling complete. Reduced from " << pCloud->size() << " to " << cloudPtrDownsampled->size() << " points.";
@@ -81,22 +83,8 @@ Model* CADConverter::convertModel(Model& model) const
 
     std::vector<Eigen::Vector3f> normals = getNormals(cloudPtrDownsampled);
 
-    // vote for major normal direction
-    qDebug("Aligning with z-axis...");
-    Eigen::Vector3f average = std::accumulate(normals.begin(), normals.end(), Eigen::Vector3f(0.0f, 0.0f, 0.0f));
-    average /= normals.size();
-    // Align major normal direction with z-axis
 
-    Eigen::Vector3f zAxis(0.0f, 0.0f, 1.0f);
-    Eigen::Matrix4f rotationMatrix = buildRotationMatrix(average, zAxis);
-
-    pcl::transformPointCloud(*pCloud, *pCloud, rotationMatrix);
-    qDebug("Alignment complete");
-
-
-
-
-
+    alignCloudWithZAxis(cloudPtr, normals);
 
     //II. Recognition
 
@@ -107,6 +95,21 @@ Model* CADConverter::convertModel(Model& model) const
     //III. Postprocessing
 
     return &model;
+}
+
+void CADConverter::alignCloudWithZAxis(pcl::PointCloud<pcl::PointXYZ>::Ptr cloudPtr, std::vector<Eigen::Vector3f> const normals) const
+{
+    // vote for major normal direction
+    qDebug("Aligning with z-axis...");
+    Eigen::Vector3f average = std::accumulate(normals.begin(), normals.end(), Eigen::Vector3f(0.0f, 0.0f, 0.0f));
+    average /= normals.size();
+    // Align major normal direction with z-axis
+
+    Eigen::Vector3f zAxis(0.0f, 0.0f, 1.0f);
+    Eigen::Matrix4f rotationMatrix = buildRotationMatrix(zAxis, average.normalized());
+
+    pcl::transformPointCloud(*cloudPtr, *cloudPtr, rotationMatrix);
+    qDebug("Alignment complete");
 }
 
 Eigen::Matrix4f CADConverter::buildRotationMatrix(Eigen::Vector3f const target, Eigen::Vector3f const source) const
@@ -120,7 +123,7 @@ Eigen::Matrix4f CADConverter::buildRotationMatrix(Eigen::Vector3f const target, 
 
     Eigen::Matrix3f FFi;
     FFi << target,
-        source - target.dot(source)*target / (source-target.dot(source)*target).norm(),
+        (source - target.dot(source)*target).normalized(),
         target.cross(source);
 
     Eigen::Matrix3f rotation = FFi * GG * FFi.inverse();
@@ -178,26 +181,44 @@ std::vector<Eigen::Vector3f> CADConverter::getNormals(pcl::PointCloud<pcl::Point
 }
 
 
-// std::vector<float> CADConverter::calculateMFE()
-// {
-//     /*
-//     Matlab equivalent:
-//         function mfe=MFE(xyz,dist)
+float CADConverter::calculateMFE(std::vector<pcl::PointXYZ> const points, std::vector<float> const distances) const
+{
+    /*
+    Matlab equivalent:
+        function mfe=MFE(xyz,dist)
 
-//         base=max(xyz(:,1))-min(xyz(:,1));
-//         h=max(xyz(:,2))-min(xyz(:,2));
-//         diag=sqrt(base^2+h^2);
-//         h=max(xyz(:,3))-min(xyz(:,3));
-//         Fin=sqrt(diag^2+h^2);
+        base=max(xyz(:,1))-min(xyz(:,1));
+        h=max(xyz(:,2))-min(xyz(:,2));
+        diag=sqrt(base^2+h^2);
+        h=max(xyz(:,3))-min(xyz(:,3));
+        Fin=sqrt(diag^2+h^2);
 
-//         mfe=mean(dist)/Fin;
+        mfe=mean(dist)/Fin;
 
-//         end
-//     */
+        end
+    */
 
-//     for ()
+    pcl::PointXYZ maxPoint(0,0,0);
+    pcl::PointXYZ minPoint(0,0,0);
+    // Get min and max values of each axis
+    for (pcl::PointXYZ const point : points)
+    {
+        maxPoint.x = qMax(maxPoint.x, point.x);
+        maxPoint.y = qMax(maxPoint.y, point.y);
+        maxPoint.z = qMax(maxPoint.z, point.z);
 
-// }
+        minPoint.x = qMin(minPoint.x, point.x);
+        minPoint.y = qMin(minPoint.y, point.y);
+        minPoint.z = qMin(minPoint.z, point.z);
+    }
+
+    float base = maxPoint.x - minPoint.x;
+    float diag = qSqrt(qPow(base, 2)+ qPow(maxPoint.y - minPoint.y, 2));
+    float fin = qSqrt(qPow(diag, 2)+ qPow(maxPoint.z - minPoint.z, 2));
+    float meanDistance = std::accumulate(distances.begin(), distances.end(), 0) / distances.size();
+
+    return meanDistance / fin;
+}
 
 // QVector<QVector3D> CADConverter::getNeighbors(QVector3D const target, QVector<QVector3D> const points) const
 // {

@@ -13,7 +13,7 @@ struct Camera
     float fov{ 60.0f };
     float aspect_ratio{ 1 };
 
-    QVector3D position{ 3, 3, 3 };
+    QVector3D position{ 0, 0, 3 };
     QVector3D target{ 0, 0, 0 };
     QVector3D up{ 0, 1, 0 };
 
