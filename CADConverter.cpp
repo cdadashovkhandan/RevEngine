@@ -81,10 +81,10 @@ Model* CADConverter::convertModel(Model& model) const
 
     pcl::KdTreeFLANN<pcl::PointXYZ> kdtree;
 
-    std::vector<Eigen::Vector3f> normals = getNormals(cloudPtrDownsampled);
+    std::vector<QPair<float, Eigen::Vector3f>> normals = getNormals(cloudPtrDownsampled);
 
 
-    alignCloudWithZAxis(cloudPtr, normals);
+    //alignCloudWithZAxis(cloudPtr, normals);
 
     //II. Recognition
 
@@ -102,7 +102,7 @@ void CADConverter::alignCloudWithZAxis(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud
     // vote for major normal direction
     qDebug("Aligning with z-axis...");
     Eigen::Vector3f average = std::accumulate(normals.begin(), normals.end(), Eigen::Vector3f(0.0f, 0.0f, 0.0f));
-    average /= normals.size();
+    average /= float(normals.size());
     // Align major normal direction with z-axis
 
     Eigen::Vector3f zAxis(0.0f, 0.0f, 1.0f);
@@ -138,7 +138,7 @@ Eigen::Matrix4f CADConverter::buildRotationMatrix(Eigen::Vector3f const target, 
 
 }
 
-std::vector<Eigen::Vector3f> CADConverter::getNormals(pcl::PointCloud<pcl::PointXYZ>::Ptr const cloudPtr) const
+std::vector<QPair<float, Eigen::Vector3f>> CADConverter::getNormals(pcl::PointCloud<pcl::PointXYZ>::Ptr const cloudPtr) const
 {
     qDebug("Calculating normals...");
     pcl::KdTreeFLANN<pcl::PointXYZ> kdtree;
@@ -148,7 +148,7 @@ std::vector<Eigen::Vector3f> CADConverter::getNormals(pcl::PointCloud<pcl::Point
 
     std::vector<int> neighborIndeces(neighborCount);
     std::vector<float> neighborDistances(neighborCount);
-    std::vector<Eigen::Vector3f> normals;
+    std::vector<QPair<float, Eigen::Vector3f>> normals;
 
 
     for (pcl::PointXYZ const point : cloudPtr->points)
@@ -172,7 +172,16 @@ std::vector<Eigen::Vector3f> CADConverter::getNormals(pcl::PointCloud<pcl::Point
 
             // Build normal vector from chosen parameters
             Eigen::Vector3f normal(qCos(tht)*qSin(phi), qSin(phi)*qSin(tht), qCos(phi));
-            normals.push_back(normal.normalized());
+
+            std::vector<float> normalDistances(neighborCount);
+            std::transform(neighbors.begin(), neighbors.end(), normalDistances.begin(), [normal](pcl::PointXYZ const point){
+                return (normal - point.getVector3fMap()).norm();
+            });
+
+            float mfe = calculateMFE(neighbors, normalDistances);
+
+
+            normals.push_back(QPair(mfe, normal.normalized()));
         }
     }
 
@@ -215,8 +224,7 @@ float CADConverter::calculateMFE(std::vector<pcl::PointXYZ> const points, std::v
     float base = maxPoint.x - minPoint.x;
     float diag = qSqrt(qPow(base, 2)+ qPow(maxPoint.y - minPoint.y, 2));
     float fin = qSqrt(qPow(diag, 2)+ qPow(maxPoint.z - minPoint.z, 2));
-    float meanDistance = std::accumulate(distances.begin(), distances.end(), 0) / distances.size();
-
+    float meanDistance = std::accumulate(distances.begin(), distances.end(), 0.0f) / float(distances.size());
     return meanDistance / fin;
 }
 

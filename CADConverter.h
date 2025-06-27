@@ -13,7 +13,7 @@ public:
     friend class ModelManager; //TODO maybe not necessary
     Model* convertModel(Model& model) const;
 
-    std::vector<Eigen::Vector3f> getNormals(pcl::PointCloud<pcl::PointXYZ>::Ptr const cloudPtr) const;
+    std::vector<QPair<float, Eigen::Vector3f>> getNormals(pcl::PointCloud<pcl::PointXYZ>::Ptr const cloudPtr) const;
 private:
     /* TODO:
      * Prim families
@@ -24,8 +24,9 @@ private:
 
     float maxDistance = 0.15f / 100.0f; // TODO: put this into Settings and make it adjustable
     // QVector<QVector3D> getNeighbors(const QVector3D target, const QVector<QVector3D> points) const;
-    Eigen::Matrix4f buildRotationMatrix(const Eigen::Vector3f target, const Eigen::Vector3f source) const;
+    Eigen::Matrix4f buildRotationMatrix(Eigen::Vector3f const target, Eigen::Vector3f const source) const;
     void alignCloudWithZAxis(pcl::PointCloud<pcl::PointXYZ>::Ptr cloudPtr, std::vector<Eigen::Vector3f> normals) const;
+    float calculateMFE(std::vector<pcl::PointXYZ> const points, std::vector<float> const distances) const;
 };
 
 #endif // CADCONVERTER_H
