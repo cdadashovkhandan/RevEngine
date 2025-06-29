@@ -60,6 +60,12 @@ void ModelRenderer::update_buffers(Model* model)
     {
         std::vector<pcl::PointXYZ, Eigen::aligned_allocator<pcl::PointXYZ>> points =
             model->pointCloud->points;
+
+        // std::vector<pcl::PointXYZ, Eigen::aligned_allocator<pcl::PointXYZ>> scaledPoints(points.size());
+
+        // std::transform(points.begin(), points.end(), scaledPoints.begin(), [](pcl::PointXYZ const point)
+        //                {return pcl::PointXYZ(point.x / 100.0f, point.y / 100.0f, point.z / 100.0f );});
+
         gl->glBindVertexArray(vao);
 
         // Coords

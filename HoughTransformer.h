@@ -13,6 +13,7 @@ public:
     HoughTransformer();
 
 
+
     // QList<PrimitiveShape*> applyTransform(QVector<QVector3D> const points, QList<PrimitiveType> const types) const;
 
     //TODO: might want to make static?
@@ -21,7 +22,16 @@ public:
     std::vector<float> getBestFit(std::vector<pcl::PointXYZ> const points) const
     {
         Shape shape;
-        std::vector<ParamPair> params = shape.buildParameters(points);
+
+        //TODO: pick a better place for this
+        float maxMagnitude = std::max_element(points.begin(),
+                                              points.end(),
+                                              [](pcl::PointXYZ const a, pcl::PointXYZ const b)
+                                                {
+                                                    return a.getVector3fMap().norm() < b.getVector3fMap().norm();
+                                              })->getVector3fMap().norm();
+
+        std::vector<ParamPair> params = shape.buildParameters(points, maxMagnitude);
 
         // Value for best fit chosen by having max votes
         // TODO: this is naive.
@@ -31,7 +41,7 @@ public:
         {
             for (ParamPair& pair : params)
             {
-                if (shape.isIntersecting(point, pair.second))
+                if (shape.isIntersecting(point, pair.second, maxMagnitude))
                 {
                     ++pair.first;
 

@@ -4,19 +4,12 @@
 
 NormalPlane::NormalPlane() {}
 
-std::vector<ParamPair> NormalPlane::buildParameters(std::vector<pcl::PointXYZ> const points) const
+std::vector<ParamPair> NormalPlane::buildParameters(std::vector<pcl::PointXYZ> const points, float maxMagnitude) const
 {
     // Three params: theta, phi, rho
     // Theta: [0 , 2pi)
     // Phi: [0, pi]
     // Rho: from 0 to the largest magnitude across points increments of rho/50
-
-    float maxMagnitude = 0;
-    for(pcl::PointXYZ const point : points)
-    {
-        float magnitude = Eigen::Vector3f(point.x, point.y, point.z).norm();
-        maxMagnitude = qMax(magnitude, maxMagnitude);
-    }
 
     std::vector<ParamPair> output;
     for (float theta = 0; theta < 2 * M_PI; ++theta)
@@ -26,18 +19,17 @@ std::vector<ParamPair> NormalPlane::buildParameters(std::vector<pcl::PointXYZ> c
             for(float rho = 0; rho <= maxMagnitude; rho += maxMagnitude / 50.0f)
             {
                 std::vector<float> params({theta, phi, rho});
-                ParamPair entry(0, params);
-                output.push_back(entry);
+                output.push_back(ParamPair(0, params));
             }
         }
     }
     return output;
 }
 
-bool NormalPlane::isIntersecting(pcl::PointXYZ const point, std::vector<float> const params) const
+bool NormalPlane::isIntersecting(pcl::PointXYZ const point, std::vector<float> const params, float const maxMagnitude) const
 {
 
-    float threshold = 0.001f;
+    float threshold = maxMagnitude / 200.0f;
     // Parameters
     float tht = params[0]; //theta
     float phi = params[1];

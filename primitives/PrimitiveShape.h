@@ -19,8 +19,8 @@ public:
     // TODO: return type probably wrong
     // virtual QVector<float> getBestFit(QVector<QVector3D> const points) const = 0;
     // Build the initial matrix of parameters and flatten them to a 2D vector of floats
-    virtual std::vector<ParamPair> buildParameters(std::vector<pcl::PointXYZ> const points) const = 0;
-    virtual bool isIntersecting(pcl::PointXYZ const point, std::vector<float> const params) const = 0;
+    virtual std::vector<ParamPair> buildParameters(std::vector<pcl::PointXYZ> const points, float const maxMagnitude) const = 0;
+    virtual bool isIntersecting(pcl::PointXYZ const point, std::vector<float> const params, float const maxMagnitude) const = 0;
 };
 
 #endif // PRIMITIVESHAPE_H

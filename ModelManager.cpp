@@ -38,11 +38,11 @@ PointCloud* ModelManager::parsePointCloud(QString fileName) const
 
 
             //TODO: make this neat
-            QVector3D newPoint(line[0].toFloat(), line[1].toFloat(), line[2].toFloat());
+            pcl::PointXYZ newPoint(line[0].toFloat(), line[1].toFloat(), line[2].toFloat());
 
-            newPoint /= 100.0f;
+            // newPoint /= 100.0f;
 
-            cloud->push_back(pcl::PointXYZ(newPoint.x(), newPoint.y(), newPoint.z()));
+            cloud->push_back(newPoint);
         }
     }
     return cloud;

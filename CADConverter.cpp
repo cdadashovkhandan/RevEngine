@@ -49,7 +49,7 @@ Model* CADConverter::convertModel(Model& model) const
     qDebug("Creating downsampled copy...");
     pcl::VoxelGrid<pcl::PointXYZ> voxelGrid;
 
-    float downSampleFactor = 0.005f;
+    float downSampleFactor = 0.5f;
 
     voxelGrid.setInputCloud(cloudPtr);
     voxelGrid.setLeafSize(downSampleFactor, downSampleFactor, downSampleFactor);
@@ -78,12 +78,12 @@ Model* CADConverter::convertModel(Model& model) const
     else
         qWarning("Centering failed, continuing...");
 
-
-    pcl::KdTreeFLANN<pcl::PointXYZ> kdtree;
-
     std::vector<QPair<float, Eigen::Vector3f>> normals = getNormals(cloudPtrDownsampled);
 
-
+    //TODO: this is for debugging only!
+    std::sort(normals.begin(), normals.end(), [](QPair<float, Eigen::Vector3f> a,
+                                                 QPair<float, Eigen::Vector3f> b)
+              { return a.first < b.first; });
     //alignCloudWithZAxis(cloudPtr, normals);
 
     //II. Recognition
