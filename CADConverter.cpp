@@ -5,6 +5,8 @@
 #include <pcl/common/transforms.h>
 #include <pcl/kdtree/kdtree_flann.h>
 #include <pcl/filters/voxel_grid.h>
+#include <pcl/segmentation/sac_segmentation.h>
+#include <pcl/segmentation/extract_clusters.h>
 
 CADConverter::CADConverter()
 {
@@ -92,7 +94,23 @@ Model* CADConverter::convertModel(Model& model) const
 
     // segment and express space as discrete matrix.
 
-    //III. Postprocessing
+    //III. Segmentation
+
+    std::vector<pcl::PointIndices> cluster_indices;
+
+    pcl::EuclideanClusterExtraction<pcl::PointXYZ> ec;
+
+    ec.setClusterTolerance (0.02); // 2cm
+
+    ec.setMinClusterSize (100);
+
+    ec.setMaxClusterSize (25000);
+
+    ec.setSearchMethod (tree);
+
+    ec.setInputCloud (cloud_filtered);
+
+    ec.extract (cluster_indices);
 
     return &model;
 }
