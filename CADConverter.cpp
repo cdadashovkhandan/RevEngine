@@ -96,21 +96,50 @@ Model* CADConverter::convertModel(Model& model) const
 
     //III. Segmentation
 
+    qDebug("Clustering...");
     std::vector<pcl::PointIndices> cluster_indices;
+
+    pcl::search::KdTree<pcl::PointXYZ>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZ>);
 
     pcl::EuclideanClusterExtraction<pcl::PointXYZ> ec;
 
-    ec.setClusterTolerance (0.02); // 2cm
+    ec.setClusterTolerance (0.1);
 
-    ec.setMinClusterSize (100);
+    ec.setMinClusterSize (50);
 
-    ec.setMaxClusterSize (25000);
+    ec.setMaxClusterSize (1000);
 
     ec.setSearchMethod (tree);
 
-    ec.setInputCloud (cloud_filtered);
+    ec.setInputCloud (cloudPtr);
 
     ec.extract (cluster_indices);
+
+    int j = 0;
+    qDebug() << "Clusters found: " << cluster_indices.size();
+    for (const auto& cluster : cluster_indices)
+    {
+
+        pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_cluster (new pcl::PointCloud<pcl::PointXYZ>);
+
+        for (const auto& idx : cluster.indices) {
+
+            cloud_cluster->push_back((*cloudPtr)[idx]);
+
+        } //*
+
+        cloud_cluster->width = cloud_cluster->size ();
+
+        cloud_cluster->height = 1;
+
+        cloud_cluster->is_dense = true;
+
+
+        std::cout << "PointCloud representing the Cluster: " << cloud_cluster->size () << " data points." << std::endl;
+
+        j++;
+
+    }
 
     return &model;
 }
@@ -199,7 +228,7 @@ std::vector<QPair<float, Eigen::Vector3f>> CADConverter::getNormals(pcl::PointCl
             float mfe = calculateMFE(neighbors, normalDistances);
 
 
-            normals.push_back(QPair(mfe, normal.normalized()));
+            normals.push_back(QPair<float, Eigen::Vector3f>(mfe, normal.normalized()));
         }
     }
 
