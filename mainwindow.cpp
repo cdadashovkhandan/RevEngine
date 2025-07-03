@@ -39,6 +39,6 @@ void MainWindow::on_convertModelButton_clicked()
 void MainWindow::on_toggleClustersCheckBox_toggled(bool checked)
 {
     settings.showClusters = checked;
-    ui->viewport->update();
+    ui->viewport->showModel(modelManager.getActiveModel());
 }
 
