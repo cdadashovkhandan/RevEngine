@@ -43,10 +43,10 @@ Model* CADConverter::convertModel(Model& model) const
 
     // 1. Translate the point cloud to align its center with center of coordinate system
 
-    PointCloud* pCloud = model.pointCloud;
-    pcl::PointCloud<pcl::PointXYZ>::Ptr cloudPtrDownsampled(new pcl::PointCloud<pcl::PointXYZ>());
+    PointCloud::Ptr pCloud = model.pointCloud;
+    PointCloud::Ptr cloudPtrDownsampled(new PointCloud());
     //TODO: I might be better off just storing clouds as shared pointers right off the bat
-    pcl::PointCloud<pcl::PointXYZ>::Ptr cloudPtr(pCloud);
+    PointCloud::Ptr cloudPtr(pCloud);
 
     qDebug("Creating downsampled copy...");
     pcl::VoxelGrid<pcl::PointXYZ> voxelGrid;

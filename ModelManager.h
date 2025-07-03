@@ -14,7 +14,7 @@ class ModelManager
 
 private:
     QVector<Model*> models; // make public?
-    PointCloud* parsePointCloud(QString fileName) const;
+    PointCloud::Ptr parsePointCloud(QString fileName) const;
     CADConverter* cadConverter;
 public:
     ModelManager();

@@ -18,12 +18,12 @@ Model* ModelManager::getActiveModel() const
  * @param fileName
  * @return
  */
-PointCloud* ModelManager::parsePointCloud(QString fileName) const
+PointCloud::Ptr ModelManager::parsePointCloud(QString fileName) const
 {
     QFile cloudFile(fileName);
     Mesh newMesh;
 
-    pcl::PointCloud<pcl::PointXYZ>* cloud = new pcl::PointCloud<pcl::PointXYZ>();
+    PointCloud::Ptr cloud(new PointCloud());
     if (cloudFile.open(QIODevice::ReadOnly))
     {
         QTextStream fileText(&cloudFile);
@@ -55,7 +55,7 @@ PointCloud* ModelManager::parsePointCloud(QString fileName) const
  */
 Model* ModelManager::createModel(QString filename)
 {
-    PointCloud* pointCloud = parsePointCloud(filename);
+    PointCloud::Ptr pointCloud = parsePointCloud(filename);
     Model* model = new Model(pointCloud);
     models.append(model);
     return models.last();

@@ -13,10 +13,10 @@ class Model
 {
 
 public:
-    PointCloud* pointCloud; // Model cannot exist without pcloud.
+    PointCloud::Ptr pointCloud; // Model cannot exist without pcloud.
     Mesh* mesh = nullptr; // Model can exist without mesh.
     std::vector<pcl::PointIndices>* pointIndices = nullptr;
-    Model(PointCloud* pointCloud);
+    Model(PointCloud::Ptr  pointCloud);
 };
 
 #endif // MODEL_H
