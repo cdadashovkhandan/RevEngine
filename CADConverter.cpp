@@ -44,21 +44,11 @@ Model* CADConverter::convertModel(Model& model) const
 
     // 1. Translate the point cloud to align its center with center of coordinate system
 
-    PointCloud::Ptr pCloud = model.pointCloud;
+    PointCloud::Ptr cloudPtr = model.pointCloud;
     PointCloud::Ptr cloudPtrDownsampled(new PointCloud());
     //TODO: I might be better off just storing clouds as shared pointers right off the bat
-    PointCloud::Ptr cloudPtr(pCloud);
 
-    qDebug("Creating downsampled copy...");
-    pcl::VoxelGrid<pcl::PointXYZ> voxelGrid;
-
-    float downSampleFactor = 0.5f;
-
-    voxelGrid.setInputCloud(cloudPtr);
-    voxelGrid.setLeafSize(downSampleFactor, downSampleFactor, downSampleFactor);
-    voxelGrid.filter(*cloudPtrDownsampled);
-
-    qDebug() << "Downsampling complete. Reduced from " << pCloud->size() << " to " << cloudPtrDownsampled->size() << " points.";
+    downsample(cloudPtr, cloudPtrDownsampled);
 
     qDebug("Centering Point Cloud...");
 
@@ -74,7 +64,7 @@ Model* CADConverter::convertModel(Model& model) const
 
         // tMatrix.translation() << centroid;
 
-        pcl::transformPointCloud(*pCloud, *pCloud, tMatrix);
+        pcl::transformPointCloud(*cloudPtr, *cloudPtr, tMatrix);
         qDebug("Centering successful");
     }
     else
@@ -96,27 +86,7 @@ Model* CADConverter::convertModel(Model& model) const
 
     //III. Segmentation
 
-    qDebug("Clustering...");
-    std::vector<pcl::PointIndices>* cluster_indices = new std::vector<pcl::PointIndices>();
 
-    pcl::search::KdTree<pcl::PointXYZ>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZ>);
-
-    pcl::EuclideanClusterExtraction<pcl::PointXYZ> ec;
-
-    ec.setClusterTolerance (settings->clusterTolerance);
-
-    ec.setMinClusterSize (settings->minClusterSize);
-
-    ec.setMaxClusterSize (settings->maxClusterSize);
-
-    ec.setSearchMethod (tree);
-
-    ec.setInputCloud (cloudPtr);
-
-    ec.extract (*cluster_indices);
-
-    int j = 0;
-    qDebug() << "Clusters found: " << cluster_indices->size();
 
     // pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_cluster (new pcl::PointCloud<pcl::PointXYZ>);
 
@@ -133,12 +103,68 @@ Model* CADConverter::convertModel(Model& model) const
     // cloud_cluster->is_dense = true;
 
 
-    model.pointIndices = cluster_indices;
+    model.pointIndices = cluster(cloudPtr);
 
     return &model;
 }
 
-void CADConverter::alignCloudWithZAxis(pcl::PointCloud<pcl::PointXYZ>::Ptr cloudPtr, std::vector<Eigen::Vector3f> const normals) const
+/**
+ * @brief CADConverter::downsample Perform voxel-grid downsampling on an input point cloud
+ * @param input Input point cloud pointer
+ * @param target target point cloud pointer (NB: input and target can be the same)
+ */
+void CADConverter::downsample(PointCloud::Ptr input, PointCloud::Ptr target) const
+{
+    qDebug("Creating downsampled copy...");
+    pcl::VoxelGrid<pcl::PointXYZ> voxelGrid;
+
+    float downSampleFactor = 0.5f;
+
+    voxelGrid.setInputCloud(input);
+    voxelGrid.setLeafSize(downSampleFactor, downSampleFactor, downSampleFactor);
+    voxelGrid.filter(*target);
+
+    qDebug() << "Downsampling complete. Reduced from " << input->size() << " to " << target->size() << " points.";
+
+}
+
+/**
+ * @brief CADConverter::cluster Perform a clustering algorithm to group points together
+ * @param input the Point Cloud to be clustered
+ * @return vector of indices for each cluster
+ */
+std::vector<pcl::PointIndices>* CADConverter::cluster(PointCloud::Ptr input) const
+{
+    qDebug("Clustering...");
+    std::vector<pcl::PointIndices>* cluster_indices = new std::vector<pcl::PointIndices>();
+
+    pcl::search::KdTree<pcl::PointXYZ>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZ>);
+
+    pcl::EuclideanClusterExtraction<pcl::PointXYZ> ec;
+
+    ec.setClusterTolerance (settings->clusterTolerance);
+
+    ec.setMinClusterSize (settings->minClusterSize);
+
+    ec.setMaxClusterSize (settings->maxClusterSize);
+
+    ec.setSearchMethod (tree);
+
+    ec.setInputCloud (input);
+
+    ec.extract (*cluster_indices);
+
+    qDebug() << "Clusters found: " << cluster_indices->size();
+
+    return cluster_indices;
+}
+
+/**
+ * @brief CADConverter::alignCloudWithZAxis Rotate the entire point cloud to be parallel to the Z axis
+ * @param cloudPtr
+ * @param normals
+ */
+void CADConverter::alignCloudWithZAxis(PointCloud::Ptr cloudPtr, std::vector<Eigen::Vector3f> const normals) const
 {
     // vote for major normal direction
     qDebug("Aligning with z-axis...");
@@ -231,6 +257,12 @@ std::vector<QPair<float, Eigen::Vector3f>> CADConverter::getNormals(pcl::PointCl
 }
 
 
+/**
+ * @brief CADConverter::calculateMFE Calculate Mean Fitting error for a given set of points and estimates.
+ * @param points
+ * @param distances
+ * @return
+ */
 float CADConverter::calculateMFE(std::vector<pcl::PointXYZ> const points, std::vector<float> const distances) const
 {
     /*
