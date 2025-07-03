@@ -9,7 +9,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     ui->viewport->settings = &settings;
-    modelManager.settings = &settings;
+    modelManager = new ModelManager(&settings);
 }
 
 MainWindow::~MainWindow()
@@ -24,14 +24,14 @@ void MainWindow::on_importModelButton_clicked()
     QString fileName = "/home/chingiz/Documents/uni/intproj/Fit4CAD/dataset/training_set/PC6.txt";
     if (fileName.isEmpty())
         return;
-    Model* model = modelManager.createModel(fileName);
+    Model* model = modelManager->createModel(fileName);
     ui->viewport->showModel(model);
 }
 
 
 void MainWindow::on_convertModelButton_clicked()
 {
-    Model* model = modelManager.generateMesh(*modelManager.getActiveModel());
+    Model* model = modelManager->generateMesh(*modelManager->getActiveModel());
     ui->viewport->showModel(model);
 }
 
@@ -39,6 +39,24 @@ void MainWindow::on_convertModelButton_clicked()
 void MainWindow::on_toggleClustersCheckBox_toggled(bool checked)
 {
     settings.showClusters = checked;
-    ui->viewport->showModel(modelManager.getActiveModel());
+    ui->viewport->showModel(modelManager->getActiveModel());
+}
+
+
+void MainWindow::on_minClusterSizeSpinBox_valueChanged(int arg1)
+{
+    settings.minClusterSize = arg1;
+}
+
+
+void MainWindow::on_maxClusterSizeSpinBox_valueChanged(int arg1)
+{
+    settings.maxClusterSize = arg1;
+}
+
+
+void MainWindow::on_clusterToleranceSpinBox_valueChanged(double arg1)
+{
+    settings.clusterTolerance = arg1;
 }
 

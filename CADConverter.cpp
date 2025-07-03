@@ -8,9 +8,10 @@
 #include <pcl/segmentation/sac_segmentation.h>
 #include <pcl/segmentation/extract_clusters.h>
 
-CADConverter::CADConverter()
+CADConverter::CADConverter(Settings* s)
 {
     houghTransformer = new HoughTransformer();
+    settings = s;
 }
 
 /**
@@ -102,11 +103,11 @@ Model* CADConverter::convertModel(Model& model) const
 
     pcl::EuclideanClusterExtraction<pcl::PointXYZ> ec;
 
-    ec.setClusterTolerance (0.1);
+    ec.setClusterTolerance (settings->clusterTolerance);
 
-    ec.setMinClusterSize (50);
+    ec.setMinClusterSize (settings->minClusterSize);
 
-    ec.setMaxClusterSize (1000);
+    ec.setMaxClusterSize (settings->maxClusterSize);
 
     ec.setSearchMethod (tree);
 

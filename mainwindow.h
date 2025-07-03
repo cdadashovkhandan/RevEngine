@@ -27,9 +27,15 @@ private slots:
 
     void on_toggleClustersCheckBox_toggled(bool checked);
 
+    void on_minClusterSizeSpinBox_valueChanged(int arg1);
+
+    void on_maxClusterSizeSpinBox_valueChanged(int arg1);
+
+    void on_clusterToleranceSpinBox_valueChanged(double arg1);
+
 private:
     Ui::MainWindow *ui;
-    ModelManager modelManager;
+    ModelManager* modelManager;
     Settings settings;
 };
 #endif // MAINWINDOW_H

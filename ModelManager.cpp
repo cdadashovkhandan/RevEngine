@@ -3,9 +3,10 @@
 #include <QDir>
 #include <QFile>
 
-ModelManager::ModelManager()
+ModelManager::ModelManager(Settings* s)
 {
-    cadConverter = new CADConverter();
+    settings = s;
+    cadConverter = new CADConverter(s);
 }
 
 Model* ModelManager::getActiveModel() const
@@ -13,7 +14,7 @@ Model* ModelManager::getActiveModel() const
     return models.last();
 }
 
-/**
+/**5
  * @brief ModelManager::parsePointCloud Parse a point cloud from file.
  * @param fileName
  * @return

@@ -5,10 +5,11 @@
 #include "data/Model.h"
 
 #include <QMatrix4x4>
+#include <Settings.h>
 class CADConverter
-{
+{    
 public:
-    CADConverter();
+    CADConverter(Settings* s);
     HoughTransformer* houghTransformer;
     friend class ModelManager; //TODO maybe not necessary
     Model* convertModel(Model& model) const;
@@ -22,6 +23,7 @@ private:
      */
     QVector<QVector3D>* transform(QVector<QVector3D>& points, QMatrix4x4 const tMatrix) const;
 
+    Settings* settings;
     float maxDistance = 0.15f; // TODO: put this into Settings and make it adjustable
     // QVector<QVector3D> getNeighbors(const QVector3D target, const QVector<QVector3D> points) const;
     Eigen::Matrix4f buildRotationMatrix(Eigen::Vector3f const target, Eigen::Vector3f const source) const;
