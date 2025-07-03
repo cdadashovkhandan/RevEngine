@@ -58,5 +58,15 @@ void MainWindow::on_maxClusterSizeSpinBox_valueChanged(int arg1)
 void MainWindow::on_clusterToleranceSpinBox_valueChanged(double arg1)
 {
     settings.clusterTolerance = arg1;
+    // TODO: for the love of god don't leave this in the final code
+    on_recalcClusterButton_clicked();
+}
+
+
+void MainWindow::on_recalcClusterButton_clicked()
+{
+    Model* model = modelManager->getActiveModel();
+    modelManager->recalculateClusters(model);
+    ui->viewport->showModel(model);
 }
 

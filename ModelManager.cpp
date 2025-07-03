@@ -62,6 +62,11 @@ Model* ModelManager::createModel(QString filename)
     return models.last();
 }
 
+void ModelManager::recalculateClusters(Model *model)
+{
+    model->pointIndices = cadConverter->cluster(model->pointCloud);
+}
+
 /**
  * @brief ModelManager::generateMesh Generate a B-Rep representation out of a Model's Point Cloud.
  * @param model

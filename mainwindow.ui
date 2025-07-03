@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>902</width>
-    <height>600</height>
+    <width>1282</width>
+    <height>613</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -96,7 +96,7 @@
     <property name="geometry">
      <rect>
       <x>550</x>
-      <y>70</y>
+      <y>40</y>
       <width>261</width>
       <height>16</height>
      </rect>
@@ -109,7 +109,7 @@
     <property name="geometry">
      <rect>
       <x>550</x>
-      <y>50</y>
+      <y>20</y>
       <width>81</width>
       <height>17</height>
      </rect>
@@ -121,7 +121,7 @@
      <enum>Qt::TextFormat::MarkdownText</enum>
     </property>
    </widget>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>550</x>
@@ -177,6 +177,9 @@
      </item>
      <item row="2" column="1">
       <widget class="QDoubleSpinBox" name="clusterToleranceSpinBox">
+       <property name="singleStep">
+        <double>0.010000000000000</double>
+       </property>
        <property name="value">
         <double>0.100000000000000</double>
        </property>
@@ -184,11 +187,11 @@
      </item>
     </layout>
    </widget>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>550</x>
-      <y>90</y>
+      <y>60</y>
       <width>126</width>
       <height>112</height>
      </rect>
@@ -233,13 +236,84 @@
      </item>
     </layout>
    </widget>
+   <widget class="QLabel" name="label_3">
+    <property name="geometry">
+     <rect>
+      <x>550</x>
+      <y>180</y>
+      <width>121</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>**MAIN CONTROLS**</string>
+    </property>
+    <property name="textFormat">
+     <enum>Qt::TextFormat::MarkdownText</enum>
+    </property>
+   </widget>
+   <widget class="Line" name="line_3">
+    <property name="geometry">
+     <rect>
+      <x>550</x>
+      <y>200</y>
+      <width>261</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Orientation::Horizontal</enum>
+    </property>
+   </widget>
+   <widget class="Line" name="line_4">
+    <property name="geometry">
+     <rect>
+      <x>890</x>
+      <y>50</y>
+      <width>261</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Orientation::Horizontal</enum>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_4">
+    <property name="geometry">
+     <rect>
+      <x>890</x>
+      <y>30</y>
+      <width>121</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>**INDIVIDUAL STEPS**</string>
+    </property>
+    <property name="textFormat">
+     <enum>Qt::TextFormat::MarkdownText</enum>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="recalcClusterButton">
+    <property name="geometry">
+     <rect>
+      <x>890</x>
+      <y>70</y>
+      <width>201</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Recalculate Clusters</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>902</width>
+     <width>1282</width>
      <height>22</height>
     </rect>
    </property>

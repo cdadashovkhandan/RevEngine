@@ -33,6 +33,8 @@ private slots:
 
     void on_clusterToleranceSpinBox_valueChanged(double arg1);
 
+    void on_recalcClusterButton_clicked();
+
 private:
     Ui::MainWindow *ui;
     ModelManager* modelManager;

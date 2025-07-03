@@ -23,6 +23,7 @@ public:
 
     Settings* settings;
     Model* createModel(QString fileName);
+    void recalculateClusters(Model* model);
     //TODO: return type is questionable
     Model* generateMesh(Model& model) const;
 };
