@@ -6,6 +6,7 @@ struct Settings
 {
     bool showPointCloud = true;
     bool showMesh = true;
+    bool showClusters = true;
 };
 
 #endif //SETTINGS_H

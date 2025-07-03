@@ -1,6 +1,7 @@
 #ifndef MODEL_H
 #define MODEL_H
 
+#include <pcl/PointIndices.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include "Mesh.h"
@@ -14,6 +15,7 @@ class Model
 public:
     PointCloud* pointCloud; // Model cannot exist without pcloud.
     Mesh* mesh = nullptr; // Model can exist without mesh.
+    std::vector<pcl::PointIndices>* pointIndices = nullptr;
     Model(PointCloud* pointCloud);
 };
 

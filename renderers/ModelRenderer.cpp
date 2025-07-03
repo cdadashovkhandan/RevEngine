@@ -33,10 +33,15 @@ void ModelRenderer::initBuffers()
     gl->glEnableVertexAttribArray(0);
     gl->glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, nullptr);
 
+    gl->glGenBuffers(1, &vbo_colors);
+    gl->glBindBuffer(GL_ARRAY_BUFFER, vbo_colors);
+    gl->glEnableVertexAttribArray(1);
+    gl->glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
+
     gl->glGenBuffers(1, &nbo);
     gl->glBindBuffer(GL_ARRAY_BUFFER, nbo);
-    gl->glEnableVertexAttribArray(1);
-    gl->glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, nullptr);
+    gl->glEnableVertexAttribArray(2);
+    gl->glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, 0, nullptr);
 
     gl->glGenBuffers(1, &ibo);
     gl->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
@@ -76,6 +81,37 @@ void ModelRenderer::update_buffers(Model* model)
         gl->glBindVertexArray(0);
         render_size = points.size();
     }
+
+    std::vector<float> colors(render_size * 3);
+
+    if (settings->showClusters && model->pointIndices != nullptr)
+    {
+        std::fill(colors.begin(), colors.end(), 0.2f); // initialize to dark grey
+        size_t colorIndex = 0;
+        for (pcl::PointIndices const cluster : *model->pointIndices)
+        {
+            for (auto const index : cluster.indices)
+            {
+                QColor newColor = clusterColors[colorIndex];
+                colors[index] = newColor.red();
+                colors[index + 1] = newColor.green();
+                colors[index + 2] = newColor.blue();
+            }
+            colorIndex = (colorIndex + 1) % CLUSTER_COLOR_COUNT;
+        }
+
+    }
+    else
+        std::fill(colors.begin(), colors.end(), 1.0f); // initialize to white
+
+    gl->glBindVertexArray(vao);
+
+    // Colors
+    gl->glBindBuffer(GL_ARRAY_BUFFER, vbo_colors);
+    gl->glBufferData(GL_ARRAY_BUFFER, colors.size() * sizeof(float),
+                     colors.data(), GL_STATIC_DRAW);
+
+    gl->glBindVertexArray(0);
 
     //TODO: I'm not sure if showing both at the same time is a good idea. Think about it further.
     if (settings->showMesh && model->mesh != nullptr)

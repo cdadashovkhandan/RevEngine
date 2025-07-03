@@ -25,6 +25,8 @@ private slots:
 
     void on_convertModelButton_clicked();
 
+    void on_toggleClustersCheckBox_toggled(bool checked);
+
 private:
     Ui::MainWindow *ui;
     ModelManager modelManager;

@@ -62,7 +62,6 @@ Model* CADConverter::convertModel(Model& model) const
     qDebug("Centering Point Cloud...");
 
     Eigen::Matrix<float, 4, 1> centroid;
-
     int result = pcl::compute3DCentroid(*cloudPtrDownsampled, centroid);
 
     if (result != 0)
@@ -97,7 +96,7 @@ Model* CADConverter::convertModel(Model& model) const
     //III. Segmentation
 
     qDebug("Clustering...");
-    std::vector<pcl::PointIndices> cluster_indices;
+    std::vector<pcl::PointIndices>* cluster_indices = new std::vector<pcl::PointIndices>();
 
     pcl::search::KdTree<pcl::PointXYZ>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZ>);
 
@@ -113,33 +112,27 @@ Model* CADConverter::convertModel(Model& model) const
 
     ec.setInputCloud (cloudPtr);
 
-    ec.extract (cluster_indices);
+    ec.extract (*cluster_indices);
 
     int j = 0;
-    qDebug() << "Clusters found: " << cluster_indices.size();
-    for (const auto& cluster : cluster_indices)
-    {
+    qDebug() << "Clusters found: " << cluster_indices->size();
 
-        pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_cluster (new pcl::PointCloud<pcl::PointXYZ>);
+    // pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_cluster (new pcl::PointCloud<pcl::PointXYZ>);
 
-        for (const auto& idx : cluster.indices) {
+    // for (const auto& idx : cluster_indices[4]) {
 
-            cloud_cluster->push_back((*cloudPtr)[idx]);
+    //     cloud_cluster->push_back((*cloudPtr)[idx]);
 
-        } //*
+    // }
 
-        cloud_cluster->width = cloud_cluster->size ();
+    // cloud_cluster->width = cloud_cluster->size ();
 
-        cloud_cluster->height = 1;
+    // cloud_cluster->height = 1;
 
-        cloud_cluster->is_dense = true;
+    // cloud_cluster->is_dense = true;
 
 
-        std::cout << "PointCloud representing the Cluster: " << cloud_cluster->size () << " data points." << std::endl;
-
-        j++;
-
-    }
+    model.pointIndices = cluster_indices;
 
     return &model;
 }
