@@ -35,6 +35,8 @@ private slots:
 
     void on_recalcClusterButton_clicked();
 
+    void on_togglePointCloudCheckBox_toggled(bool checked);
+
 private:
     Ui::MainWindow *ui;
     ModelManager* modelManager;
