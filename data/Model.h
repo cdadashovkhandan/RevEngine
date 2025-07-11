@@ -4,6 +4,7 @@
 #include <pcl/PointIndices.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
+#include <QPair>
 #include "Mesh.h"
 
 using PointCloud = pcl::PointCloud<pcl::PointXYZ>;
@@ -16,7 +17,8 @@ public:
     PointCloud::Ptr pointCloud; // Model cannot exist without pcloud.
     Mesh* mesh = nullptr; // Model can exist without mesh.
     std::vector<pcl::PointIndices>* pointIndices = nullptr;
-    Model(PointCloud::Ptr  pointCloud);
+    std::vector<QPair<float, pcl::Normal>>* normals = nullptr;
+    Model(PointCloud::Ptr pointCloud);
 };
 
 #endif // MODEL_H

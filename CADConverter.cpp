@@ -70,12 +70,14 @@ Model* CADConverter::convertModel(Model& model) const
     else
         qWarning("Centering failed, continuing...");
 
-    std::vector<QPair<float, Eigen::Vector3f>> normals = getNormals(cloudPtrDownsampled);
+    model.normals = getNormals(cloudPtrDownsampled);
 
     //TODO: this is for debugging only!
-    std::sort(normals.begin(), normals.end(), [](QPair<float, Eigen::Vector3f> a,
-                                                 QPair<float, Eigen::Vector3f> b)
-              { return a.first < b.first; });
+    // std::sort(normals.begin(), normals.end(), [](QPair<float, Eigen::Vector3f> a,
+    //                                              QPair<float, Eigen::Vector3f> b)
+    //           { return a.first < b.first; });
+
+
     //alignCloudWithZAxis(cloudPtr, normals);
 
     //II. Recognition
@@ -205,7 +207,7 @@ Eigen::Matrix4f CADConverter::buildRotationMatrix(Eigen::Vector3f const target, 
 
 }
 
-std::vector<QPair<float, Eigen::Vector3f>> CADConverter::getNormals(pcl::PointCloud<pcl::PointXYZ>::Ptr const cloudPtr) const
+std::vector<QPair<float, pcl::Normal>>* CADConverter::getNormals(pcl::PointCloud<pcl::PointXYZ>::Ptr const cloudPtr) const
 {
     qDebug("Calculating normals...");
     pcl::KdTreeFLANN<pcl::PointXYZ> kdtree;
@@ -215,7 +217,7 @@ std::vector<QPair<float, Eigen::Vector3f>> CADConverter::getNormals(pcl::PointCl
 
     std::vector<int> neighborIndeces(neighborCount);
     std::vector<float> neighborDistances(neighborCount);
-    std::vector<QPair<float, Eigen::Vector3f>> normals;
+    std::vector<QPair<float, pcl::Normal>>* normals = new std::vector<QPair<float, pcl::Normal>>();
 
 
     for (pcl::PointXYZ const point : cloudPtr->points)
@@ -238,17 +240,18 @@ std::vector<QPair<float, Eigen::Vector3f>> CADConverter::getNormals(pcl::PointCl
             // float rho = params[2];
 
             // Build normal vector from chosen parameters
-            Eigen::Vector3f normal(qCos(tht)*qSin(phi), qSin(phi)*qSin(tht), qCos(phi));
+            Eigen::Vector3f rawNormal(qCos(tht)*qSin(phi), qSin(phi)*qSin(tht), qCos(phi));
+            rawNormal.normalize();
 
             std::vector<float> normalDistances(neighborCount);
-            std::transform(neighbors.begin(), neighbors.end(), normalDistances.begin(), [normal](pcl::PointXYZ const point){
-                return (normal - point.getVector3fMap()).norm();
+            std::transform(neighbors.begin(), neighbors.end(), normalDistances.begin(), [rawNormal](pcl::PointXYZ const point){
+                return (rawNormal - point.getVector3fMap()).norm();
             });
 
             float mfe = calculateMFE(neighbors, normalDistances);
 
 
-            normals.push_back(QPair<float, Eigen::Vector3f>(mfe, normal.normalized()));
+            normals->push_back(QPair<float, pcl::Normal>(mfe, pcl::Normal(rawNormal.x(), rawNormal.y(), rawNormal.z())));
         }
     }
 

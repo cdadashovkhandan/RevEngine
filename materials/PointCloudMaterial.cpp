@@ -4,6 +4,7 @@ PointCloudMaterial::PointCloudMaterial(QOpenGLFunctions_4_1_Core* gl) : Material
 {
     shader = new QOpenGLShaderProgram();
     shader->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/pointcloud.vert");
+    shader->addShaderFromSourceFile(QOpenGLShader::Geometry, ":/shaders/pointcloud.geom");
     shader->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/pointcloud.frag");
     shader->link();
 }

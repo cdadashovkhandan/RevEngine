@@ -60,6 +60,7 @@ void ModelRenderer::update_buffers(Model* model)
     // QVector<uint32_t> indices = mesh->f_verts();
 
 
+    // Point Cloud
 
     if (settings->showPointCloud)
     {
@@ -82,6 +83,34 @@ void ModelRenderer::update_buffers(Model* model)
         render_size = points.size();
     }
 
+    // Normals
+    if (settings->showNormals && model->normals != nullptr)
+    {
+        std::vector<pcl::Normal> normals;
+
+        std::transform(model->normals->begin(),
+                       model->normals->end(),
+                       normals.begin(),
+                       [](QPair<float, pcl::Normal> pair) {
+                            return pair.second;
+                       });
+
+        // std::vector<pcl::PointXYZ, Eigen::aligned_allocator<pcl::PointXYZ>> scaledPoints(points.size());
+
+        // std::transform(points.begin(), points.end(), scaledPoints.begin(), [](pcl::PointXYZ const point)
+        //                {return pcl::PointXYZ(point.x / 100.0f, point.y / 100.0f, point.z / 100.0f );});
+
+        gl->glBindVertexArray(vao);
+
+        // Coords
+        gl->glBindBuffer(GL_ARRAY_BUFFER, nbo);
+        gl->glBufferData(GL_ARRAY_BUFFER, normals.size() * sizeof(pcl::Normal),
+                         normals.data(), GL_STATIC_DRAW);
+
+        gl->glBindVertexArray(0);
+    }
+
+    // Cluster Colors
     std::vector<float> colors(render_size * 3);
 
     if (settings->showClusters && model->pointIndices != nullptr)
