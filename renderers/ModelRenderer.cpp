@@ -89,7 +89,7 @@ void ModelRenderer::update_buffers(Model* model)
     // Normals
     if (settings->showNormals && model->normals != nullptr)
     {
-        std::vector<pcl::Normal> normals;
+        std::vector<pcl::Normal> normals(model->normals->size());
 
         std::transform(model->normals->begin(),
                        model->normals->end(),
