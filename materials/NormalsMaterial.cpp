@@ -1,14 +1,16 @@
-#include "PointCloudMaterial.h"
+#include "NormalsMaterial.h"
 
-PointCloudMaterial::PointCloudMaterial(QOpenGLFunctions_4_1_Core* gl) : Material(gl)
+NormalsMaterial::NormalsMaterial(QOpenGLFunctions_4_1_Core* gl) : Material(gl)
 {
+
     shader = new QOpenGLShaderProgram();
-    shader->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/pointcloud.vert");
-    shader->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/pointcloud.frag");
+    shader->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/normals.vert");
+    shader->addShaderFromSourceFile(QOpenGLShader::Geometry, ":/shaders/normals.geom");
+    shader->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/normals.frag");
     shader->link();
 }
 
-void PointCloudMaterial::update_uniforms(QMatrix4x4 model_mat, QMatrix4x4 view_mat, QMatrix4x4 proj_mat, QMatrix3x3 normal_mat) {
+void NormalsMaterial::update_uniforms(QMatrix4x4 model_mat, QMatrix4x4 view_mat, QMatrix4x4 proj_mat, QMatrix3x3 normal_mat) {
     bind();
     const GLint model_uni = shader->uniformLocation("model_matrix");
     const GLint view_uni = shader->uniformLocation("view_matrix");

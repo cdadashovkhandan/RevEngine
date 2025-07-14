@@ -21,7 +21,7 @@ void MainWindow::on_importModelButton_clicked()
 {
     // QString fileName = QFileDialog::getOpenFileName(this, "Text File...", {}, "Text Files (*.txt)");
     //TODO: unhardcode
-    QString fileName = "/home/chingiz/Documents/uni/intproj/Fit4CAD/dataset/training_set/PC6.txt";
+    QString fileName = "/home/chingiz/Documents/intproj/Fit4CAD/dataset/training_set/PC6.txt";
     if (fileName.isEmpty())
         return;
     Model* model = modelManager->createModel(fileName);
@@ -76,5 +76,12 @@ void MainWindow::on_togglePointCloudCheckBox_toggled(bool checked)
     // TODO: This currently doesn't work because of the Renderer
     // settings.showPointCloud = checked;
     // ui->viewport->showModel(modelManager->getActiveModel());
+}
+
+
+void MainWindow::on_toggleNormalsCheckBox_toggled(bool checked)
+{
+    settings.showNormals = checked;
+    ui->viewport->update();
 }
 

@@ -32,6 +32,7 @@ private:
     GLuint ibo;
     int render_size = 0;
     Material* pointCloudMat { nullptr };
+    Material* normalsMat { nullptr };
 
     void drawMaterial(Material &material);
 

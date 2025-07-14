@@ -9,10 +9,9 @@ in VS_OUT {
     vec3 normal;
 } gs_in[];
 
-const float MAGNITUDE = 0.4;
+const float MAGNITUDE = 0.01;
 
 uniform mat4 proj_matrix;
-//uniform bool render_normals;
 
 void GenerateLine(int index)
 {
@@ -26,11 +25,5 @@ void GenerateLine(int index)
 
 void main()
 {
-//    if (render_normals)
-//    {
-//        GenerateLine(0);
-//    }
-    gl_Position = gl_in[0].gl_Position;
-    EmitVertex();
-    EndPrimitive();
+    GenerateLine(0);
 }

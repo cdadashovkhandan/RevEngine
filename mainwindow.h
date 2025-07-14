@@ -37,6 +37,8 @@ private slots:
 
     void on_togglePointCloudCheckBox_toggled(bool checked);
 
+    void on_toggleNormalsCheckBox_toggled(bool checked);
+
 private:
     Ui::MainWindow *ui;
     ModelManager* modelManager;

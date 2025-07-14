@@ -7,7 +7,7 @@ struct Settings
     bool showPointCloud = true;
     bool showMesh = true;
     bool showClusters = true;
-    bool showNormals = true;
+    bool showNormals = false;
 
     float clusterTolerance = 0.1f;
     unsigned int minClusterSize = 50;

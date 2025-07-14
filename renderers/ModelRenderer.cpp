@@ -6,10 +6,13 @@
 #include <QMatrix4x4>
 
 #include <materials/PointCloudMaterial.h>
+#include <materials/NormalsMaterial.h>
 
 ModelRenderer::ModelRenderer(QOpenGLFunctions_4_1_Core* gl, Scene* scene)
     : Renderer(gl, scene, nullptr),
-    pointCloudMat(new PointCloudMaterial(gl))
+    pointCloudMat(new PointCloudMaterial(gl)),
+    normalsMat(new NormalsMaterial(gl))
+
 {
     gl->glGenVertexArrays(1, &vao);
     gl->glEnable(GL_DEPTH_TEST);
@@ -180,7 +183,7 @@ void ModelRenderer::update_uniforms()
     QMatrix3x3 norm = (view * model).normalMatrix();
 
     pointCloudMat->update_uniforms(model, view, proj, norm);
-    // wireframe_mat->update_uniforms(model, view, proj, norm);
+    normalsMat->update_uniforms(model, view, proj, norm);
 }
 
 /**
@@ -212,11 +215,11 @@ void ModelRenderer::render()
     // drawMaterial(*pointCloudMat);
     // gl->glDisable(GL_POLYGON_OFFSET_FILL);
 
-    // if (settings->showWireframe)
-    // {
-    //     gl->glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    //     // drawMaterial(*wireframe_mat);
-    // }
+    if (settings->showNormals)
+    {
+     //   gl->glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        drawMaterial(*normalsMat);
+    }
 }
 
 /**
