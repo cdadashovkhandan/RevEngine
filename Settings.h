@@ -12,6 +12,7 @@ struct Settings
     float clusterTolerance = 0.1f;
     unsigned int minClusterSize = 50;
     unsigned int maxClusterSize = 1000;
+    float scaleFactor = 0.01f;
 
 };
 

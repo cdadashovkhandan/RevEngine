@@ -39,6 +39,8 @@ private slots:
 
     void on_toggleNormalsCheckBox_toggled(bool checked);
 
+    void on_scaleFactorSpinBox_valueChanged(double arg1);
+
 private:
     Ui::MainWindow *ui;
     ModelManager* modelManager;

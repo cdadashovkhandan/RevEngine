@@ -85,3 +85,10 @@ void MainWindow::on_toggleNormalsCheckBox_toggled(bool checked)
     ui->viewport->update();
 }
 
+
+void MainWindow::on_scaleFactorSpinBox_valueChanged(double arg1)
+{
+    settings.scaleFactor = arg1;
+    ui->viewport->update();
+}
+

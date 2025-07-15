@@ -177,7 +177,12 @@ void ModelRenderer::update_buffers(Model* model)
  */
 void ModelRenderer::update_uniforms()
 {
-    QMatrix4x4 model = QMatrix4x4();
+    float scaleFactor = 0.01f;
+    Eigen::Transform<float, 3, Eigen::Affine> model_raw =
+        Eigen::Transform<float, 3, Eigen::Affine>{Eigen::Transform<float, 3, Eigen::Affine>::Identity()}
+            .scale(settings->scaleFactor);
+
+    QMatrix4x4 model(model_raw.data());
     QMatrix4x4 view = scene->camera->viewMatrix();
     QMatrix4x4 proj = scene->camera->projectionMatrix();
     QMatrix3x3 norm = (view * model).normalMatrix();

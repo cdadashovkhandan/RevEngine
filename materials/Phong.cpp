@@ -37,8 +37,6 @@ void Phong::update_uniforms(QMatrix4x4 model_mat, QMatrix4x4 view_mat, QMatrix4x
     gl->glUniformMatrix4fv(proj_uni, 1, false, proj_mat.data());
     gl->glUniformMatrix3fv(norm_uni, 1, false, normal_mat.data());
 
-    // gl->glUniform1i(norm_bool_uni, true);
-
     gl->glUniform3f(diffuse_col_uni, diffuse_color[0], diffuse_color[1], diffuse_color[2]);
     gl->glUniform3f(specular_col_uni, specular_color[0], specular_color[1], specular_color[2]);
     gl->glUniform3f(ambient_col_uni, ambient_color[0], ambient_color[1], ambient_color[2]);

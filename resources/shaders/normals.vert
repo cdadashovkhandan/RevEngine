@@ -15,7 +15,8 @@ uniform mat4 proj_matrix;
 uniform mat3 normal_matrix;
 
 void main() {
-    vec4 vert_coords = vec4(vert_coords_vs.x / 100.0f, vert_coords_vs.y / 100.0f, vert_coords_vs.z / 100.0f, 1.0f);
+    // vec4 vert_coords = vec4(vert_coords_vs.x / scale_factor, vert_coords_vs.y / scale_factor, vert_coords_vs.z / scale_factor, 1.0f);
+    vec4 vert_coords = vec4(vert_coords_vs.x, vert_coords_vs.y, vert_coords_vs.z, 1.0f);
 
     mat4 view_model = view_matrix * model_matrix;
 
