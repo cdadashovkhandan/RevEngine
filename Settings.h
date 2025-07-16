@@ -13,7 +13,6 @@ struct Settings
     unsigned int minClusterSize = 50;
     unsigned int maxClusterSize = 1000;
     float scaleFactor = 0.01f;
-
 };
 
 #endif //SETTINGS_H

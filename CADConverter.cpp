@@ -32,6 +32,48 @@ QVector<QVector3D>* CADConverter::transform(QVector<QVector3D>& points, QMatrix4
 }
 
 /**
+ * @brief CADConverter::shrink scale a point cloud down to a unit cube
+ * @param input
+ */
+void CADConverter::shrink(PointCloud::Ptr cloud) const
+{
+    qDebug("Downsizing pointcloud to unit cube.");
+    float scaleFactor = 0.01f;
+    // find the scaling factor
+    Eigen::Vector3f maxPoint(0,0,0);
+    Eigen::Vector3f minPoint(0,0,0);
+    // Get min and max values of each axis
+    for (pcl::PointXYZ const point : cloud->points)
+    {
+        maxPoint.x() = qMax(maxPoint.x(), point.x);
+        maxPoint.y() = qMax(maxPoint.y(), point.y);
+        maxPoint.z() = qMax(maxPoint.z(), point.z);
+
+        minPoint.x() = qMin(minPoint.x(), point.x);
+        minPoint.y() = qMin(minPoint.y(), point.y);
+        minPoint.z() = qMin(minPoint.z(), point.z);
+    }
+
+    Eigen::Vector3f difference = (maxPoint - minPoint).cwiseAbs();
+    float maxRange = qMax(qMax(difference.x(), difference.y()), difference.z());
+
+    size_t index = (maxRange == difference.x()) ? 0 :
+                    (maxRange == difference.y()) ? 1 :
+                    2;
+
+
+    scaleFactor = maxRange;
+    qDebug() << "Detected scale factor: " << scaleFactor;
+    Eigen::Transform<float, 3, Eigen::Affine> tMatrix =
+        Eigen::Transform<float, 3, Eigen::Affine>{Eigen::Transform<float, 3, Eigen::Affine>::Identity()}
+            .scale(settings->scaleFactor);
+
+    pcl::transformPointCloud(*cloud, *cloud, tMatrix);
+
+    qDebug("Downsizing complete.");
+}
+
+/**
  * @brief CADConverter::convertModel Generate a B-rep CAD model from a Model's Point Cloud
  * @param model
  * @return
@@ -65,6 +107,8 @@ Model* CADConverter::convertModel(Model& model) const
         // tMatrix.translation() << centroid;
 
         pcl::transformPointCloud(*cloudPtr, *cloudPtr, tMatrix);
+        // transform downsampled version as well for displaying normals
+        pcl::transformPointCloud(*cloudPtrDownsampled, *cloudPtrDownsampled, tMatrix);
         qDebug("Centering successful");
     }
     else
@@ -104,6 +148,9 @@ Model* CADConverter::convertModel(Model& model) const
 
     // cloud_cluster->is_dense = true;
 
+
+
+    shrink(cloudPtr);
 
     model.pointIndices = cluster(cloudPtr);
 
@@ -225,8 +272,6 @@ std::vector<QPair<float, pcl::Normal>>* CADConverter::getNormals(pcl::PointCloud
         if (kdtree.nearestKSearch(point, neighborCount, neighborIndeces, neighborDistances) > 0)
         {
             std::vector<pcl::PointXYZ> neighbors(neighborCount);
-            // QVector<QVector3D> points(neighborCount);
-            // tree.k_nearest_neighbors(node.point, neighborCount, &neighbors, nullptr);
 
             std::transform(neighborIndeces.begin(),
                            neighborIndeces.end(),
@@ -243,6 +288,7 @@ std::vector<QPair<float, pcl::Normal>>* CADConverter::getNormals(pcl::PointCloud
             Eigen::Vector3f rawNormal(qCos(tht)*qSin(phi), qSin(phi)*qSin(tht), qCos(phi));
             rawNormal.normalize();
 
+            // Calculate distances from each normal to the original point
             std::vector<float> normalDistances(neighborCount);
             std::transform(neighbors.begin(), neighbors.end(), normalDistances.begin(), [rawNormal](pcl::PointXYZ const point){
                 return (rawNormal - point.getVector3fMap()).norm();
@@ -258,6 +304,7 @@ std::vector<QPair<float, pcl::Normal>>* CADConverter::getNormals(pcl::PointCloud
     qDebug("Normals calculated successfully");
     return normals;
 }
+
 
 
 /**

@@ -87,7 +87,7 @@ void ModelRenderer::update_buffers(Model* model)
     }
 
     // Normals
-    if (settings->showNormals && model->normals != nullptr)
+    if (model->normals != nullptr)
     {
         std::vector<pcl::Normal> normals(model->normals->size());
 
@@ -131,7 +131,6 @@ void ModelRenderer::update_buffers(Model* model)
             }
             colorIndex = (colorIndex + 1) % CLUSTER_COLOR_COUNT;
         }
-
     }
     else
         std::fill(colors.begin(), colors.end(), 1.0f); // initialize to white
@@ -220,7 +219,8 @@ void ModelRenderer::render()
     // drawMaterial(*pointCloudMat);
     // gl->glDisable(GL_POLYGON_OFFSET_FILL);
 
-    if (settings->showNormals)
+    //TODO: this is a bit weird. Scene->model is not used in updateBuffers, so this seems kind of disconnected and flimsy.
+    if (settings->showNormals && scene->model->normals != nullptr)
     {
      //   gl->glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         drawMaterial(*normalsMat);

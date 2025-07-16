@@ -18,6 +18,7 @@ public:
 
     void downsample(PointCloud::Ptr input, PointCloud::Ptr target) const;
     std::vector<pcl::PointIndices>* cluster(PointCloud::Ptr input) const;
+    void shrink(PointCloud::Ptr cloud) const;
 private:
     /* TODO:
      * Prim families
