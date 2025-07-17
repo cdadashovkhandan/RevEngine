@@ -177,6 +177,9 @@
      </item>
      <item row="2" column="1">
       <widget class="QDoubleSpinBox" name="clusterToleranceSpinBox">
+       <property name="decimals">
+        <number>4</number>
+       </property>
        <property name="singleStep">
         <double>0.010000000000000</double>
        </property>
@@ -349,7 +352,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Minimum Cluster Size</string>
+     <string>(Visual) Scale Factor</string>
     </property>
    </widget>
    <widget class="QDoubleSpinBox" name="scaleFactorSpinBox">
@@ -360,6 +363,9 @@
       <width>126</width>
       <height>26</height>
      </rect>
+    </property>
+    <property name="decimals">
+     <number>2</number>
     </property>
     <property name="singleStep">
      <double>0.010000000000000</double>

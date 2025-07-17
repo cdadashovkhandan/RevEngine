@@ -43,16 +43,7 @@ void CADConverter::shrink(PointCloud::Ptr cloud) const
     Eigen::Vector3f maxPoint(0,0,0);
     Eigen::Vector3f minPoint(0,0,0);
     // Get min and max values of each axis
-    for (pcl::PointXYZ const point : cloud->points)
-    {
-        maxPoint.x() = qMax(maxPoint.x(), point.x);
-        maxPoint.y() = qMax(maxPoint.y(), point.y);
-        maxPoint.z() = qMax(maxPoint.z(), point.z);
-
-        minPoint.x() = qMin(minPoint.x(), point.x);
-        minPoint.y() = qMin(minPoint.y(), point.y);
-        minPoint.z() = qMin(minPoint.z(), point.z);
-    }
+    getMinMax(cloud->points, minPoint, maxPoint);
 
     Eigen::Vector3f difference = (maxPoint - minPoint).cwiseAbs();
     float maxRange = qMax(qMax(difference.x(), difference.y()), difference.z());
@@ -62,15 +53,29 @@ void CADConverter::shrink(PointCloud::Ptr cloud) const
                     2;
 
 
-    scaleFactor = maxRange;
+    scaleFactor = 1.0f / maxRange;
     qDebug() << "Detected scale factor: " << scaleFactor;
     Eigen::Transform<float, 3, Eigen::Affine> tMatrix =
         Eigen::Transform<float, 3, Eigen::Affine>{Eigen::Transform<float, 3, Eigen::Affine>::Identity()}
-            .scale(settings->scaleFactor);
+            .scale(scaleFactor);
 
     pcl::transformPointCloud(*cloud, *cloud, tMatrix);
 
     qDebug("Downsizing complete.");
+
+    // For debug only:
+
+
+    Eigen::Vector3f newMaxPoint(0,0,0);
+    Eigen::Vector3f newMinPoint(0,0,0);
+
+    getMinMax(cloud->points, newMinPoint, newMaxPoint);
+
+    // Eigen::Vector3f ranges = newMaxPoint - newMinPoint;
+
+    qDebug() << "New min point: (" << newMinPoint.x() << ", " <<  newMinPoint.y() << ", " << newMinPoint.z() << ")";
+    qDebug() << "New max point: (" << newMaxPoint.x() << ", " <<  newMaxPoint.y() << ", " << newMaxPoint.z() << ")";
+
 }
 
 /**
@@ -330,25 +335,27 @@ float CADConverter::calculateMFE(std::vector<pcl::PointXYZ> const points, std::v
         end
     */
 
-    pcl::PointXYZ maxPoint(0,0,0);
-    pcl::PointXYZ minPoint(0,0,0);
+    Eigen::Vector3f maxPoint(0,0,0);
+    Eigen::Vector3f minPoint(0,0,0);
     // Get min and max values of each axis
-    for (pcl::PointXYZ const point : points)
-    {
-        maxPoint.x = qMax(maxPoint.x, point.x);
-        maxPoint.y = qMax(maxPoint.y, point.y);
-        maxPoint.z = qMax(maxPoint.z, point.z);
+    getMinMax(points, minPoint, maxPoint);
 
-        minPoint.x = qMin(minPoint.x, point.x);
-        minPoint.y = qMin(minPoint.y, point.y);
-        minPoint.z = qMin(minPoint.z, point.z);
-    }
-
-    float base = maxPoint.x - minPoint.x;
-    float diag = qSqrt(qPow(base, 2)+ qPow(maxPoint.y - minPoint.y, 2));
-    float fin = qSqrt(qPow(diag, 2)+ qPow(maxPoint.z - minPoint.z, 2));
+    float base = maxPoint.x() - minPoint.x();
+    float diag = qSqrt(qPow(base, 2)+ qPow(maxPoint.y() - minPoint.y(), 2));
+    float fin = qSqrt(qPow(diag, 2)+ qPow(maxPoint.z() - minPoint.z(), 2));
     float meanDistance = std::accumulate(distances.begin(), distances.end(), 0.0f) / float(distances.size());
     return meanDistance / fin;
+}
+
+template <typename Allocator> // appease compiler to work with any allocator
+void CADConverter::getMinMax(std::vector<pcl::PointXYZ, Allocator> const points, Eigen::Vector3f& minPoint, Eigen::Vector3f& maxPoint) const
+{
+    for (pcl::PointXYZ const point : points)
+    {
+        maxPoint = maxPoint.cwiseMax(point.getVector3fMap());
+
+        minPoint = minPoint.cwiseMin(point.getVector3fMap());
+    }
 }
 
 // QVector<QVector3D> CADConverter::getNeighbors(QVector3D const target, QVector<QVector3D> const points) const
