@@ -125,9 +125,9 @@ void ModelRenderer::update_buffers(Model* model)
             for (auto const index : cluster.indices)
             {
                 QColor newColor = clusterColors[colorIndex];
-                colors[index] = newColor.red();
-                colors[index + 1] = newColor.green();
-                colors[index + 2] = newColor.blue();
+                colors[3 * index] = newColor.red();
+                colors[3 * index + 1] = newColor.green();
+                colors[3 * index + 2] = newColor.blue();
             }
             colorIndex = (colorIndex + 1) % CLUSTER_COLOR_COUNT;
         }

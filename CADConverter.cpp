@@ -1,4 +1,5 @@
 #include "CADConverter.h"
+#include "dbscan/dbscan.hpp"
 
 #include <primitives/NormalPlane.h>
 #include <pcl/common/centroid.h>
@@ -7,6 +8,9 @@
 #include <pcl/filters/voxel_grid.h>
 #include <pcl/segmentation/sac_segmentation.h>
 #include <pcl/segmentation/extract_clusters.h>
+#include <pcl/sample_consensus/method_types.h>
+#include <pcl/sample_consensus/model_types.h>
+
 
 CADConverter::CADConverter(Settings* s)
 {
@@ -64,7 +68,6 @@ void CADConverter::shrink(PointCloud::Ptr cloud) const
     qDebug("Downsizing complete.");
 
     // For debug only:
-
 
     Eigen::Vector3f newMaxPoint(0,0,0);
     Eigen::Vector3f newMinPoint(0,0,0);
@@ -189,24 +192,51 @@ void CADConverter::downsample(PointCloud::Ptr input, PointCloud::Ptr target) con
  */
 std::vector<pcl::PointIndices>* CADConverter::cluster(PointCloud::Ptr input) const
 {
-    qDebug("Clustering...");
-    std::vector<pcl::PointIndices>* cluster_indices = new std::vector<pcl::PointIndices>();
+    bool useRansac = false; // TODO: move to settings or create proper condition
 
-    pcl::search::KdTree<pcl::PointXYZ>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZ>);
+    std::vector<pcl::PointIndices>* cluster_indices;
+    if (useRansac)
+    {
+        qDebug("Clustering with RANSAC...");
 
-    pcl::EuclideanClusterExtraction<pcl::PointXYZ> ec;
+        pcl::ModelCoefficients::Ptr coefficients (new pcl::ModelCoefficients);
+        pcl::PointIndices::Ptr inliers (new pcl::PointIndices);
+        // Create the segmentation object
+        pcl::SACSegmentation<pcl::PointXYZ> seg;
+        // Optional
+        seg.setOptimizeCoefficients (true);
+        // Mandatory
+        seg.setModelType (pcl::SACMODEL_PLANE);
+        seg.setMethodType (pcl::SAC_RANSAC);
+        seg.setDistanceThreshold (settings->clusterTolerance);
 
-    ec.setClusterTolerance (settings->clusterTolerance);
+        seg.setInputCloud (input);
+        seg.segment (*inliers, *coefficients);
+        cluster_indices = new std::vector<pcl::PointIndices>();
+        cluster_indices->push_back(*inliers);
+    }
+    else
+    {
+        qDebug("Clustering with DBSCAN...");
+        cluster_indices = dbscan(input->points, settings->clusterTolerance, settings->minClusterSize);
+    }
+    // pcl::search::KdTree<pcl::PointXYZ>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZ>);
 
-    ec.setMinClusterSize (settings->minClusterSize);
+    // pcl::EuclideanClusterExtraction<pcl::PointXYZ> ec;
 
-    ec.setMaxClusterSize (settings->maxClusterSize);
+    // ec.setClusterTolerance (settings->clusterTolerance);
 
-    ec.setSearchMethod (tree);
+    // ec.setMinClusterSize (settings->minClusterSize);
 
-    ec.setInputCloud (input);
+    // ec.setMaxClusterSize (settings->maxClusterSize);
 
-    ec.extract (*cluster_indices);
+    // ec.setSearchMethod (tree);
+
+    // ec.setInputCloud (input);
+
+    // ec.extract (*cluster_indices);
+
+
 
     qDebug() << "Clusters found: " << cluster_indices->size();
 

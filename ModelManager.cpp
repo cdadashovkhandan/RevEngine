@@ -41,8 +41,6 @@ PointCloud::Ptr ModelManager::parsePointCloud(QString fileName) const
             //TODO: make this neat
             pcl::PointXYZ newPoint(line[0].toFloat(), line[1].toFloat(), line[2].toFloat());
 
-            // newPoint /= 100.0f;
-
             cloud->push_back(newPoint);
         }
     }

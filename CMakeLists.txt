@@ -50,9 +50,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         resources/shaders/normals.geom
         materials/NormalsMaterial.h materials/NormalsMaterial.cpp
         resources/shaders/normals.frag resources/shaders/normals.geom resources/shaders/normals.vert
-
-
-
+        dbscan/vendor/nanoflann/nanoflann.hpp dbscan/dbscan.cpp dbscan/dbscan.hpp  dbscan/LICENSE
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET RevEngine APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
