@@ -29,9 +29,7 @@ private slots:
 
     void on_minClusterSizeSpinBox_valueChanged(int arg1);
 
-    void on_maxClusterSizeSpinBox_valueChanged(int arg1);
-
-    void on_clusterToleranceSpinBox_valueChanged(double arg1);
+    void on_distanceThresholdSpinBox_valueChanged(double arg1);
 
     void on_recalcClusterButton_clicked();
 

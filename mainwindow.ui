@@ -131,16 +131,23 @@
      </rect>
     </property>
     <layout class="QGridLayout" name="gridLayout">
-     <item row="0" column="1">
-      <widget class="QSpinBox" name="minClusterSizeSpinBox">
-       <property name="maximum">
-        <number>10000</number>
+     <item row="1" column="0">
+      <widget class="QLabel" name="distanceThresholdLabel">
+       <property name="text">
+        <string>Distance Threshold</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QDoubleSpinBox" name="distanceThresholdSpinBox">
+       <property name="decimals">
+        <number>4</number>
+       </property>
+       <property name="singleStep">
+        <double>0.010000000000000</double>
        </property>
        <property name="value">
-        <number>50</number>
-       </property>
-       <property name="displayIntegerBase">
-        <number>10</number>
+        <double>0.100000000000000</double>
        </property>
       </widget>
      </item>
@@ -151,40 +158,16 @@
        </property>
       </widget>
      </item>
-     <item row="1" column="0">
-      <widget class="QLabel" name="maxClusterSizeLabel">
-       <property name="text">
-        <string>Maximum Cluster Size</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="1">
-      <widget class="QSpinBox" name="maxClusterSizeSpinBox">
+     <item row="0" column="1">
+      <widget class="QSpinBox" name="minClusterSizeSpinBox">
        <property name="maximum">
         <number>10000</number>
        </property>
        <property name="value">
-        <number>1000</number>
+        <number>50</number>
        </property>
-      </widget>
-     </item>
-     <item row="2" column="0">
-      <widget class="QLabel" name="clusterToleranceLabel">
-       <property name="text">
-        <string>Cluster Tolerance</string>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="1">
-      <widget class="QDoubleSpinBox" name="clusterToleranceSpinBox">
-       <property name="decimals">
-        <number>4</number>
-       </property>
-       <property name="singleStep">
-        <double>0.010000000000000</double>
-       </property>
-       <property name="value">
-        <double>0.100000000000000</double>
+       <property name="displayIntegerBase">
+        <number>10</number>
        </property>
       </widget>
      </item>

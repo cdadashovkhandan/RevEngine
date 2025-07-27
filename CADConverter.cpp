@@ -10,13 +10,99 @@
 #include <pcl/segmentation/extract_clusters.h>
 #include <pcl/sample_consensus/method_types.h>
 #include <pcl/sample_consensus/model_types.h>
-
+#include <pcl/filters/extract_indices.h>
+#include <pcl/common/io.h>
 
 CADConverter::CADConverter(Settings* s)
 {
     houghTransformer = new HoughTransformer();
     settings = s;
 }
+
+/**
+ * @brief CADConverter::convertModel Generate a B-rep CAD model from a Model's Point Cloud
+ * @param model
+ * @return
+ */
+Model* CADConverter::convertModel(Model& model) const
+{
+    // Main function for everything:
+
+    // I. Preprocessing
+
+    // 1. Translate the point cloud to align its center with center of coordinate system
+
+    PointCloud::Ptr cloudPtr = model.pointCloud;
+    PointCloud::Ptr cloudPtrDownsampled(new PointCloud());
+    //TODO: I might be better off just storing clouds as shared pointers right off the bat
+
+    downsample(cloudPtr, cloudPtrDownsampled);
+
+    qDebug("Centering Point Cloud...");
+
+    Eigen::Matrix<float, 4, 1> centroid;
+    int result = pcl::compute3DCentroid(*cloudPtrDownsampled, centroid);
+
+    if (result != 0)
+    {
+        Eigen::Matrix4f tMatrix = Eigen::Matrix4f::Identity();
+        tMatrix(0, 3) = -centroid.x();
+        tMatrix(1, 3) = -centroid.y();
+        tMatrix(2, 3) = -centroid.z();
+
+        // tMatrix.translation() << centroid;
+
+        pcl::transformPointCloud(*cloudPtr, *cloudPtr, tMatrix);
+        // transform downsampled version as well for displaying normals
+        pcl::transformPointCloud(*cloudPtrDownsampled, *cloudPtrDownsampled, tMatrix);
+        qDebug("Centering successful");
+    }
+    else
+        qWarning("Centering failed, continuing...");
+
+    model.normals = getNormals(cloudPtrDownsampled);
+
+    //TODO: this is for debugging only!
+    // std::sort(normals.begin(), normals.end(), [](QPair<float, Eigen::Vector3f> a,
+    //                                              QPair<float, Eigen::Vector3f> b)
+    //           { return a.first < b.first; });
+
+
+    //alignCloudWithZAxis(cloudPtr, normals);
+
+    //II. Recognition
+
+    //Initialize hough space
+
+    // segment and express space as discrete matrix.
+
+    //III. Segmentation
+
+
+
+    // PointCloud::Ptr cloud_cluster (new pcl::PointCloud);
+
+    // for (const auto& idx : cluster_indices[4]) {
+
+    //     cloud_cluster->push_back((*cloudPtr)[idx]);
+
+    // }
+
+    // cloud_cluster->width = cloud_cluster->size ();
+
+    // cloud_cluster->height = 1;
+
+    // cloud_cluster->is_dense = true;
+
+
+
+    shrink(cloudPtr);
+
+    model.pointIndices = cluster(cloudPtr);
+
+    return &model;
+}
+
 
 /**
  * @brief CADConverter::transform Apply transformation to entire point cloud.
@@ -82,90 +168,6 @@ void CADConverter::shrink(PointCloud::Ptr cloud) const
 }
 
 /**
- * @brief CADConverter::convertModel Generate a B-rep CAD model from a Model's Point Cloud
- * @param model
- * @return
- */
-Model* CADConverter::convertModel(Model& model) const
-{
-    // Main function for everything:
-
-    // I. Preprocessing
-
-    // 1. Translate the point cloud to align its center with center of coordinate system
-
-    PointCloud::Ptr cloudPtr = model.pointCloud;
-    PointCloud::Ptr cloudPtrDownsampled(new PointCloud());
-    //TODO: I might be better off just storing clouds as shared pointers right off the bat
-
-    downsample(cloudPtr, cloudPtrDownsampled);
-
-    qDebug("Centering Point Cloud...");
-
-    Eigen::Matrix<float, 4, 1> centroid;
-    int result = pcl::compute3DCentroid(*cloudPtrDownsampled, centroid);
-
-    if (result != 0)
-    {
-        Eigen::Matrix4f tMatrix = Eigen::Matrix4f::Identity();
-        tMatrix(0, 3) = -centroid.x();
-        tMatrix(1, 3) = -centroid.y();
-        tMatrix(2, 3) = -centroid.z();
-
-        // tMatrix.translation() << centroid;
-
-        pcl::transformPointCloud(*cloudPtr, *cloudPtr, tMatrix);
-        // transform downsampled version as well for displaying normals
-        pcl::transformPointCloud(*cloudPtrDownsampled, *cloudPtrDownsampled, tMatrix);
-        qDebug("Centering successful");
-    }
-    else
-        qWarning("Centering failed, continuing...");
-
-    model.normals = getNormals(cloudPtrDownsampled);
-
-    //TODO: this is for debugging only!
-    // std::sort(normals.begin(), normals.end(), [](QPair<float, Eigen::Vector3f> a,
-    //                                              QPair<float, Eigen::Vector3f> b)
-    //           { return a.first < b.first; });
-
-
-    //alignCloudWithZAxis(cloudPtr, normals);
-
-    //II. Recognition
-
-    //Initialize hough space
-
-    // segment and express space as discrete matrix.
-
-    //III. Segmentation
-
-
-
-    // pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_cluster (new pcl::PointCloud<pcl::PointXYZ>);
-
-    // for (const auto& idx : cluster_indices[4]) {
-
-    //     cloud_cluster->push_back((*cloudPtr)[idx]);
-
-    // }
-
-    // cloud_cluster->width = cloud_cluster->size ();
-
-    // cloud_cluster->height = 1;
-
-    // cloud_cluster->is_dense = true;
-
-
-
-    shrink(cloudPtr);
-
-    model.pointIndices = cluster(cloudPtr);
-
-    return &model;
-}
-
-/**
  * @brief CADConverter::downsample Perform voxel-grid downsampling on an input point cloud
  * @param input Input point cloud pointer
  * @param target target point cloud pointer (NB: input and target can be the same)
@@ -192,11 +194,14 @@ void CADConverter::downsample(PointCloud::Ptr input, PointCloud::Ptr target) con
  */
 std::vector<pcl::PointIndices>* CADConverter::cluster(PointCloud::Ptr input) const
 {
-    bool useRansac = false; // TODO: move to settings or create proper condition
+    bool useRansac = true; // TODO: move to settings or create proper condition
+
+
 
     std::vector<pcl::PointIndices>* cluster_indices;
-    if (useRansac)
+    if (useRansac) // Partially adapted from https://stackoverflow.com/questions/46826720/pclransac-segmentation-get-all-planes-in-cloud
     {
+        //TODO: maybe move to a separate method ?
         qDebug("Clustering with RANSAC...");
 
         pcl::ModelCoefficients::Ptr coefficients (new pcl::ModelCoefficients);
@@ -208,17 +213,33 @@ std::vector<pcl::PointIndices>* CADConverter::cluster(PointCloud::Ptr input) con
         // Mandatory
         seg.setModelType (pcl::SACMODEL_PLANE);
         seg.setMethodType (pcl::SAC_RANSAC);
-        seg.setDistanceThreshold (settings->clusterTolerance);
+        seg.setDistanceThreshold (settings->distanceThreshold);
+        pcl::ExtractIndices<pcl::PointXYZ> extract;
+        PointCloud::Ptr cloudCopy(new PointCloud());
+        pcl::copyPointCloud(*input, *cloudCopy);
+        int original_size(cloudCopy->height*cloudCopy->width);
 
-        seg.setInputCloud (input);
-        seg.segment (*inliers, *coefficients);
+        // TODO: put into Settings
+        float min_percentage = 2.0f;
         cluster_indices = new std::vector<pcl::PointIndices>();
-        cluster_indices->push_back(*inliers);
+
+        while (cloudCopy->height * cloudCopy->width > original_size * min_percentage/100.0f)
+        {
+            seg.setInputCloud (cloudCopy);
+            seg.segment (*inliers, *coefficients);
+            cluster_indices->push_back(*inliers);
+
+            // Extract inliers
+            extract.setInputCloud(cloudCopy);
+            extract.setIndices(inliers);
+            extract.setNegative(true);
+            extract.filter(*cloudCopy);
+        }
     }
     else
     {
         qDebug("Clustering with DBSCAN...");
-        cluster_indices = dbscan(input->points, settings->clusterTolerance, settings->minClusterSize);
+        cluster_indices = dbscan(input->points, settings->distanceThreshold, settings->minClusterSize);
     }
     // pcl::search::KdTree<pcl::PointXYZ>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZ>);
 
@@ -289,7 +310,7 @@ Eigen::Matrix4f CADConverter::buildRotationMatrix(Eigen::Vector3f const target, 
 
 }
 
-std::vector<QPair<float, pcl::Normal>>* CADConverter::getNormals(pcl::PointCloud<pcl::PointXYZ>::Ptr const cloudPtr) const
+std::vector<QPair<float, pcl::Normal>>* CADConverter::getNormals(PointCloud::Ptr const cloudPtr) const
 {
     qDebug("Calculating normals...");
     pcl::KdTreeFLANN<pcl::PointXYZ> kdtree;
