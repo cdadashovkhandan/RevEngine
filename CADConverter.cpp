@@ -60,7 +60,10 @@ Model* CADConverter::convertModel(Model& model) const
     else
         qWarning("Centering failed, continuing...");
 
-    model.normals = getNormals(cloudPtrDownsampled);
+
+    model.normals = settings->highPrecisionNormals
+            ? getNormals(cloudPtr)
+            : getNormals(cloudPtrDownsampled);
 
     //TODO: this is for debugging only!
     // std::sort(normals.begin(), normals.end(), [](QPair<float, Eigen::Vector3f> a,

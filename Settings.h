@@ -9,6 +9,8 @@ struct Settings
     bool showClusters = true;
     bool showNormals = false;
 
+    bool highPrecisionNormals = false;
+
     float distanceThreshold = 0.1f;
     unsigned int minClusterSize = 50;
     float scaleFactor = 0.01f;

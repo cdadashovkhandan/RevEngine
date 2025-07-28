@@ -86,3 +86,11 @@ void MainWindow::on_scaleFactorSpinBox_valueChanged(double arg1)
     ui->viewport->update();
 }
 
+
+void MainWindow::on_highPrecisionNormalsCheckBox_toggled(bool checked)
+{
+    settings.highPrecisionNormals = checked;
+    //TODO: proper modelmanager updating
+    ui->viewport->update();
+}
+

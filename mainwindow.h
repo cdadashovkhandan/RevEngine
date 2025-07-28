@@ -39,6 +39,8 @@ private slots:
 
     void on_scaleFactorSpinBox_valueChanged(double arg1);
 
+    void on_highPrecisionNormalsCheckBox_toggled(bool checked);
+
 private:
     Ui::MainWindow *ui;
     ModelManager* modelManager;
