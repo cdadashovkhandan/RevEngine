@@ -45,6 +45,8 @@ private slots:
 
     void on_lazyImportButton_clicked();
 
+    void on_comboBox_currentIndexChanged(int index);
+
 private:
     Ui::MainWindow *ui;
     ModelManager* modelManager;

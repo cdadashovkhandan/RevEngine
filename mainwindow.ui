@@ -458,12 +458,12 @@
     </property>
     <item>
      <property name="text">
-      <string>Nearest Neighbors</string>
+      <string>PCA</string>
      </property>
     </item>
     <item>
      <property name="text">
-      <string>PCA</string>
+      <string>Nearest Neighbors</string>
      </property>
     </item>
    </widget>

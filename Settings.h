@@ -4,8 +4,8 @@
 
 //TODO: maybe move to a separate file?
 enum NormalMode {
-    NEAREST_NEIGHBORS = 0,
-    PCA = 1
+    PCA = 0,
+    NEAREST_NEIGHBORS = 1,
 };
 
 struct Settings

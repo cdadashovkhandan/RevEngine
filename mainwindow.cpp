@@ -107,3 +107,9 @@ void MainWindow::on_lazyImportButton_clicked()
     ui->viewport->showModel(model);
 }
 
+
+void MainWindow::on_comboBox_currentIndexChanged(int index)
+{
+    settings.normalMode = (NormalMode) index;
+}
+

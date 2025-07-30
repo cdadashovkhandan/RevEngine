@@ -318,11 +318,12 @@ Eigen::Matrix4f CADConverter::buildRotationMatrix(Eigen::Vector3f const target, 
 
 std::vector<Eigen::Vector3f>* CADConverter::getNormals(PointCloud::Ptr const cloudPtr) const
 {
-    std::vector<Eigen::Vector3f>* normals = new std::vector<Eigen::Vector3f>();
+    std::vector<Eigen::Vector3f>* normals;
 
     qDebug("Calculating normals...");
     if (settings->normalMode == NormalMode::NEAREST_NEIGHBORS)
     {
+        qDebug("Normal Method: NEAREST NEIGHBORS");
         pcl::KdTreeFLANN<pcl::PointXYZ> kdtree;
         kdtree.setInputCloud (cloudPtr);
 
@@ -330,7 +331,7 @@ std::vector<Eigen::Vector3f>* CADConverter::getNormals(PointCloud::Ptr const clo
 
         std::vector<int> neighborIndeces(neighborCount);
         std::vector<float> neighborDistances(neighborCount);
-
+        normals = new std::vector<Eigen::Vector3f>();
 
         for (pcl::PointXYZ const point : cloudPtr->points)
         {
@@ -368,7 +369,9 @@ std::vector<Eigen::Vector3f>* CADConverter::getNormals(PointCloud::Ptr const clo
     }
     else if (settings->normalMode == NormalMode::PCA)
     {
-        pcl::NormalEstimation<pcl::PointXYZ, Eigen::Vector3f> ne;
+        qDebug("Normal Method: PCA");
+        //TODO: set parallel method
+        pcl::NormalEstimation<pcl::PointXYZ, pcl::Normal> ne;
         ne.setInputCloud(cloudPtr);
 
         pcl::search::KdTree<pcl::PointXYZ>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZ> ());
@@ -376,17 +379,17 @@ std::vector<Eigen::Vector3f>* CADConverter::getNormals(PointCloud::Ptr const clo
 
         ne.setRadiusSearch(0.3f);
 
-        pcl::PointCloud<Eigen::Vector3f>::Ptr cloud_normals (new pcl::PointCloud<Eigen::Vector3f>);
+        pcl::PointCloud<pcl::Normal>::Ptr cloud_normals (new pcl::PointCloud<pcl::Normal>);
 
         ne.compute(*cloud_normals);
 
-        // normals->resize(cloud_normals->points.size());
-        // std::transform(cloud_normals->points.begin(), cloud_normals->points.end(), normals->begin(), [](Eigen::Matrix<float, 3,1,0,3,1> point)
-        // {
-        //     return point.cast<Eigen::Vector3f>();
-        // });
+        normals = new std::vector<Eigen::Vector3f>(cloud_normals->points.size());
+        std::transform(cloud_normals->points.begin(), cloud_normals->points.end(), normals->begin(), [](pcl::Normal const normal)
+        {
+            return normal.getNormalVector3fMap();
+        });
 
-        normals->assign(cloud_normals->points.begin(), cloud_normals->points.end());
+        // normals->assign(cloud_normals->points.begin(), cloud_normals->points.end());
 
     }
 
