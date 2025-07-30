@@ -78,6 +78,7 @@ target_link_libraries(RevEngine
     ${PCL_COMMON_LIBRARIES}
     ${PCL_KDTREE_LIBRARIES}
     ${PCL_FILTERS_LIBRARIES}
+    ${PCL_FEATURES_LIBRARIES}
     ${PCL_SEGMENTATION_LIBRARIES})
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.

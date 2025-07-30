@@ -12,6 +12,7 @@
 #include <pcl/sample_consensus/model_types.h>
 #include <pcl/filters/extract_indices.h>
 #include <pcl/common/io.h>
+#include <pcl/features/normal_3d.h>
 
 CADConverter::CADConverter(Settings* s)
 {
@@ -70,8 +71,10 @@ Model* CADConverter::convertModel(Model& model) const
     //                                              QPair<float, Eigen::Vector3f> b)
     //           { return a.first < b.first; });
 
-
-    //alignCloudWithZAxis(cloudPtr, normals);
+    if (model.normals->size() > 3)
+    {
+        alignCloudWithZAxis(cloudPtr, *model.normals);
+    }
 
     //II. Recognition
 
@@ -197,7 +200,7 @@ void CADConverter::downsample(PointCloud::Ptr input, PointCloud::Ptr target) con
  */
 std::vector<pcl::PointIndices>* CADConverter::cluster(PointCloud::Ptr input) const
 {
-    bool useRansac = true; // TODO: move to settings or create proper condition
+    bool useRansac = false; // TODO: move to settings or create proper condition
 
 
 
@@ -313,54 +316,81 @@ Eigen::Matrix4f CADConverter::buildRotationMatrix(Eigen::Vector3f const target, 
 
 }
 
-std::vector<QPair<float, pcl::Normal>>* CADConverter::getNormals(PointCloud::Ptr const cloudPtr) const
+std::vector<Eigen::Vector3f>* CADConverter::getNormals(PointCloud::Ptr const cloudPtr) const
 {
+    std::vector<Eigen::Vector3f>* normals = new std::vector<Eigen::Vector3f>();
+
     qDebug("Calculating normals...");
-    pcl::KdTreeFLANN<pcl::PointXYZ> kdtree;
-    kdtree.setInputCloud (cloudPtr);
-
-    size_t neighborCount = 3; //TODO: delegate to Settings
-
-    std::vector<int> neighborIndeces(neighborCount);
-    std::vector<float> neighborDistances(neighborCount);
-    std::vector<QPair<float, pcl::Normal>>* normals = new std::vector<QPair<float, pcl::Normal>>();
-
-
-    for (pcl::PointXYZ const point : cloudPtr->points)
+    if (settings->normalMode == NormalMode::NEAREST_NEIGHBORS)
     {
-        if (kdtree.nearestKSearch(point, neighborCount, neighborIndeces, neighborDistances) > 0)
+        pcl::KdTreeFLANN<pcl::PointXYZ> kdtree;
+        kdtree.setInputCloud (cloudPtr);
+
+        size_t neighborCount = settings->normalsNeighborCount;
+
+        std::vector<int> neighborIndeces(neighborCount);
+        std::vector<float> neighborDistances(neighborCount);
+
+
+        for (pcl::PointXYZ const point : cloudPtr->points)
         {
-            std::vector<pcl::PointXYZ> neighbors(neighborCount);
+            if (kdtree.nearestKSearch(point, neighborCount, neighborIndeces, neighborDistances) > 0)
+            {
+                std::vector<pcl::PointXYZ> neighbors(neighborCount);
 
-            std::transform(neighborIndeces.begin(),
-                           neighborIndeces.end(),
-                           neighbors.begin(),
-                           [&cloudPtr](int const n) { return (*cloudPtr)[n]; });
+                std::transform(neighborIndeces.begin(),
+                               neighborIndeces.end(),
+                               neighbors.begin(),
+                               [&cloudPtr](int const n) { return (*cloudPtr)[n]; });
 
-            std::vector<float> params = houghTransformer->getBestFit<NormalPlane>(neighbors);
+                std::vector<float> params = houghTransformer->getBestFit<NormalPlane>(neighbors);
 
-            float tht = params[0]; //theta
-            float phi = params[1];
-            // float rho = params[2];
+                float tht = params[0]; //theta
+                float phi = params[1];
+                // float rho = params[2];
 
-            // Build normal vector from chosen parameters
-            Eigen::Vector3f rawNormal(qCos(tht)*qSin(phi), qSin(phi)*qSin(tht), qCos(phi));
-            rawNormal.normalize();
+                // Build normal vector from chosen parameters
+                Eigen::Vector3f rawNormal(qCos(tht)*qSin(phi), qSin(phi)*qSin(tht), qCos(phi));
+                rawNormal.normalize();
 
-            // Calculate distances from each normal to the original point
-            std::vector<float> normalDistances(neighborCount);
-            std::transform(neighbors.begin(), neighbors.end(), normalDistances.begin(), [rawNormal](pcl::PointXYZ const point){
-                return (rawNormal - point.getVector3fMap()).norm();
-            });
+                // Calculate distances from each normal to the original point
+                std::vector<float> normalDistances(neighborCount);
+                std::transform(neighbors.begin(), neighbors.end(), normalDistances.begin(), [rawNormal](pcl::PointXYZ const point){
+                    return (rawNormal - point.getVector3fMap()).norm();
+                });
 
-            float mfe = calculateMFE(neighbors, normalDistances);
+                float mfe = calculateMFE(neighbors, normalDistances);
 
-
-            normals->push_back(QPair<float, pcl::Normal>(mfe, pcl::Normal(rawNormal.x(), rawNormal.y(), rawNormal.z())));
+                if (mfe <= settings->mfeThreshold)
+                    normals->push_back(rawNormal);
+            }
         }
     }
+    else if (settings->normalMode == NormalMode::PCA)
+    {
+        pcl::NormalEstimation<pcl::PointXYZ, Eigen::Vector3f> ne;
+        ne.setInputCloud(cloudPtr);
 
-    qDebug("Normals calculated successfully");
+        pcl::search::KdTree<pcl::PointXYZ>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZ> ());
+        ne.setSearchMethod (tree);
+
+        ne.setRadiusSearch(0.3f);
+
+        pcl::PointCloud<Eigen::Vector3f>::Ptr cloud_normals (new pcl::PointCloud<Eigen::Vector3f>);
+
+        ne.compute(*cloud_normals);
+
+        // normals->resize(cloud_normals->points.size());
+        // std::transform(cloud_normals->points.begin(), cloud_normals->points.end(), normals->begin(), [](Eigen::Matrix<float, 3,1,0,3,1> point)
+        // {
+        //     return point.cast<Eigen::Vector3f>();
+        // });
+
+        normals->assign(cloud_normals->points.begin(), cloud_normals->points.end());
+
+    }
+
+    qDebug() << "Normals found: " << normals->size();
     return normals;
 }
 
@@ -395,8 +425,8 @@ float CADConverter::calculateMFE(std::vector<pcl::PointXYZ> const points, std::v
     getMinMax(points, minPoint, maxPoint);
 
     float base = maxPoint.x() - minPoint.x();
-    float diag = qSqrt(qPow(base, 2)+ qPow(maxPoint.y() - minPoint.y(), 2));
-    float fin = qSqrt(qPow(diag, 2)+ qPow(maxPoint.z() - minPoint.z(), 2));
+    float diag = qSqrt(qPow(base, 2) + qPow(maxPoint.y() - minPoint.y(), 2));
+    float fin = qSqrt(qPow(diag, 2) + qPow(maxPoint.z() - minPoint.z(), 2));
     float meanDistance = std::accumulate(distances.begin(), distances.end(), 0.0f) / float(distances.size());
     return meanDistance / fin;
 }

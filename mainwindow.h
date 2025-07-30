@@ -41,6 +41,10 @@ private slots:
 
     void on_highPrecisionNormalsCheckBox_toggled(bool checked);
 
+    void on_normalNeighborsSpinBox_valueChanged(int arg1);
+
+    void on_lazyImportButton_clicked();
+
 private:
     Ui::MainWindow *ui;
     ModelManager* modelManager;

@@ -19,9 +19,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_importModelButton_clicked()
 {
-    // QString fileName = QFileDialog::getOpenFileName(this, "Text File...", {}, "Text Files (*.txt)");
-    //TODO: unhardcode
-    QString fileName = "/home/chingiz/Documents/uni/intproj/Fit4CAD/dataset/training_set/PC6.txt";
+    QString fileName = QFileDialog::getOpenFileName(this, "Text File...", {}, "Text Files (*.txt)");
     if (fileName.isEmpty())
         return;
     Model* model = modelManager->createModel(fileName);
@@ -92,5 +90,20 @@ void MainWindow::on_highPrecisionNormalsCheckBox_toggled(bool checked)
     settings.highPrecisionNormals = checked;
     //TODO: proper modelmanager updating
     ui->viewport->update();
+}
+
+
+void MainWindow::on_normalNeighborsSpinBox_valueChanged(int arg1)
+{
+    settings.normalsNeighborCount = arg1;
+}
+
+
+//TODO: REMOVE ON RELEASE
+void MainWindow::on_lazyImportButton_clicked()
+{
+    QString fileName = "/home/chingiz/Documents/uni/intproj/Fit4CAD/dataset/training_set/PC6.txt";
+    Model* model = modelManager->createModel(fileName);
+    ui->viewport->showModel(model);
 }
 

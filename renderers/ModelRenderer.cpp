@@ -89,14 +89,6 @@ void ModelRenderer::update_buffers(Model* model)
     // Normals
     if (model->normals != nullptr)
     {
-        std::vector<pcl::Normal> normals(model->normals->size());
-
-        std::transform(model->normals->begin(),
-                       model->normals->end(),
-                       normals.begin(),
-                       [](QPair<float, pcl::Normal> pair) {
-                            return pair.second;
-                       });
 
         // std::vector<pcl::PointXYZ, Eigen::aligned_allocator<pcl::PointXYZ>> scaledPoints(points.size());
 
@@ -105,10 +97,10 @@ void ModelRenderer::update_buffers(Model* model)
 
         gl->glBindVertexArray(vao);
 
-        // Coords
+        // Normals
         gl->glBindBuffer(GL_ARRAY_BUFFER, nbo);
-        gl->glBufferData(GL_ARRAY_BUFFER, normals.size() * sizeof(pcl::Normal),
-                         normals.data(), GL_STATIC_DRAW);
+        gl->glBufferData(GL_ARRAY_BUFFER, model->normals->size() * sizeof(pcl::Normal),
+                         model->normals->data(), GL_STATIC_DRAW);
 
         gl->glBindVertexArray(0);
     }

@@ -14,7 +14,7 @@ public:
     friend class ModelManager; //TODO maybe not necessary
     Model* convertModel(Model& model) const;
 
-    std::vector<QPair<float, pcl::Normal>>* getNormals(pcl::PointCloud<pcl::PointXYZ>::Ptr const cloudPtr) const;
+    std::vector<Eigen::Vector3f>*  getNormals(pcl::PointCloud<pcl::PointXYZ>::Ptr const cloudPtr) const;
 
     void downsample(PointCloud::Ptr input, PointCloud::Ptr target) const;
     std::vector<pcl::PointIndices>* cluster(PointCloud::Ptr input) const;

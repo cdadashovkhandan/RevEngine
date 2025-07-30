@@ -2,6 +2,12 @@
 #ifndef SETTINGS_H
 #define SETTINGS_H
 
+//TODO: maybe move to a separate file?
+enum NormalMode {
+    NEAREST_NEIGHBORS = 0,
+    PCA = 1
+};
+
 struct Settings
 {
     bool showPointCloud = true;
@@ -9,11 +15,16 @@ struct Settings
     bool showClusters = true;
     bool showNormals = false;
 
-    bool highPrecisionNormals = false;
-
-    float distanceThreshold = 0.1f;
+    float distanceThreshold = 0.05f;
     unsigned int minClusterSize = 50;
     float scaleFactor = 0.01f;
+
+    // Normals
+    bool highPrecisionNormals = false;
+    float mfeThreshold = 0.02;
+    int normalsNeighborCount = 3;
+    NormalMode normalMode = NormalMode::PCA;
+
 };
 
 #endif //SETTINGS_H
