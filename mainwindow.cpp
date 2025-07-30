@@ -113,3 +113,9 @@ void MainWindow::on_comboBox_currentIndexChanged(int index)
     settings.normalMode = (NormalMode) index;
 }
 
+
+void MainWindow::on_normalSearchRadiusSpinBox_valueChanged(double arg1)
+{
+    settings.normalSearchRadius = arg1;
+}
+

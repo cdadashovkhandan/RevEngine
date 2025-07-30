@@ -47,6 +47,8 @@ private slots:
 
     void on_comboBox_currentIndexChanged(int index);
 
+    void on_normalSearchRadiusSpinBox_valueChanged(double arg1);
+
 private:
     Ui::MainWindow *ui;
     ModelManager* modelManager;

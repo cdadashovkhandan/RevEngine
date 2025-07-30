@@ -20,8 +20,9 @@ struct Settings
     float scaleFactor = 0.01f;
 
     // Normals
+    float normalSearchRadius = 0.3f;
     bool highPrecisionNormals = false;
-    float mfeThreshold = 0.02;
+    float mfeThreshold = 0.02f;
     int normalsNeighborCount = 3;
     NormalMode normalMode = NormalMode::PCA;
 

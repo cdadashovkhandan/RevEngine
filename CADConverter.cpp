@@ -71,10 +71,10 @@ Model* CADConverter::convertModel(Model& model) const
     //                                              QPair<float, Eigen::Vector3f> b)
     //           { return a.first < b.first; });
 
-    if (model.normals->size() > 3)
-    {
-        alignCloudWithZAxis(cloudPtr, *model.normals);
-    }
+    // if (model.normals->size() > 3)
+    // {
+    //     alignCloudWithZAxis(cloudPtr, *model.normals);
+    // }
 
     //II. Recognition
 
@@ -202,8 +202,6 @@ std::vector<pcl::PointIndices>* CADConverter::cluster(PointCloud::Ptr input) con
 {
     bool useRansac = false; // TODO: move to settings or create proper condition
 
-
-
     std::vector<pcl::PointIndices>* cluster_indices;
     if (useRansac) // Partially adapted from https://stackoverflow.com/questions/46826720/pclransac-segmentation-get-all-planes-in-cloud
     {
@@ -247,23 +245,6 @@ std::vector<pcl::PointIndices>* CADConverter::cluster(PointCloud::Ptr input) con
         qDebug("Clustering with DBSCAN...");
         cluster_indices = dbscan(input->points, settings->distanceThreshold, settings->minClusterSize);
     }
-    // pcl::search::KdTree<pcl::PointXYZ>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZ>);
-
-    // pcl::EuclideanClusterExtraction<pcl::PointXYZ> ec;
-
-    // ec.setClusterTolerance (settings->clusterTolerance);
-
-    // ec.setMinClusterSize (settings->minClusterSize);
-
-    // ec.setMaxClusterSize (settings->maxClusterSize);
-
-    // ec.setSearchMethod (tree);
-
-    // ec.setInputCloud (input);
-
-    // ec.extract (*cluster_indices);
-
-
 
     qDebug() << "Clusters found: " << cluster_indices->size();
 
@@ -318,7 +299,7 @@ Eigen::Matrix4f CADConverter::buildRotationMatrix(Eigen::Vector3f const target, 
 
 std::vector<Eigen::Vector3f>* CADConverter::getNormals(PointCloud::Ptr const cloudPtr) const
 {
-    std::vector<Eigen::Vector3f>* normals;
+    std::vector<Eigen::Vector3f>* normals = new std::vector<Eigen::Vector3f>();;
 
     qDebug("Calculating normals...");
     if (settings->normalMode == NormalMode::NEAREST_NEIGHBORS)
@@ -331,7 +312,6 @@ std::vector<Eigen::Vector3f>* CADConverter::getNormals(PointCloud::Ptr const clo
 
         std::vector<int> neighborIndeces(neighborCount);
         std::vector<float> neighborDistances(neighborCount);
-        normals = new std::vector<Eigen::Vector3f>();
 
         for (pcl::PointXYZ const point : cloudPtr->points)
         {
@@ -360,9 +340,9 @@ std::vector<Eigen::Vector3f>* CADConverter::getNormals(PointCloud::Ptr const clo
                     return (rawNormal - point.getVector3fMap()).norm();
                 });
 
-                float mfe = calculateMFE(neighbors, normalDistances);
-
-                if (mfe <= settings->mfeThreshold)
+                //TODO: MFEs are currently too high across the board. See if fixes can be made.
+                // float mfe = calculateMFE(neighbors, normalDistances);
+                // if (mfe <= settings->mfeThreshold)
                     normals->push_back(rawNormal);
             }
         }
@@ -377,27 +357,25 @@ std::vector<Eigen::Vector3f>* CADConverter::getNormals(PointCloud::Ptr const clo
         pcl::search::KdTree<pcl::PointXYZ>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZ> ());
         ne.setSearchMethod (tree);
 
-        ne.setRadiusSearch(0.3f);
+        ne.setRadiusSearch(settings->normalSearchRadius);
 
         pcl::PointCloud<pcl::Normal>::Ptr cloud_normals (new pcl::PointCloud<pcl::Normal>);
 
         ne.compute(*cloud_normals);
 
-        normals = new std::vector<Eigen::Vector3f>(cloud_normals->points.size());
-        std::transform(cloud_normals->points.begin(), cloud_normals->points.end(), normals->begin(), [](pcl::Normal const normal)
+        // pcl::removeNaNFromPointCloud(*cloud_normals, *cloud_normals, nullptr);
+
+        for (pcl::Normal const normal : cloud_normals->points)
         {
-            return normal.getNormalVector3fMap();
-        });
-
-        // normals->assign(cloud_normals->points.begin(), cloud_normals->points.end());
-
+            Eigen::Vector3f normalVector = normal.getNormalVector3fMap();
+            if (!std::isnan(normalVector.norm()))
+                normals->push_back(normalVector);
+        }
     }
 
     qDebug() << "Normals found: " << normals->size();
     return normals;
 }
-
-
 
 /**
  * @brief CADConverter::calculateMFE Calculate Mean Fitting error for a given set of points and estimates.
