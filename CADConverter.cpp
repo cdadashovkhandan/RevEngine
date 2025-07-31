@@ -39,6 +39,8 @@ Model* CADConverter::convertModel(Model& model) const
 
     downsample(cloudPtr, cloudPtrDownsampled);
 
+    model.pointCloudDownsampled = cloudPtrDownsampled;
+
     qDebug("Centering Point Cloud...");
 
     Eigen::Matrix<float, 4, 1> centroid;
@@ -190,7 +192,6 @@ void CADConverter::downsample(PointCloud::Ptr input, PointCloud::Ptr target) con
     voxelGrid.filter(*target);
 
     qDebug() << "Downsampling complete. Reduced from " << input->size() << " to " << target->size() << " points.";
-
 }
 
 /**

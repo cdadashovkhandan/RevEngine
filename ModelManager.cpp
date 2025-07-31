@@ -65,6 +65,13 @@ void ModelManager::recalculateClusters(Model *model)
     model->pointIndices = cadConverter->cluster(model->pointCloud);
 }
 
+void ModelManager::recalculateNormals(Model *model)
+{
+    model->normals = settings->highPrecisionNormals
+        ? cadConverter->getNormals(model->pointCloud)
+        : cadConverter->getNormals(model->pointCloudDownsampled);
+}
+
 /**
  * @brief ModelManager::generateMesh Generate a B-Rep representation out of a Model's Point Cloud.
  * @param model

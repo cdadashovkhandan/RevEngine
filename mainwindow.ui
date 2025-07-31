@@ -287,7 +287,7 @@
     <property name="geometry">
      <rect>
       <x>890</x>
-      <y>70</y>
+      <y>100</y>
       <width>201</width>
       <height>25</height>
      </rect>
@@ -510,6 +510,19 @@
     </property>
     <property name="text">
      <string>(PCA) Search Radius</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="recalcNormalsButton">
+    <property name="geometry">
+     <rect>
+      <x>890</x>
+      <y>60</y>
+      <width>201</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Recalculate Normals</string>
     </property>
    </widget>
   </widget>

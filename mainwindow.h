@@ -49,6 +49,8 @@ private slots:
 
     void on_normalSearchRadiusSpinBox_valueChanged(double arg1);
 
+    void on_recalcNormalsButton_clicked();
+
 private:
     Ui::MainWindow *ui;
     ModelManager* modelManager;

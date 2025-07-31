@@ -119,3 +119,11 @@ void MainWindow::on_normalSearchRadiusSpinBox_valueChanged(double arg1)
     settings.normalSearchRadius = arg1;
 }
 
+
+void MainWindow::on_recalcNormalsButton_clicked()
+{
+    Model* model = modelManager->getActiveModel();
+    modelManager->recalculateNormals(model);
+    ui->viewport->showModel(model);
+}
+

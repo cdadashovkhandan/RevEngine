@@ -15,6 +15,7 @@ class Model
 
 public:
     PointCloud::Ptr pointCloud; // Model cannot exist without pcloud.
+    PointCloud::Ptr pointCloudDownsampled;
     Mesh* mesh = nullptr; // Model can exist without mesh.
     std::vector<pcl::PointIndices>* pointIndices = nullptr;
     std::vector<Eigen::Vector3f>* normals = nullptr;
