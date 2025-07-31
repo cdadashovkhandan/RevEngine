@@ -99,7 +99,7 @@ void ModelRenderer::update_buffers(Model* model)
 
         // Normals
         gl->glBindBuffer(GL_ARRAY_BUFFER, nbo);
-        gl->glBufferData(GL_ARRAY_BUFFER, model->normals->size() * sizeof(pcl::Normal),
+        gl->glBufferData(GL_ARRAY_BUFFER, model->normals->size() * sizeof(Eigen::Vector3f),
                          model->normals->data(), GL_STATIC_DRAW);
 
         gl->glBindVertexArray(0);
