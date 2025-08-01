@@ -127,3 +127,10 @@ void MainWindow::on_recalcNormalsButton_clicked()
     ui->viewport->showModel(model);
 }
 
+
+void MainWindow::on_toggleAxisLinesCheckBox_toggled(bool checked)
+{
+    settings.showAxisLines = checked;
+    ui->viewport->update();
+}
+

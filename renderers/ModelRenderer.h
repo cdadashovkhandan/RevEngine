@@ -33,6 +33,7 @@ private:
     int render_size = 0;
     Material* pointCloudMat { nullptr };
     Material* normalsMat { nullptr };
+    Material* worldMat { nullptr };
 
     void drawMaterial(Material &material);
 

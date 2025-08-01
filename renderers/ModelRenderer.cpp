@@ -7,11 +7,13 @@
 
 #include <materials/PointCloudMaterial.h>
 #include <materials/NormalsMaterial.h>
+#include <materials/WorldMaterial.h>
 
 ModelRenderer::ModelRenderer(QOpenGLFunctions_4_1_Core* gl, Scene* scene)
     : Renderer(gl, scene, nullptr),
     pointCloudMat(new PointCloudMaterial(gl)),
-    normalsMat(new NormalsMaterial(gl))
+    normalsMat(new NormalsMaterial(gl)),
+    worldMat(new WorldMaterial(gl))
 
 {
     gl->glGenVertexArrays(1, &vao);
@@ -180,6 +182,7 @@ void ModelRenderer::update_uniforms()
 
     pointCloudMat->update_uniforms(model, view, proj, norm);
     normalsMat->update_uniforms(model, view, proj, norm);
+    worldMat->update_uniforms(model, view, proj, norm);
 }
 
 /**
@@ -198,6 +201,9 @@ void ModelRenderer::render()
     // gl->glPolygonOffset(1, 1);
     gl->glPolygonOffset(1, 1);
     drawMaterial(*pointCloudMat);
+
+    if (settings->showAxisLines)
+        drawMaterial(*worldMat);
     // gl->glDisable(GL_POLYGON_OFFSET_FILL);
 
     // gl->glClearColor(0, 0, 0, 1.0f);

@@ -5,5 +5,8 @@
         <file alias="normals.frag">resources/shaders/normals.frag</file>
         <file alias="normals.vert">resources/shaders/normals.vert</file>
         <file alias="normals.geom">resources/shaders/normals.geom</file>
+        <file alias="world.frag">resources/shaders/world.frag</file>
+        <file alias="world.vert">resources/shaders/world.vert</file>
+        <file alias="world.geom">resources/shaders/world.geom</file>
     </qresource>
 </RCC>

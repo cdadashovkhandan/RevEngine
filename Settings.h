@@ -14,6 +14,7 @@ struct Settings
     bool showMesh = true;
     bool showClusters = true;
     bool showNormals = false;
+    bool showAxisLines = true;
 
     float distanceThreshold = 0.05f;
     unsigned int minClusterSize = 50;

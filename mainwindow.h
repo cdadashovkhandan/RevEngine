@@ -51,6 +51,8 @@ private slots:
 
     void on_recalcNormalsButton_clicked();
 
+    void on_toggleAxisLinesCheckBox_toggled(bool checked);
+
 private:
     Ui::MainWindow *ui;
     ModelManager* modelManager;
