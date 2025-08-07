@@ -22,7 +22,7 @@ public:
     pcl::PointIndices::Ptr pointIndices; //Indices of the points this shape overlaps with
 
     // TODO: return type probably wrong
-    // virtual QVector<float> getBestFit(QVector<QVector3D> const points) const = 0;
+    std::vector<float> getBestFit(std::vector<pcl::PointXYZ> const points) const;
     // Build the initial matrix of parameters and flatten them to a 2D vector of floats
     virtual std::vector<ParamPair> buildParameters(std::vector<pcl::PointXYZ> const points, float const maxMagnitude) const = 0;
     virtual bool isIntersecting(pcl::PointXYZ const point, std::vector<float> const params, float const maxMagnitude) const = 0;

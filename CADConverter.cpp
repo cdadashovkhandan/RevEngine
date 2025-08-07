@@ -16,7 +16,6 @@
 
 CADConverter::CADConverter(Settings* s)
 {
-    houghTransformer = new HoughTransformer();
     settings = s;
 }
 
@@ -30,6 +29,8 @@ Model* CADConverter::convertModel(Model& model) const
     // Main function for everything:
 
     // I. Preprocessing
+
+    //TODO: move all the preprocessing to a separate class
 
     PointCloud::Ptr cloudPtr = model.pointCloud;
     PointCloud::Ptr cloudPtrDownsampled(new PointCloud());
@@ -83,6 +84,7 @@ Model* CADConverter::convertModel(Model& model) const
         {
             PrimitiveShape* shape = getShape(pair.first);
 
+            // std::vector<float> params = shape->getBestFit();
 
             shapeCandidates.push_back(shape);
         }
@@ -316,8 +318,9 @@ std::vector<Eigen::Vector3f>* CADConverter::getNormals(PointCloud::Ptr const clo
                                neighborIndeces.end(),
                                neighbors.begin(),
                                [&cloudPtr](int const n) { return (*cloudPtr)[n]; });
+                Plane* normalPlane = new Plane();
 
-                std::vector<float> params = houghTransformer->getBestFit(new Plane(), neighbors);
+                std::vector<float> params = normalPlane->getBestFit(neighbors);
 
                 float tht = params[0]; //theta
                 float phi = params[1];
@@ -441,6 +444,9 @@ PrimitiveShape* CADConverter::getShape(PrimitiveType const type) const
         break;
     case PrimitiveType::CONE:
         throw "Not Implemented";
+        break;
+    default:
+        throw "Unrecognized shape";
         break;
     }
 }

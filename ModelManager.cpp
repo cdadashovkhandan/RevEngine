@@ -14,7 +14,7 @@ Model* ModelManager::getActiveModel() const
     return models.last();
 }
 
-/**5
+/**
  * @brief ModelManager::parsePointCloud Parse a point cloud from file.
  * @param fileName
  * @return

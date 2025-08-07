@@ -1,16 +1,16 @@
 #ifndef CADCONVERTER_H
 #define CADCONVERTER_H
 
-#include "HoughTransformer.h"
 #include "data/Model.h"
 
 #include <QMatrix4x4>
 #include <Settings.h>
+
+#include <primitives/PrimitiveShape.h>
 class CADConverter
 {    
 public:
     CADConverter(Settings* s);
-    HoughTransformer* houghTransformer;
     friend class ModelManager; //TODO maybe not necessary
     Model* convertModel(Model& model) const;
 
