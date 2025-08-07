@@ -1,3 +1,3 @@
 #include "PrimitiveShape.h"
 
-PrimitiveShape::PrimitiveShape() {}
+//TODO: remove?

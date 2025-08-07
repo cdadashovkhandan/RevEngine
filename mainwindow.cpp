@@ -102,7 +102,7 @@ void MainWindow::on_normalNeighborsSpinBox_valueChanged(int arg1)
 //TODO: REMOVE ON RELEASE
 void MainWindow::on_lazyImportButton_clicked()
 {
-    QString fileName = "/home/chingiz/Documents/uni/intproj/Fit4CAD/dataset/training_set/PC6.txt";
+    QString fileName = "/home/chingiz/Documents/uni/intproj/Fit4CAD/dataset/training_set/PC5.txt";
     Model* model = modelManager->createModel(fileName);
     ui->viewport->showModel(model);
 }
@@ -132,5 +132,11 @@ void MainWindow::on_toggleAxisLinesCheckBox_toggled(bool checked)
 {
     settings.showAxisLines = checked;
     ui->viewport->update();
+}
+
+
+void MainWindow::on_shapePlaneCheckBox_toggled(bool checked)
+{
+    settings.primitiveTypes[PrimitiveType::PLANE] = checked;
 }
 

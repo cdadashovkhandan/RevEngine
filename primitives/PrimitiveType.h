@@ -2,12 +2,11 @@
 #define PRIMITIVETYPE_H
 
 enum PrimitiveType {
-    CUBOID,
+    PLANE,
     CYLINDER,
+    SPHERE,
     TORUS,
     CONE,
-    PLANE,
-    NORMALPLANE // for voting normal directions
 };
 
 #endif // PRIMITIVETYPE_H

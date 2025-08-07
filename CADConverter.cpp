@@ -1,7 +1,7 @@
 #include "CADConverter.h"
 #include "dbscan/dbscan.hpp"
 
-#include <primitives/NormalPlane.h>
+#include <primitives/Plane.h>
 #include <pcl/common/centroid.h>
 #include <pcl/common/transforms.h>
 #include <pcl/kdtree/kdtree_flann.h>
@@ -31,11 +31,8 @@ Model* CADConverter::convertModel(Model& model) const
 
     // I. Preprocessing
 
-    // 1. Translate the point cloud to align its center with center of coordinate system
-
     PointCloud::Ptr cloudPtr = model.pointCloud;
     PointCloud::Ptr cloudPtrDownsampled(new PointCloud());
-    //TODO: I might be better off just storing clouds as shared pointers right off the bat
 
     downsample(cloudPtr, cloudPtrDownsampled);
 
@@ -68,45 +65,34 @@ Model* CADConverter::convertModel(Model& model) const
             ? getNormals(cloudPtr)
             : getNormals(cloudPtrDownsampled);
 
-    //TODO: this is for debugging only!
-    // std::sort(normals.begin(), normals.end(), [](QPair<float, Eigen::Vector3f> a,
-    //                                              QPair<float, Eigen::Vector3f> b)
-    //           { return a.first < b.first; });
-
     // if (model.normals->size() > 3)
     // {
     //     alignCloudWithZAxis(cloudPtr, *model.normals);
     // }
 
+    shrink(cloudPtr);
+
+
+
     //II. Recognition
 
-    //Initialize hough space
+    // Recognize shapes for each family
+    std::vector<PrimitiveShape*> shapeCandidates;
+    for (std::pair<const PrimitiveType, bool> pair : settings->primitiveTypes) {
+        if (pair.second) // The primitive is active
+        {
+            PrimitiveShape* shape = getShape(pair.first);
 
-    // segment and express space as discrete matrix.
+
+            shapeCandidates.push_back(shape);
+        }
+    }
+
+    // Pick best shapes across primitive families
 
     //III. Segmentation
 
-
-
-    // PointCloud::Ptr cloud_cluster (new pcl::PointCloud);
-
-    // for (const auto& idx : cluster_indices[4]) {
-
-    //     cloud_cluster->push_back((*cloudPtr)[idx]);
-
-    // }
-
-    // cloud_cluster->width = cloud_cluster->size ();
-
-    // cloud_cluster->height = 1;
-
-    // cloud_cluster->is_dense = true;
-
-
-
-    shrink(cloudPtr);
-
-    model.pointIndices = cluster(cloudPtr);
+    // model.pointIndices = cluster(cloudPtr);
 
     return &model;
 }
@@ -146,6 +132,7 @@ void CADConverter::shrink(PointCloud::Ptr cloud) const
     Eigen::Vector3f difference = (maxPoint - minPoint).cwiseAbs();
     float maxRange = qMax(qMax(difference.x(), difference.y()), difference.z());
 
+    //TODO: unused
     size_t index = (maxRange == difference.x()) ? 0 :
                     (maxRange == difference.y()) ? 1 :
                     2;
@@ -298,6 +285,11 @@ Eigen::Matrix4f CADConverter::buildRotationMatrix(Eigen::Vector3f const target, 
 
 }
 
+/**
+ * @brief CADConverter::getNormals Estimate the normals for a given point cloud.
+ * @param cloudPtr
+ * @return
+ */
 std::vector<Eigen::Vector3f>* CADConverter::getNormals(PointCloud::Ptr const cloudPtr) const
 {
     std::vector<Eigen::Vector3f>* normals = new std::vector<Eigen::Vector3f>();;
@@ -325,7 +317,7 @@ std::vector<Eigen::Vector3f>* CADConverter::getNormals(PointCloud::Ptr const clo
                                neighbors.begin(),
                                [&cloudPtr](int const n) { return (*cloudPtr)[n]; });
 
-                std::vector<float> params = houghTransformer->getBestFit<NormalPlane>(neighbors);
+                std::vector<float> params = houghTransformer->getBestFit(new Plane(), neighbors);
 
                 float tht = params[0]; //theta
                 float phi = params[1];
@@ -379,7 +371,7 @@ std::vector<Eigen::Vector3f>* CADConverter::getNormals(PointCloud::Ptr const clo
 }
 
 /**
- * @brief CADConverter::calculateMFE Calculate Mean Fitting error for a given set of points and estimates.
+ * @brief CADConverter::calculateMFE Calculate Mean Fitting error for a given set of points and their distances from estimates.
  * @param points
  * @param distances
  * @return
@@ -413,6 +405,12 @@ float CADConverter::calculateMFE(std::vector<pcl::PointXYZ> const points, std::v
     return meanDistance / fin;
 }
 
+/**
+ * @brief CADConverter::getMinMax Get the minimum and maximum value for each dimension and store them in vectors.
+ * @param points
+ * @param minPoint minimum values in every dimension.
+ * @param maxPoint maximum values in every dimension.
+ */
 template <typename Allocator> // appease compiler to work with any allocator
 void CADConverter::getMinMax(std::vector<pcl::PointXYZ, Allocator> const points, Eigen::Vector3f& minPoint, Eigen::Vector3f& maxPoint) const
 {
@@ -424,18 +422,25 @@ void CADConverter::getMinMax(std::vector<pcl::PointXYZ, Allocator> const points,
     }
 }
 
-// QVector<QVector3D> CADConverter::getNeighbors(QVector3D const target, QVector<QVector3D> const points) const
-// {
-//     QVector<QVector3D> result;
-//     result.append(target); // TODO: might be unnecessary
-//     for (QVector3D point : points)
-//     {
-//         float distance = target.distanceToPoint(point);
-//         if (distance <= maxDistance && distance > 0)
-//         {
-//             result.append(point);
-//         }
-//     }
-
-//     return result;
-// }
+PrimitiveShape* CADConverter::getShape(PrimitiveType const type) const
+{
+    // TODO: Find a more elegant solution
+    switch (type)
+    {
+    case PrimitiveType::PLANE:
+        return new Plane();
+        break;
+    case PrimitiveType::SPHERE:
+        throw "Not Implemented";
+        break;
+    case PrimitiveType::CYLINDER:
+        throw "Not Implemented";
+        break;
+    case PrimitiveType::TORUS:
+        throw "Not Implemented";
+        break;
+    case PrimitiveType::CONE:
+        throw "Not Implemented";
+        break;
+    }
+}

@@ -1,10 +1,14 @@
-#include "NormalPlane.h"
+#include "Plane.h"
 #include <QtMath>
 #include <QDebug>
 
-NormalPlane::NormalPlane() {}
+Plane::Plane() {
+    shapeType = PrimitiveType::PLANE;
+}
 
-std::vector<ParamPair> NormalPlane::buildParameters(std::vector<pcl::PointXYZ> const points, float maxMagnitude) const
+Plane::~Plane() {}
+
+std::vector<ParamPair> Plane::buildParameters(std::vector<pcl::PointXYZ> const points, float maxMagnitude) const
 {
     // Three params: theta, phi, rho
     // Theta: [0 , 2pi)
@@ -26,7 +30,7 @@ std::vector<ParamPair> NormalPlane::buildParameters(std::vector<pcl::PointXYZ> c
     return output;
 }
 
-bool NormalPlane::isIntersecting(pcl::PointXYZ const point, std::vector<float> const params, float const maxMagnitude) const
+bool Plane::isIntersecting(pcl::PointXYZ const point, std::vector<float> const params, float const maxMagnitude) const
 {
 
     float threshold = maxMagnitude / 200.0f;

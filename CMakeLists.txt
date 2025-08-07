@@ -46,7 +46,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         HoughTransformer.h HoughTransformer.cpp
         primitives/PrimitiveShape.cpp primitives/PrimitiveShape.h
         primitives/PrimitiveType.h
-        primitives/NormalPlane.h primitives/NormalPlane.cpp
+        primitives/Plane.h primitives/Plane.cpp
         resources/shaders/normals.geom
         materials/NormalsMaterial.h materials/NormalsMaterial.cpp
         resources/shaders/normals.frag resources/shaders/normals.geom resources/shaders/normals.vert

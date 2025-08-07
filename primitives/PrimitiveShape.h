@@ -1,20 +1,25 @@
 #ifndef PRIMITIVESHAPE_H
 #define PRIMITIVESHAPE_H
 
+#include "primitives/PrimitiveType.h"
 #include <QVector3D>
 #include <QVector>
 #include <QPair>
 #include <pcl/point_types.h>
+#include <pcl/PointIndices.h>
 using ParamPair = QPair<unsigned int, std::vector<float>>;
 
 class PrimitiveShape
 {
 //TODO: Separate hough transform logic from shape instances
 public:
-    PrimitiveShape();
+    virtual ~PrimitiveShape() = default;
+    PrimitiveType  shapeType;
 
     QVector3D position;
     QVector3D orientation;
+
+    pcl::PointIndices::Ptr pointIndices; //Indices of the points this shape overlaps with
 
     // TODO: return type probably wrong
     // virtual QVector<float> getBestFit(QVector<QVector3D> const points) const = 0;

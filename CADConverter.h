@@ -36,6 +36,7 @@ private:
 
     template <typename Allocator>
     void getMinMax(const std::vector<pcl::PointXYZ, Allocator> points, Eigen::Vector3f &minPoint, Eigen::Vector3f &maxPoint) const;
+    PrimitiveShape *getShape(const PrimitiveType type) const;
 };
 
 #endif // CADCONVERTER_H

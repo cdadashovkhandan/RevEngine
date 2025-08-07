@@ -3,6 +3,9 @@
 #define SETTINGS_H
 
 //TODO: maybe move to a separate file?
+#include "primitives/PrimitiveType.h"
+#include <map>
+#include <vector>
 enum NormalMode {
     PCA = 0,
     NEAREST_NEIGHBORS = 1,
@@ -26,6 +29,16 @@ struct Settings
     float mfeThreshold = 0.02f;
     int normalsNeighborCount = 3;
     NormalMode normalMode = NormalMode::PCA;
+
+    // Recognition
+
+    std::map<PrimitiveType, bool> primitiveTypes = {
+        { PrimitiveType::PLANE, true },
+        { PrimitiveType::SPHERE, false },
+        { PrimitiveType::CYLINDER, false },
+        { PrimitiveType::TORUS, false },
+        { PrimitiveType::CONE, false },
+    };
 
 };
 
