@@ -82,11 +82,13 @@ Model* CADConverter::convertModel(Model& model) const
     for (std::pair<const PrimitiveType, bool> pair : settings->primitiveTypes) {
         if (pair.second) // The primitive is active
         {
-            PrimitiveShape* shape = getShape(pair.first);
+            // PrimitiveShape* shape = getShape(pair.first);
 
-            // std::vector<float> params = shape->getBestFit();
+            // std::vector<float> params = shape->getBestFit(cloudPtr->points);
 
-            shapeCandidates.push_back(shape);
+
+
+            // shapeCandidates.push_back(shape);
         }
     }
 
@@ -305,22 +307,24 @@ std::vector<Eigen::Vector3f>* CADConverter::getNormals(PointCloud::Ptr const clo
 
         size_t neighborCount = settings->normalsNeighborCount;
 
-        std::vector<int> neighborIndeces(neighborCount);
+
+        pcl::PointIndices::Ptr neighborIndices(new pcl::PointIndices());
+        neighborIndices->indices.resize(neighborCount);
         std::vector<float> neighborDistances(neighborCount);
 
         for (pcl::PointXYZ const point : cloudPtr->points)
         {
-            if (kdtree.nearestKSearch(point, neighborCount, neighborIndeces, neighborDistances) > 0)
+            if (kdtree.nearestKSearch(point, neighborCount, neighborIndices->indices, neighborDistances) > 0)
             {
-                std::vector<pcl::PointXYZ> neighbors(neighborCount);
+                std::vector<pcl::PointXYZ, Eigen::aligned_allocator<pcl::PointXYZ>> neighbors(neighborCount);
 
-                std::transform(neighborIndeces.begin(),
-                               neighborIndeces.end(),
-                               neighbors.begin(),
-                               [&cloudPtr](int const n) { return (*cloudPtr)[n]; });
+                // std::transform(neighborIndices.indices.begin(),
+                //                neighborIndices.indices.end(),
+                //                neighbors.begin(),
+                //                [&cloudPtr](int const n) { return (*cloudPtr)[n]; });
                 Plane* normalPlane = new Plane();
 
-                std::vector<float> params = normalPlane->getBestFit(neighbors);
+                std::vector<float> params = normalPlane->getBestFit(cloudPtr, neighborIndices);
 
                 float tht = params[0]; //theta
                 float phi = params[1];

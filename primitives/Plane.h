@@ -9,7 +9,7 @@ class Plane : public PrimitiveShape
 public:
     explicit Plane();
     ~Plane() override;
-    std::vector<ParamPair> buildParameters(std::vector<pcl::PointXYZ> const points, float const maxMagnitude) const override;
+    std::vector<ParamPair> buildParameters(std::vector<pcl::PointXYZ, Eigen::aligned_allocator<pcl::PointXYZ>> const points, float const maxMagnitude) const override;
     bool isIntersecting(pcl::PointXYZ const point, std::vector<float> const params, float const maxMagnitude) const override;
 
 };

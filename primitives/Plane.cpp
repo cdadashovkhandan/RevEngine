@@ -8,7 +8,7 @@ Plane::Plane() {
 
 Plane::~Plane() {}
 
-std::vector<ParamPair> Plane::buildParameters(std::vector<pcl::PointXYZ> const points, float maxMagnitude) const
+std::vector<ParamPair> Plane::buildParameters(std::vector<pcl::PointXYZ, Eigen::aligned_allocator<pcl::PointXYZ>> const points, float maxMagnitude) const
 {
     // Three params: theta, phi, rho
     // Theta: [0 , 2pi)
@@ -23,7 +23,7 @@ std::vector<ParamPair> Plane::buildParameters(std::vector<pcl::PointXYZ> const p
             for(float rho = 0; rho <= maxMagnitude; rho += maxMagnitude / 50.0f)
             {
                 std::vector<float> params({theta, phi, rho});
-                output.push_back(ParamPair(0, params));
+                output.push_back(ParamPair(pcl::PointIndices::Ptr(new pcl::PointIndices), params));
             }
         }
     }
