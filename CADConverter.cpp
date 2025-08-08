@@ -318,10 +318,6 @@ std::vector<Eigen::Vector3f>* CADConverter::getNormals(PointCloud::Ptr const clo
             {
                 std::vector<pcl::PointXYZ, Eigen::aligned_allocator<pcl::PointXYZ>> neighbors(neighborCount);
 
-                // std::transform(neighborIndices.indices.begin(),
-                //                neighborIndices.indices.end(),
-                //                neighbors.begin(),
-                //                [&cloudPtr](int const n) { return (*cloudPtr)[n]; });
                 Plane* normalPlane = new Plane();
 
                 std::vector<float> params = normalPlane->getBestFit(cloudPtr, neighborIndices);
