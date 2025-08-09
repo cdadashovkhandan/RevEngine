@@ -1,5 +1,4 @@
 #include "PrimitiveShape.h"
-#include "Util.h"
 
 #include <pcl/filters/extract_indices.h>
 
@@ -57,37 +56,4 @@ std::vector<float> PrimitiveShape::getBestFit(pcl::PointCloud<pcl::PointXYZ>::Pt
     return parameters;
 }
 
-/**
- * @brief CADConverter::calculateMFE Calculate Mean Fitting error for a given set of points and their distances from estimates.
- * @param points
- * @param distances
- * @return
- */
-float PrimitiveShape::calculateMFE(std::vector<pcl::PointXYZ, Eigen::aligned_allocator<pcl::PointXYZ>> const points, std::vector<float> const distances) const
-{
-    /*
-    Matlab equivalent:
-        function mfe=MFE(xyz,dist)
 
-        base=max(xyz(:,1))-min(xyz(:,1));
-        h=max(xyz(:,2))-min(xyz(:,2));
-        diag=sqrt(base^2+h^2);
-        h=max(xyz(:,3))-min(xyz(:,3));
-        Fin=sqrt(diag^2+h^2);
-
-        mfe=mean(dist)/Fin;
-
-        end
-    */
-
-    Eigen::Vector3f maxPoint(0,0,0);
-    Eigen::Vector3f minPoint(0,0,0);
-    // Get min and max values of each axis
-    Util::getMinMax(points, minPoint, maxPoint);
-
-    float base = maxPoint.x() - minPoint.x();
-    float diag = qSqrt(qPow(base, 2) + qPow(maxPoint.y() - minPoint.y(), 2));
-    float fin = qSqrt(qPow(diag, 2) + qPow(maxPoint.z() - minPoint.z(), 2));
-    float meanDistance = std::accumulate(distances.begin(), distances.end(), 0.0f) / float(distances.size());
-    return meanDistance / fin;
-}

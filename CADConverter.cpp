@@ -325,7 +325,7 @@ std::vector<Eigen::Vector3f>* CADConverter::getNormals(PointCloud::Ptr const clo
 
                 float tht = params[0]; //theta
                 float phi = params[1];
-                float rho = params[2];
+                // float rho = params[2];
 
                 // Build normal vector from chosen parameters
 
@@ -338,14 +338,14 @@ std::vector<Eigen::Vector3f>* CADConverter::getNormals(PointCloud::Ptr const clo
 
                 // Calculate distances from each normal to the original point
                 std::vector<float> normalDistances(neighborCount);
-                std::transform(neighbors.begin(), neighbors.end(), normalDistances.begin(), [&a, &b, &c, &rho](pcl::PointXYZ const point){
-                    // return (rawNormal - point.getVector3fMap()).norm();
-                    float d = qAbs(a * point.x + b * point.y + c * point.z + rho);
-                    return d / (qPow(a, 2) + qPow(b, 2) + qPow(c, 2));
-                });
+                // std::transform(neighbors.begin(), neighbors.end(), normalDistances.begin(), [&a, &b, &c, &rho](pcl::PointXYZ const point){
+                //     // return (rawNormal - point.getVector3fMap()).norm();
+                //     float d = qAbs(a * point.x + b * point.y + c * point.z + rho);
+                //     return d / (qPow(a, 2) + qPow(b, 2) + qPow(c, 2));
+                // });
 
                 //TODO: MFEs are currently too high across the board. See if fixes can be made.
-                float mfe = calculateMFE(neighbors, normalDistances);
+                float mfe = normalPlane->calculateMFE(cloudPtr);
                 if (mfe <= settings->mfeThreshold)
                     normals->push_back(rawNormal);
             }

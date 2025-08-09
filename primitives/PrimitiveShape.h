@@ -19,13 +19,14 @@ public:
 
 
     std::vector<float> parameters = {};
+    float mfe = -1.0f;
     QVector3D position;
     QVector3D orientation;
 
     pcl::PointIndices::Ptr pointIndices; //Indices of the points this shape overlaps with. TODO: better variable name
 
     // TODO: return type probably wrong
-    float calculateMFE(std::vector<pcl::PointXYZ, Eigen::aligned_allocator<pcl::PointXYZ>> const points, std::vector<float> const distances) const;
+    virtual float calculateMFE(pcl::PointCloud<pcl::PointXYZ>::Ptr const cloud) = 0;
     std::vector<float> getBestFit(pcl::PointCloud<pcl::PointXYZ>::Ptr const cloud, pcl::PointIndices::Ptr const indices);
     // Build the initial matrix of parameters and flatten them to a 2D vector of floats
     virtual std::vector<ParamPair> buildParameters(std::vector<pcl::PointXYZ, Eigen::aligned_allocator<pcl::PointXYZ>> const points, float const maxMagnitude) const = 0;
