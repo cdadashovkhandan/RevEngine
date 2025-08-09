@@ -13,6 +13,7 @@
 #include <pcl/filters/extract_indices.h>
 #include <pcl/common/io.h>
 #include <pcl/features/normal_3d.h>
+#include "Util.h"
 
 CADConverter::CADConverter(Settings* s)
 {
@@ -131,7 +132,7 @@ void CADConverter::shrink(PointCloud::Ptr cloud) const
     Eigen::Vector3f maxPoint(0,0,0);
     Eigen::Vector3f minPoint(0,0,0);
     // Get min and max values of each axis
-    getMinMax(cloud->points, minPoint, maxPoint);
+    Util::getMinMax(cloud->points, minPoint, maxPoint);
 
     Eigen::Vector3f difference = (maxPoint - minPoint).cwiseAbs();
     float maxRange = qMax(qMax(difference.x(), difference.y()), difference.z());
@@ -157,7 +158,7 @@ void CADConverter::shrink(PointCloud::Ptr cloud) const
     Eigen::Vector3f newMaxPoint(0,0,0);
     Eigen::Vector3f newMinPoint(0,0,0);
 
-    getMinMax(cloud->points, newMinPoint, newMaxPoint);
+    Util::getMinMax(cloud->points, newMinPoint, newMaxPoint);
 
     // Eigen::Vector3f ranges = newMaxPoint - newMinPoint;
 
@@ -324,21 +325,28 @@ std::vector<Eigen::Vector3f>* CADConverter::getNormals(PointCloud::Ptr const clo
 
                 float tht = params[0]; //theta
                 float phi = params[1];
-                // float rho = params[2];
+                float rho = params[2];
 
                 // Build normal vector from chosen parameters
-                Eigen::Vector3f rawNormal(qCos(tht)*qSin(phi), qSin(phi)*qSin(tht), qCos(phi));
+
+                float a = qCos(tht)*qSin(phi);
+                float b = qSin(phi)*qSin(tht);
+                float c = qCos(phi);
+
+                Eigen::Vector3f rawNormal(a, b, c);
                 rawNormal.normalize();
 
                 // Calculate distances from each normal to the original point
                 std::vector<float> normalDistances(neighborCount);
-                std::transform(neighbors.begin(), neighbors.end(), normalDistances.begin(), [rawNormal](pcl::PointXYZ const point){
-                    return (rawNormal - point.getVector3fMap()).norm();
+                std::transform(neighbors.begin(), neighbors.end(), normalDistances.begin(), [&a, &b, &c, &rho](pcl::PointXYZ const point){
+                    // return (rawNormal - point.getVector3fMap()).norm();
+                    float d = qAbs(a * point.x + b * point.y + c * point.z + rho);
+                    return d / (qPow(a, 2) + qPow(b, 2) + qPow(c, 2));
                 });
 
                 //TODO: MFEs are currently too high across the board. See if fixes can be made.
-                // float mfe = calculateMFE(neighbors, normalDistances);
-                // if (mfe <= settings->mfeThreshold)
+                float mfe = calculateMFE(neighbors, normalDistances);
+                if (mfe <= settings->mfeThreshold)
                     normals->push_back(rawNormal);
             }
         }
@@ -371,58 +379,6 @@ std::vector<Eigen::Vector3f>* CADConverter::getNormals(PointCloud::Ptr const clo
 
     qDebug() << "Normals found: " << normals->size();
     return normals;
-}
-
-/**
- * @brief CADConverter::calculateMFE Calculate Mean Fitting error for a given set of points and their distances from estimates.
- * @param points
- * @param distances
- * @return
- */
-float CADConverter::calculateMFE(std::vector<pcl::PointXYZ> const points, std::vector<float> const distances) const
-{
-    /*
-    Matlab equivalent:
-        function mfe=MFE(xyz,dist)
-
-        base=max(xyz(:,1))-min(xyz(:,1));
-        h=max(xyz(:,2))-min(xyz(:,2));
-        diag=sqrt(base^2+h^2);
-        h=max(xyz(:,3))-min(xyz(:,3));
-        Fin=sqrt(diag^2+h^2);
-
-        mfe=mean(dist)/Fin;
-
-        end
-    */
-
-    Eigen::Vector3f maxPoint(0,0,0);
-    Eigen::Vector3f minPoint(0,0,0);
-    // Get min and max values of each axis
-    getMinMax(points, minPoint, maxPoint);
-
-    float base = maxPoint.x() - minPoint.x();
-    float diag = qSqrt(qPow(base, 2) + qPow(maxPoint.y() - minPoint.y(), 2));
-    float fin = qSqrt(qPow(diag, 2) + qPow(maxPoint.z() - minPoint.z(), 2));
-    float meanDistance = std::accumulate(distances.begin(), distances.end(), 0.0f) / float(distances.size());
-    return meanDistance / fin;
-}
-
-/**
- * @brief CADConverter::getMinMax Get the minimum and maximum value for each dimension and store them in vectors.
- * @param points
- * @param minPoint minimum values in every dimension.
- * @param maxPoint maximum values in every dimension.
- */
-template <typename Allocator> // appease compiler to work with any allocator
-void CADConverter::getMinMax(std::vector<pcl::PointXYZ, Allocator> const points, Eigen::Vector3f& minPoint, Eigen::Vector3f& maxPoint) const
-{
-    for (pcl::PointXYZ const point : points)
-    {
-        maxPoint = maxPoint.cwiseMax(point.getVector3fMap());
-
-        minPoint = minPoint.cwiseMin(point.getVector3fMap());
-    }
 }
 
 PrimitiveShape* CADConverter::getShape(PrimitiveType const type) const

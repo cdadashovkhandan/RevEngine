@@ -32,10 +32,7 @@ private:
     // QVector<QVector3D> getNeighbors(const QVector3D target, const QVector<QVector3D> points) const;
     Eigen::Matrix4f buildRotationMatrix(Eigen::Vector3f const target, Eigen::Vector3f const source) const;
     void alignCloudWithZAxis(pcl::PointCloud<pcl::PointXYZ>::Ptr cloudPtr, std::vector<Eigen::Vector3f> normals) const;
-    float calculateMFE(std::vector<pcl::PointXYZ> const points, std::vector<float> const distances) const;
 
-    template <typename Allocator>
-    void getMinMax(const std::vector<pcl::PointXYZ, Allocator> points, Eigen::Vector3f &minPoint, Eigen::Vector3f &maxPoint) const;
     PrimitiveShape *getShape(const PrimitiveType type) const;
 };
 
