@@ -8,7 +8,7 @@
 #include <pcl/PointIndices.h>
 #include <pcl/point_types.h>
 
-std::vector<pcl::PointIndices>* dbscan(const std::vector<pcl::PointXYZ, Eigen::aligned_allocator<pcl::PointXYZ>>& data, float eps, int min_pts);
+std::vector<pcl::PointIndices::Ptr>* dbscan(const std::vector<pcl::PointXYZ, Eigen::aligned_allocator<pcl::PointXYZ>>& data, float eps, int min_pts);
 
 // template<size_t dim>
 // auto dbscan(const std::span<float>& data, float eps, int min_pts)

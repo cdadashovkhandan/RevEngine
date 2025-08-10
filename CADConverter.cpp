@@ -78,20 +78,28 @@ Model* CADConverter::convertModel(Model& model) const
 
     //II. Recognition
 
+
+    // temp code to get indices of all points
+    model.pointIndices = cluster(cloudPtr); // TODO: temporary!
+
     // Recognize shapes for each family
     std::vector<PrimitiveShape*> shapeCandidates;
     for (std::pair<const PrimitiveType, bool> pair : settings->primitiveTypes) {
         if (pair.second) // The primitive is active
         {
-            // PrimitiveShape* shape = getShape(pair.first);
+            PrimitiveShape* shape = getShape(pair.first);
 
-            // std::vector<float> params = shape->getBestFit(cloudPtr->points);
+            std::vector<float> params = shape->getBestFit(cloudPtr, model.pointIndices->at(0));
 
 
 
-            // shapeCandidates.push_back(shape);
+            shapeCandidates.push_back(shape);
+
+            qDebug() << "Shape found. Indices: " << shape->pointIndices->indices.size() << " Params: " << shape->parameters;
         }
     }
+
+
 
     // Pick best shapes across primitive families
 
@@ -191,11 +199,11 @@ void CADConverter::downsample(PointCloud::Ptr input, PointCloud::Ptr target) con
  * @param input the Point Cloud to be clustered
  * @return vector of indices for each cluster
  */
-std::vector<pcl::PointIndices>* CADConverter::cluster(PointCloud::Ptr input) const
+std::vector<pcl::PointIndices::Ptr>* CADConverter::cluster(PointCloud::Ptr input) const
 {
     bool useRansac = false; // TODO: move to settings or create proper condition
 
-    std::vector<pcl::PointIndices>* cluster_indices;
+    std::vector<pcl::PointIndices::Ptr>* cluster_indices;
     if (useRansac) // Partially adapted from https://stackoverflow.com/questions/46826720/pclransac-segmentation-get-all-planes-in-cloud
     {
         //TODO: maybe move to a separate method ?
@@ -218,13 +226,13 @@ std::vector<pcl::PointIndices>* CADConverter::cluster(PointCloud::Ptr input) con
 
         // TODO: put into Settings
         float min_percentage = 2.0f;
-        cluster_indices = new std::vector<pcl::PointIndices>();
+        cluster_indices = new std::vector<pcl::PointIndices::Ptr>();
 
         while (cloudCopy->height * cloudCopy->width > original_size * min_percentage/100.0f)
         {
             seg.setInputCloud (cloudCopy);
             seg.segment (*inliers, *coefficients);
-            cluster_indices->push_back(*inliers);
+            cluster_indices->push_back(inliers);
 
             // Extract inliers
             extract.setInputCloud(cloudCopy);

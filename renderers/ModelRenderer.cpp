@@ -114,9 +114,9 @@ void ModelRenderer::update_buffers(Model* model)
     {
         std::fill(colors.begin(), colors.end(), 0.2f); // initialize to dark grey
         size_t colorIndex = 0;
-        for (pcl::PointIndices const cluster : *model->pointIndices)
+        for (pcl::PointIndices::Ptr const cluster : *model->pointIndices)
         {
-            for (auto const index : cluster.indices)
+            for (auto const index : cluster->indices)
             {
                 QColor newColor = clusterColors[colorIndex];
                 colors[3 * index] = newColor.red();

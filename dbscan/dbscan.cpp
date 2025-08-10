@@ -49,17 +49,17 @@ struct adaptor
 
 
 
-void sort_clusters(std::vector<pcl::PointIndices>& clusters)
+void sort_clusters(std::vector<pcl::PointIndices::Ptr>& clusters)
 {
     for(auto& cluster: clusters)
     {
-        std::sort(cluster.indices.begin(), cluster.indices.end());
+        std::sort(cluster->indices.begin(), cluster->indices.end());
     }
 }
 
 
 template<int n_cols, typename Adaptor>
-std::vector<pcl::PointIndices>* dbscan(const Adaptor& adapt, float eps, int min_pts)
+std::vector<pcl::PointIndices::Ptr>* dbscan(const Adaptor& adapt, float eps, int min_pts)
 {
     eps *= eps;
     using namespace nanoflann;
@@ -71,7 +71,7 @@ std::vector<pcl::PointIndices>* dbscan(const Adaptor& adapt, float eps, int min_
     const auto n_points = adapt.kdtree_get_point_count();
     auto visited  = std::vector<bool>(n_points);
     // auto clusters = std::vector<std::vector<size_t>>();
-    std::vector<pcl::PointIndices>* clusters = new std::vector<pcl::PointIndices>();
+    std::vector<pcl::PointIndices::Ptr>* clusters = new std::vector<pcl::PointIndices::Ptr>();
     auto matches  = std::vector<std::pair<size_t, float>>();
     auto sub_matches = std::vector<std::pair<size_t, float>>();
 
@@ -83,7 +83,7 @@ std::vector<pcl::PointIndices>* dbscan(const Adaptor& adapt, float eps, int min_
         if (matches.size() < static_cast<size_t>(min_pts)) continue;
         visited[i] = true;
 
-        pcl::PointIndices cluster = pcl::PointIndices();
+        pcl::PointIndices::Ptr cluster(new pcl::PointIndices());
 
         while (matches.empty() == false)
         {
@@ -98,7 +98,7 @@ std::vector<pcl::PointIndices>* dbscan(const Adaptor& adapt, float eps, int min_
             {
                 std::copy(sub_matches.begin(), sub_matches.end(), std::back_inserter(matches));
             }
-            cluster.indices.push_back(nb_idx);
+            cluster->indices.push_back(nb_idx);
         }
         clusters->push_back(std::move(cluster));
     }
@@ -114,7 +114,7 @@ std::vector<pcl::PointIndices>* dbscan(const Adaptor& adapt, float eps, int min_
 // }
 
 
-std::vector<pcl::PointIndices>* dbscan(const std::vector<pcl::PointXYZ, Eigen::aligned_allocator<pcl::PointXYZ>>& data, float eps, int min_pts)
+std::vector<pcl::PointIndices::Ptr>* dbscan(const std::vector<pcl::PointXYZ, Eigen::aligned_allocator<pcl::PointXYZ>>& data, float eps, int min_pts)
 {
     const auto adapt = adaptor<pcl::PointXYZ>(data);
 

@@ -17,7 +17,7 @@ public:
     std::vector<Eigen::Vector3f>*  getNormals(pcl::PointCloud<pcl::PointXYZ>::Ptr const cloudPtr) const;
 
     void downsample(PointCloud::Ptr input, PointCloud::Ptr target) const;
-    std::vector<pcl::PointIndices>* cluster(PointCloud::Ptr input) const;
+    std::vector<pcl::PointIndices::Ptr>* cluster(PointCloud::Ptr input) const;
     void shrink(PointCloud::Ptr cloud) const;
 private:
     /* TODO:
