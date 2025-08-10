@@ -55,6 +55,8 @@ private slots:
 
     void on_shapePlaneCheckBox_toggled(bool checked);
 
+    void on_toggleShapesCheckBox_toggled(bool checked);
+
 private:
     Ui::MainWindow *ui;
     ModelManager* modelManager;

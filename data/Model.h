@@ -5,7 +5,7 @@
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <QPair>
-#include "Mesh.h"
+#include "primitives/PrimitiveShape.h"
 
 using PointCloud = pcl::PointCloud<pcl::PointXYZ>;
 
@@ -15,8 +15,8 @@ class Model
 
 public:
     PointCloud::Ptr pointCloud; // Model cannot exist without pcloud.
-    PointCloud::Ptr pointCloudDownsampled;
-    Mesh* mesh = nullptr; // Model can exist without mesh.
+    PointCloud::Ptr pointCloudDownsampled; //TODO: replace with indices?
+    std::vector<PrimitiveShape*>* shapes = nullptr; // Model can exist without shapes.
     std::vector<pcl::PointIndices::Ptr>* pointIndices = nullptr;
     std::vector<Eigen::Vector3f>* normals = nullptr;
     Model(PointCloud::Ptr pointCloud);

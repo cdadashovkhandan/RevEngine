@@ -105,3 +105,27 @@ float Plane::calculateMFE(pcl::PointCloud<pcl::PointXYZ>::Ptr const cloud)
     mfe = meanDistance / fin;
     return mfe;
 }
+
+RenderShape Plane::getRenderShape() const
+{
+    RenderShape renderShape;
+
+    auto verts = getBaseVertices();
+
+    renderShape.vertices = verts;
+
+    return renderShape;
+}
+
+std::vector<Eigen::Vector3f> Plane::getBaseVertices() const
+{
+    std::vector<Eigen::Vector3f> vertices(4);
+
+    // Unit plane projected on xy plane.
+    vertices.push_back(Eigen::Vector3f(0, 0, 0));
+    vertices.push_back(Eigen::Vector3f(1, 0, 0));
+    vertices.push_back(Eigen::Vector3f(1, 1, 0));
+    vertices.push_back(Eigen::Vector3f(0, 1, 0));
+
+    return vertices;
+}

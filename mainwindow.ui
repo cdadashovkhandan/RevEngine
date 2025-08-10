@@ -194,9 +194,9 @@
       </widget>
      </item>
      <item>
-      <widget class="QCheckBox" name="toggleMeshCheckBox">
+      <widget class="QCheckBox" name="toggleShapesCheckBox">
        <property name="text">
-        <string>Show Model</string>
+        <string>Show Detected Shapes</string>
        </property>
       </widget>
      </item>

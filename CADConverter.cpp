@@ -84,6 +84,7 @@ Model* CADConverter::convertModel(Model& model) const
 
     // Recognize shapes for each family
     std::vector<PrimitiveShape*> shapeCandidates;
+    model.shapes = new std::vector<PrimitiveShape*>();
     for (std::pair<const PrimitiveType, bool> pair : settings->primitiveTypes) {
         if (pair.second) // The primitive is active
         {
@@ -91,11 +92,10 @@ Model* CADConverter::convertModel(Model& model) const
 
             std::vector<float> params = shape->getBestFit(cloudPtr, model.pointIndices->at(0));
 
-
-
             shapeCandidates.push_back(shape);
 
             shape->calculateMFE(cloudPtr);
+            model.shapes->push_back(shape); // TODO: temporary
 
             qDebug() << "Shape found. Indices: " << shape->pointIndices->indices.size() << " Params: " << shape->parameters << "MFE: " << shape->mfe;
         }

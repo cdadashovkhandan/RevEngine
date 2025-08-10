@@ -8,5 +8,8 @@
         <file alias="world.frag">resources/shaders/world.frag</file>
         <file alias="world.vert">resources/shaders/world.vert</file>
         <file alias="world.geom">resources/shaders/world.geom</file>
+        <file alias="shape.frag">resources/shaders/shape.frag</file>
+        <file alias="shape.vert">resources/shaders/shape.vert</file>
+        <file alias="shape.geom">resources/shaders/shape.geom</file>
     </qresource>
 </RCC>

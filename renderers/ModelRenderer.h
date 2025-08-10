@@ -8,8 +8,6 @@
 #include <materials/Material.h>
 #include <qcolor.h>
 
-#define CLUSTER_COLOR_COUNT 5
-
 class ModelRenderer : public Renderer
 {
 public:
@@ -25,17 +23,25 @@ protected:
     void initBuffers() override;
 
 private:
+    static const size_t CLUSTER_COLOR_COUNT = 5;
     GLuint vao;
     GLuint vbo;
     GLuint vbo_colors;
     GLuint nbo;
     GLuint ibo;
     int render_size = 0;
+
+    std::vector<RenderShape> renderShapes;
+
     Material* pointCloudMat { nullptr };
     Material* normalsMat { nullptr };
     Material* worldMat { nullptr };
 
+    Material* shapeMat { nullptr};
+
     void drawMaterial(Material &material);
+
+    void drawShape(RenderShape const renderShape);
 
     QColor clusterColors[CLUSTER_COLOR_COUNT] { QColorConstants::Svg::red, QColorConstants::Svg::green, QColorConstants::Svg::cyan, QColorConstants::Svg::magenta, QColorConstants::Svg::yellow };
 };

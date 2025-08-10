@@ -14,7 +14,7 @@ enum NormalMode {
 struct Settings
 {
     bool showPointCloud = true;
-    bool showMesh = true;
+    bool showShapes = true;
     bool showClusters = true;
     bool showNormals = false;
     bool showAxisLines = true;

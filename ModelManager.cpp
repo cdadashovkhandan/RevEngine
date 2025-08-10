@@ -22,8 +22,6 @@ Model* ModelManager::getActiveModel() const
 PointCloud::Ptr ModelManager::parsePointCloud(QString fileName) const
 {
     QFile cloudFile(fileName);
-    Mesh newMesh;
-
     PointCloud::Ptr cloud(new PointCloud());
     if (cloudFile.open(QIODevice::ReadOnly))
     {

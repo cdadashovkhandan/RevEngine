@@ -141,3 +141,11 @@ void MainWindow::on_shapePlaneCheckBox_toggled(bool checked)
     settings.primitiveTypes[PrimitiveType::PLANE] = checked;
 }
 
+
+void MainWindow::on_toggleShapesCheckBox_toggled(bool checked)
+{
+    settings.showShapes = checked;
+
+    ui->viewport->update();
+}
+

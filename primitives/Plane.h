@@ -13,8 +13,10 @@ public:
     bool isIntersecting(pcl::PointXYZ const point, std::vector<float> const params, float const maxMagnitude) const override;
     float calculateMFE(pcl::PointCloud<pcl::PointXYZ>::Ptr const cloud) override;
 
+    RenderShape getRenderShape() const override;
 protected:
     std::vector<float> getDistancesToPoints() const;
+    std::vector<Eigen::Vector3f> getBaseVertices() const override;
 };
 
 #endif // PLANE_H

@@ -8,12 +8,14 @@
 #include <materials/PointCloudMaterial.h>
 #include <materials/NormalsMaterial.h>
 #include <materials/WorldMaterial.h>
+#include <materials/ShapeMaterial.h>
 
 ModelRenderer::ModelRenderer(QOpenGLFunctions_4_1_Core* gl, Scene* scene)
     : Renderer(gl, scene, nullptr),
     pointCloudMat(new PointCloudMaterial(gl)),
     normalsMat(new NormalsMaterial(gl)),
-    worldMat(new WorldMaterial(gl))
+    worldMat(new WorldMaterial(gl)),
+    shapeMat(new ShapeMaterial(gl))
 
 {
     gl->glGenVertexArrays(1, &vao);
@@ -71,11 +73,6 @@ void ModelRenderer::update_buffers(Model* model)
     {
         std::vector<pcl::PointXYZ, Eigen::aligned_allocator<pcl::PointXYZ>> points =
             model->pointCloud->points;
-
-        // std::vector<pcl::PointXYZ, Eigen::aligned_allocator<pcl::PointXYZ>> scaledPoints(points.size());
-
-        // std::transform(points.begin(), points.end(), scaledPoints.begin(), [](pcl::PointXYZ const point)
-        //                {return pcl::PointXYZ(point.x / 100.0f, point.y / 100.0f, point.z / 100.0f );});
 
         gl->glBindVertexArray(vao);
 
@@ -139,9 +136,35 @@ void ModelRenderer::update_buffers(Model* model)
     gl->glBindVertexArray(0);
 
     //TODO: I'm not sure if showing both at the same time is a good idea. Think about it further.
-    if (settings->showMesh && model->mesh != nullptr)
+    if (settings->showShapes && model->shapes != nullptr)
     {
-        // Mesh rendering code
+        for (PrimitiveShape* shape : *model->shapes)
+        {
+            RenderShape renderShape = shape->getRenderShape();
+
+            gl->glGenVertexArrays(1, &renderShape.vao);
+            gl->glBindVertexArray(renderShape.vao);
+
+            gl->glGenBuffers(1, &renderShape.vbo);
+            gl->glBindBuffer(GL_ARRAY_BUFFER, renderShape.vbo);
+            gl->glBufferData(GL_ARRAY_BUFFER, renderShape.vertices.size() * sizeof(Eigen::Vector3f),
+                             renderShape.vertices.data(), GL_STATIC_DRAW);
+            gl->glEnableVertexAttribArray(0);
+            gl->glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, nullptr);
+
+            // gl->glGenBuffers(1, &nbo);
+            // gl->glBindBuffer(GL_ARRAY_BUFFER, nbo);
+            // gl->glEnableVertexAttribArray(2);
+            // gl->glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, 0, nullptr);
+
+            gl->glGenBuffers(1, &renderShape.ibo);
+            gl->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, renderShape.ibo);
+            gl->glBufferData(GL_ELEMENT_ARRAY_BUFFER, renderShape.indices.size() * sizeof(uint32_t), renderShape.indices.data(), GL_STATIC_DRAW);
+
+            gl->glBindVertexArray(0);
+
+            renderShapes.push_back(renderShape);
+        }
     }
 
     /*
@@ -183,6 +206,7 @@ void ModelRenderer::update_uniforms()
     pointCloudMat->update_uniforms(model, view, proj, norm);
     normalsMat->update_uniforms(model, view, proj, norm);
     worldMat->update_uniforms(model, view, proj, norm);
+    shapeMat->update_uniforms(model, view, proj, norm);
 }
 
 /**
@@ -223,6 +247,12 @@ void ModelRenderer::render()
      //   gl->glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         drawMaterial(*normalsMat);
     }
+
+    if (settings->showShapes && renderShapes.size() > 0)
+    {
+        for (const RenderShape &shape : renderShapes)
+            drawShape(shape);
+    }
 }
 
 /**
@@ -238,5 +268,16 @@ void ModelRenderer::drawMaterial(Material &material)
         gl->glBindVertexArray(0);
     }
     material.release();
+}
+
+void ModelRenderer::drawShape(RenderShape const renderShape)
+{
+    shapeMat->bind();
+    {
+        gl->glBindVertexArray(renderShape.vao);
+        gl->glDrawElements(GL_POINTS, renderShape.indices.size(), GL_UNSIGNED_INT, &renderShape.indices);
+        gl->glBindVertexArray(0);
+    }
+    shapeMat->release();
 }
 
