@@ -95,7 +95,9 @@ Model* CADConverter::convertModel(Model& model) const
 
             shapeCandidates.push_back(shape);
 
-            qDebug() << "Shape found. Indices: " << shape->pointIndices->indices.size() << " Params: " << shape->parameters;
+            shape->calculateMFE(cloudPtr);
+
+            qDebug() << "Shape found. Indices: " << shape->pointIndices->indices.size() << " Params: " << shape->parameters << "MFE: " << shape->mfe;
         }
     }
 
