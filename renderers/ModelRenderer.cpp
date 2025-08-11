@@ -16,9 +16,7 @@ ModelRenderer::ModelRenderer(QOpenGLFunctions_4_1_Core* gl, Scene* scene)
     normalsMat(new NormalsMaterial(gl)),
     worldMat(new WorldMaterial(gl)),
     shapeMat(new ShapeMaterial(gl))
-
 {
-    gl->glGenVertexArrays(1, &vao);
     gl->glEnable(GL_DEPTH_TEST);
 }
 
@@ -62,11 +60,6 @@ void ModelRenderer::initBuffers()
  */
 void ModelRenderer::update_buffers(Model* model)
 {
-    // QVector<QVector3D>& vertices = mesh->v_coords;
-    // QVector<QVector3D>& normals = mesh->v_normals;
-    // QVector<uint32_t> indices = mesh->f_verts();
-
-
     // Point Cloud
 
     if (settings->showPointCloud)
@@ -88,12 +81,6 @@ void ModelRenderer::update_buffers(Model* model)
     // Normals
     if (model->normals != nullptr)
     {
-
-        // std::vector<pcl::PointXYZ, Eigen::aligned_allocator<pcl::PointXYZ>> scaledPoints(points.size());
-
-        // std::transform(points.begin(), points.end(), scaledPoints.begin(), [](pcl::PointXYZ const point)
-        //                {return pcl::PointXYZ(point.x / 100.0f, point.y / 100.0f, point.z / 100.0f );});
-
         gl->glBindVertexArray(vao);
 
         // Normals
@@ -135,29 +122,28 @@ void ModelRenderer::update_buffers(Model* model)
 
     gl->glBindVertexArray(0);
 
-    //TODO: I'm not sure if showing both at the same time is a good idea. Think about it further.
     if (settings->showShapes && model->shapes != nullptr)
     {
+        clearRenderShapes();
         for (PrimitiveShape* shape : *model->shapes)
         {
+            qDebug() << "Rendering shape of type " << shape->shapeType;
             RenderShape renderShape = shape->getRenderShape();
 
             gl->glGenVertexArrays(1, &renderShape.vao);
+            gl->glGenBuffers(1, &renderShape.vbo);
+            gl->glGenBuffers(1, &renderShape.ibo);
+
             gl->glBindVertexArray(renderShape.vao);
 
-            gl->glGenBuffers(1, &renderShape.vbo);
             gl->glBindBuffer(GL_ARRAY_BUFFER, renderShape.vbo);
+
+            gl->glEnableVertexAttribArray(0);
+            gl->glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
+
             gl->glBufferData(GL_ARRAY_BUFFER, renderShape.vertices.size() * sizeof(Eigen::Vector3f),
                              renderShape.vertices.data(), GL_STATIC_DRAW);
-            gl->glEnableVertexAttribArray(0);
-            gl->glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, nullptr);
 
-            // gl->glGenBuffers(1, &nbo);
-            // gl->glBindBuffer(GL_ARRAY_BUFFER, nbo);
-            // gl->glEnableVertexAttribArray(2);
-            // gl->glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, 0, nullptr);
-
-            gl->glGenBuffers(1, &renderShape.ibo);
             gl->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, renderShape.ibo);
             gl->glBufferData(GL_ELEMENT_ARRAY_BUFFER, renderShape.indices.size() * sizeof(uint32_t), renderShape.indices.data(), GL_STATIC_DRAW);
 
@@ -166,26 +152,17 @@ void ModelRenderer::update_buffers(Model* model)
             renderShapes.push_back(renderShape);
         }
     }
+}
 
-    /*
-    gl->glBindVertexArray(vao);
+void ModelRenderer::clearRenderShapes()
+{
+    for (RenderShape renderShape : renderShapes) {
+        gl->glDeleteVertexArrays(1, &renderShape.vao);
+        gl->glDeleteBuffers(1, &renderShape.vbo);
+        gl->glDeleteBuffers(1, &renderShape.ibo);
+    }
 
-    // Coords
-    gl->glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    gl->glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(QVector3D), vertices.data(), GL_STATIC_DRAW);
-
-    // Normals
-    gl->glBindBuffer(GL_ARRAY_BUFFER, nbo);
-    gl->glBufferData(GL_ARRAY_BUFFER, normals.size() * sizeof(QVector3D), normals.data(), GL_STATIC_DRAW);
-
-    // Indices
-    gl->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-    gl->glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(uint32_t), indices.data(), GL_STATIC_DRAW);
-
-    gl->glBindVertexArray(0);
-
-    render_size = indices.size();
-    */
+    renderShapes.clear();
 }
 
 /**
@@ -219,7 +196,7 @@ void ModelRenderer::render()
     gl->glEnable(GL_PROGRAM_POINT_SIZE);
 
     // gl->glDepthFunc(GL_LEQUAL);
-    gl->glPolygonMode(GL_POINT, GL_FILL);
+    gl->glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
     // gl->glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     // gl->glEnable(GL_POLYGON_OFFSET_FILL);
     // gl->glPolygonOffset(1, 1);
@@ -248,6 +225,8 @@ void ModelRenderer::render()
         drawMaterial(*normalsMat);
     }
 
+    // gl->glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
+
     if (settings->showShapes && renderShapes.size() > 0)
     {
         for (const RenderShape &shape : renderShapes)
@@ -275,7 +254,8 @@ void ModelRenderer::drawShape(RenderShape const renderShape)
     shapeMat->bind();
     {
         gl->glBindVertexArray(renderShape.vao);
-        gl->glDrawElements(GL_POINTS, renderShape.indices.size(), GL_UNSIGNED_INT, &renderShape.indices);
+        gl->glDrawArrays(GL_POINTS, 0, renderShape.vertices.size());
+        // gl->glDrawElements(GL_TRIANGLES, renderShape.indices.size(), GL_UNSIGNED_INT, nullptr);
         gl->glBindVertexArray(0);
     }
     shapeMat->release();

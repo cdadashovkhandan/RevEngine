@@ -114,18 +114,20 @@ RenderShape Plane::getRenderShape() const
 
     renderShape.vertices = verts;
 
+    renderShape.indices = { 0, 1, 3, 1, 2, 3 };
     return renderShape;
 }
 
 std::vector<Eigen::Vector3f> Plane::getBaseVertices() const
 {
-    std::vector<Eigen::Vector3f> vertices(4);
+    std::vector<Eigen::Vector3f> vertices;
 
     // Unit plane projected on xy plane.
-    vertices.push_back(Eigen::Vector3f(0, 0, 0));
-    vertices.push_back(Eigen::Vector3f(1, 0, 0));
-    vertices.push_back(Eigen::Vector3f(1, 1, 0));
-    vertices.push_back(Eigen::Vector3f(0, 1, 0));
+    vertices.push_back(Eigen::Vector3f(0.5f, 0.5f, 0.0f)); // top right
+    vertices.push_back(Eigen::Vector3f(0.5f, 0.0f, 0.0f)); // bottom right
+    vertices.push_back(Eigen::Vector3f(0.0f, 0.0f, 0.0f)); // bottom left
+    vertices.push_back(Eigen::Vector3f(0.0f, 0.5f, 0.0f)); // top left
+
 
     return vertices;
 }

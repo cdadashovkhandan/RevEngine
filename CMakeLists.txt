@@ -55,6 +55,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         Util.h
         primitives/RenderShape.h
         materials/ShapeMaterial.h materials/ShapeMaterial.cpp
+        resources/shaders/shape.frag  resources/shaders/shape.vert
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET RevEngine APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR

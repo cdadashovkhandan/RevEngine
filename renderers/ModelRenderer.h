@@ -37,13 +37,15 @@ private:
     Material* normalsMat { nullptr };
     Material* worldMat { nullptr };
 
-    Material* shapeMat { nullptr};
+    Material* shapeMat { nullptr };
 
     void drawMaterial(Material &material);
 
     void drawShape(RenderShape const renderShape);
 
     QColor clusterColors[CLUSTER_COLOR_COUNT] { QColorConstants::Svg::red, QColorConstants::Svg::green, QColorConstants::Svg::cyan, QColorConstants::Svg::magenta, QColorConstants::Svg::yellow };
+
+    void clearRenderShapes();
 };
 
 #endif // MODELRENDERER_H

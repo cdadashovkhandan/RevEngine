@@ -8,8 +8,8 @@
 struct RenderShape
 {
     GLuint vao;
+
     GLuint vbo;
-    GLuint nbo; // TODO: maybe not necessary?
     GLuint ibo;
 
     std::vector<uint32_t> indices;
