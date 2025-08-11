@@ -123,10 +123,10 @@ std::vector<Eigen::Vector3f> Plane::getBaseVertices() const
     std::vector<Eigen::Vector3f> vertices;
 
     // Unit plane projected on xy plane.
-    vertices.push_back(Eigen::Vector3f(0.25f, 0.25f, 0.0f)); // top right
+    vertices.push_back(Eigen::Vector3f(0.5f, 0.25f, 0.0f)); // top right
     vertices.push_back(Eigen::Vector3f(0.25f, 0.0f, 0.0f)); // bottom right
     vertices.push_back(Eigen::Vector3f(0.0f, 0.0f, 0.0f)); // bottom left
-    vertices.push_back(Eigen::Vector3f(0.0f, 0.25f, 0.0f)); // top left
+    vertices.push_back(Eigen::Vector3f(0.0f, 0.7f, 0.0f)); // top left
 
 
     return vertices;

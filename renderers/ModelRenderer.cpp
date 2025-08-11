@@ -132,10 +132,11 @@ void ModelRenderer::update_buffers(Model* model)
             std::shared_ptr<RenderShape> renderShape = shape->getRenderShape();
 
             gl->glGenVertexArrays(1, &renderShape->vao);
-            gl->glGenBuffers(1, &renderShape->vbo);
-            gl->glGenBuffers(1, &renderShape->ibo);
+
 
             gl->glBindVertexArray(renderShape->vao);
+            gl->glGenBuffers(1, &renderShape->vbo);
+            gl->glGenBuffers(1, &renderShape->ibo);
 
             gl->glBindBuffer(GL_ARRAY_BUFFER, renderShape->vbo);
             gl->glBufferData(GL_ARRAY_BUFFER, renderShape->vertices.size() * sizeof(Eigen::Vector3f),
@@ -144,14 +145,12 @@ void ModelRenderer::update_buffers(Model* model)
             gl->glEnableVertexAttribArray(0);
             gl->glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
 
-
-
             gl->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, renderShape->ibo);
-            gl->glBufferData(GL_ELEMENT_ARRAY_BUFFER, renderShape->indices.size() * sizeof(uint32_t), renderShape->indices.data(), GL_STATIC_DRAW);
+            gl->glBufferData(GL_ELEMENT_ARRAY_BUFFER, renderShape->indices.size() * sizeof(int32_t), renderShape->indices.data(), GL_STATIC_DRAW);
 
 
-            // Eigen::Vector3f data[renderShape->vertices.size()];
-            // gl->glGetBufferSubData(GL_ARRAY_BUFFER, 0, renderShape->vertices.size() * sizeof(Eigen::Vector3f), data);
+            // int32_t data[renderShape->indices.size()];
+            // gl->glGetBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, renderShape->indices.size() * sizeof(int32_t), data);
 
             gl->glBindVertexArray(0);
 
@@ -227,7 +226,7 @@ void ModelRenderer::render()
     //TODO: this is a bit weird. Scene->model is not used in updateBuffers, so this seems kind of disconnected and flimsy.
     if (settings->showNormals && scene->model->normals != nullptr)
     {
-     //   gl->glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        //   gl->glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         drawMaterial(*normalsMat);
     }
 
@@ -261,10 +260,13 @@ void ModelRenderer::drawShape(std::shared_ptr<RenderShape> const renderShape)
     {
         gl->glBindVertexArray(renderShape->vao);
 
-        // Eigen::Vector3f data[renderShape->vertices.size()];
-        // gl->glGetBufferSubData(GL_ARRAY_BUFFER, 0, renderShape->vertices.size() * sizeof(Eigen::Vector3f), data);
+        gl->glBindBuffer(GL_ARRAY_BUFFER, renderShape->vbo);
+        gl->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, renderShape->ibo);
 
-        // gl->glDrawArrays(GL_POINTS, 0, renderShape->vertices.size());
+        // uint32_t data[renderShape->indices.size()];
+        // gl->glGetBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, renderShape->indices.size() * sizeof(uint32_t), data);
+
+        gl->glDrawArrays(GL_POINTS, 0, renderShape->vertices.size());
         gl->glDrawElements(GL_TRIANGLES, renderShape->indices.size(), GL_UNSIGNED_INT, nullptr);
 
         GLenum err = gl->glGetError();
