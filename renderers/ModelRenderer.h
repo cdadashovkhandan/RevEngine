@@ -31,7 +31,9 @@ private:
     GLuint ibo;
     int render_size = 0;
 
-    std::vector<RenderShape> renderShapes;
+    GLuint testVao;
+
+    std::vector<std::shared_ptr<RenderShape>> renderShapes;
 
     Material* pointCloudMat { nullptr };
     Material* normalsMat { nullptr };
@@ -41,7 +43,7 @@ private:
 
     void drawMaterial(Material &material);
 
-    void drawShape(RenderShape const renderShape);
+    void drawShape(std::shared_ptr<RenderShape> const renderShape);
 
     QColor clusterColors[CLUSTER_COLOR_COUNT] { QColorConstants::Svg::red, QColorConstants::Svg::green, QColorConstants::Svg::cyan, QColorConstants::Svg::magenta, QColorConstants::Svg::yellow };
 

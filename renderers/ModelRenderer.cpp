@@ -18,6 +18,8 @@ ModelRenderer::ModelRenderer(QOpenGLFunctions_4_1_Core* gl, Scene* scene)
     shapeMat(new ShapeMaterial(gl))
 {
     gl->glEnable(GL_DEPTH_TEST);
+    // GLuint vertArrays[2] = {vao, renderShape->vao};
+    gl->glGenVertexArrays(1, &vao);
 }
 
 ModelRenderer::~ModelRenderer()
@@ -30,7 +32,6 @@ ModelRenderer::~ModelRenderer()
  */
 void ModelRenderer::initBuffers()
 {
-    gl->glGenVertexArrays(1, &vao);
     gl->glBindVertexArray(vao);
 
     gl->glGenBuffers(1, &vbo);
@@ -128,24 +129,29 @@ void ModelRenderer::update_buffers(Model* model)
         for (PrimitiveShape* shape : *model->shapes)
         {
             qDebug() << "Rendering shape of type " << shape->shapeType;
-            RenderShape renderShape = shape->getRenderShape();
+            std::shared_ptr<RenderShape> renderShape = shape->getRenderShape();
 
-            gl->glGenVertexArrays(1, &renderShape.vao);
-            gl->glGenBuffers(1, &renderShape.vbo);
-            gl->glGenBuffers(1, &renderShape.ibo);
+            gl->glGenVertexArrays(1, &renderShape->vao);
+            gl->glGenBuffers(1, &renderShape->vbo);
+            gl->glGenBuffers(1, &renderShape->ibo);
 
-            gl->glBindVertexArray(renderShape.vao);
+            gl->glBindVertexArray(renderShape->vao);
 
-            gl->glBindBuffer(GL_ARRAY_BUFFER, renderShape.vbo);
+            gl->glBindBuffer(GL_ARRAY_BUFFER, renderShape->vbo);
+            gl->glBufferData(GL_ARRAY_BUFFER, renderShape->vertices.size() * sizeof(Eigen::Vector3f),
+                             renderShape->vertices.data(), GL_STATIC_DRAW);
 
             gl->glEnableVertexAttribArray(0);
             gl->glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
 
-            gl->glBufferData(GL_ARRAY_BUFFER, renderShape.vertices.size() * sizeof(Eigen::Vector3f),
-                             renderShape.vertices.data(), GL_STATIC_DRAW);
 
-            gl->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, renderShape.ibo);
-            gl->glBufferData(GL_ELEMENT_ARRAY_BUFFER, renderShape.indices.size() * sizeof(uint32_t), renderShape.indices.data(), GL_STATIC_DRAW);
+
+            gl->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, renderShape->ibo);
+            gl->glBufferData(GL_ELEMENT_ARRAY_BUFFER, renderShape->indices.size() * sizeof(uint32_t), renderShape->indices.data(), GL_STATIC_DRAW);
+
+
+            // Eigen::Vector3f data[renderShape->vertices.size()];
+            // gl->glGetBufferSubData(GL_ARRAY_BUFFER, 0, renderShape->vertices.size() * sizeof(Eigen::Vector3f), data);
 
             gl->glBindVertexArray(0);
 
@@ -156,10 +162,10 @@ void ModelRenderer::update_buffers(Model* model)
 
 void ModelRenderer::clearRenderShapes()
 {
-    for (RenderShape renderShape : renderShapes) {
-        gl->glDeleteVertexArrays(1, &renderShape.vao);
-        gl->glDeleteBuffers(1, &renderShape.vbo);
-        gl->glDeleteBuffers(1, &renderShape.ibo);
+    for (const std::shared_ptr<RenderShape> &renderShape : renderShapes) {
+        gl->glDeleteVertexArrays(1, &renderShape->vao);
+        gl->glDeleteBuffers(1, &renderShape->vbo);
+        gl->glDeleteBuffers(1, &renderShape->ibo);
     }
 
     renderShapes.clear();
@@ -196,7 +202,7 @@ void ModelRenderer::render()
     gl->glEnable(GL_PROGRAM_POINT_SIZE);
 
     // gl->glDepthFunc(GL_LEQUAL);
-    gl->glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
+    gl->glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     // gl->glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     // gl->glEnable(GL_POLYGON_OFFSET_FILL);
     // gl->glPolygonOffset(1, 1);
@@ -229,7 +235,7 @@ void ModelRenderer::render()
 
     if (settings->showShapes && renderShapes.size() > 0)
     {
-        for (const RenderShape &shape : renderShapes)
+        for (const std::shared_ptr<RenderShape> &shape : renderShapes)
             drawShape(shape);
     }
 }
@@ -249,13 +255,20 @@ void ModelRenderer::drawMaterial(Material &material)
     material.release();
 }
 
-void ModelRenderer::drawShape(RenderShape const renderShape)
+void ModelRenderer::drawShape(std::shared_ptr<RenderShape> const renderShape)
 {
     shapeMat->bind();
     {
-        gl->glBindVertexArray(renderShape.vao);
-        gl->glDrawArrays(GL_POINTS, 0, renderShape.vertices.size());
-        // gl->glDrawElements(GL_TRIANGLES, renderShape.indices.size(), GL_UNSIGNED_INT, nullptr);
+        gl->glBindVertexArray(renderShape->vao);
+
+        // Eigen::Vector3f data[renderShape->vertices.size()];
+        // gl->glGetBufferSubData(GL_ARRAY_BUFFER, 0, renderShape->vertices.size() * sizeof(Eigen::Vector3f), data);
+
+        // gl->glDrawArrays(GL_POINTS, 0, renderShape->vertices.size());
+        gl->glDrawElements(GL_TRIANGLES, renderShape->indices.size(), GL_UNSIGNED_INT, nullptr);
+
+        GLenum err = gl->glGetError();
+        if (err != GL_NO_ERROR) qDebug() << "OpenGL error:" << err;
         gl->glBindVertexArray(0);
     }
     shapeMat->release();

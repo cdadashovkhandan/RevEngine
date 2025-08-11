@@ -106,15 +106,15 @@ float Plane::calculateMFE(pcl::PointCloud<pcl::PointXYZ>::Ptr const cloud)
     return mfe;
 }
 
-RenderShape Plane::getRenderShape() const
+std::shared_ptr<RenderShape> Plane::getRenderShape() const
 {
-    RenderShape renderShape;
+    std::shared_ptr<RenderShape> renderShape(new RenderShape());
 
     auto verts = getBaseVertices();
 
-    renderShape.vertices = verts;
+    renderShape->vertices = verts;
 
-    renderShape.indices = { 0, 1, 3, 1, 2, 3 };
+    renderShape->indices = { 0, 1, 3, 1, 2, 3 };
     return renderShape;
 }
 
@@ -123,10 +123,10 @@ std::vector<Eigen::Vector3f> Plane::getBaseVertices() const
     std::vector<Eigen::Vector3f> vertices;
 
     // Unit plane projected on xy plane.
-    vertices.push_back(Eigen::Vector3f(0.5f, 0.5f, 0.0f)); // top right
-    vertices.push_back(Eigen::Vector3f(0.5f, 0.0f, 0.0f)); // bottom right
+    vertices.push_back(Eigen::Vector3f(0.25f, 0.25f, 0.0f)); // top right
+    vertices.push_back(Eigen::Vector3f(0.25f, 0.0f, 0.0f)); // bottom right
     vertices.push_back(Eigen::Vector3f(0.0f, 0.0f, 0.0f)); // bottom left
-    vertices.push_back(Eigen::Vector3f(0.0f, 0.5f, 0.0f)); // top left
+    vertices.push_back(Eigen::Vector3f(0.0f, 0.25f, 0.0f)); // top left
 
 
     return vertices;

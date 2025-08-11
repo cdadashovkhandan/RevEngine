@@ -31,7 +31,7 @@ public:
     virtual std::vector<ParamPair> buildParameters(std::vector<pcl::PointXYZ, Eigen::aligned_allocator<pcl::PointXYZ>> const points, float const maxMagnitude) const = 0;
     virtual bool isIntersecting(pcl::PointXYZ const point, std::vector<float> const params, float const maxMagnitude) const = 0;
 
-    virtual RenderShape getRenderShape() const = 0;
+    virtual std::shared_ptr<RenderShape> getRenderShape() const = 0;
 protected:
     virtual std::vector<Eigen::Vector3f> getBaseVertices() const = 0;
 };
