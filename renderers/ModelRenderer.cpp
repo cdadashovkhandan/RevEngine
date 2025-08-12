@@ -251,6 +251,11 @@ void ModelRenderer::drawMaterial(Material &material)
 
         // gl->glBindBuffer(GL_ARRAY_BUFFER, vbo);
 
+        gl->glBindBuffer(GL_ARRAY_BUFFER, vbo);
+        gl->glEnableVertexAttribArray(0);
+        gl->glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, nullptr);
+
+
         gl->glDrawArrays(GL_POINTS, 0, render_size);
         gl->glBindVertexArray(0);
     }
@@ -264,6 +269,9 @@ void ModelRenderer::drawShape(std::shared_ptr<RenderShape> const renderShape)
         gl->glBindVertexArray(renderShape->vao);
 
         gl->glBindBuffer(GL_ARRAY_BUFFER, renderShape->vbo);
+        gl->glEnableVertexAttribArray(0);
+        gl->glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
+
         gl->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, renderShape->ibo);
 
         // uint32_t data[renderShape->indices.size()];
