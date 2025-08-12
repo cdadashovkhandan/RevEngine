@@ -26,7 +26,8 @@ public:
     void recalculateClusters(Model* model);
     void recalculateNormals(Model* model);
     //TODO: return type is questionable
-    Model* generateMesh(Model& model) const;
+    Model* preprocessModel(Model& model) const;
+    Model *recognizeShapes(Model &model) const;
 };
 
 #endif // MODELMANAGER_H

@@ -59,6 +59,8 @@ private slots:
 
     void on_forceRansacCheckBox_toggled(bool checked);
 
+    void on_recognizeShapesButton_clicked();
+
 private:
     Ui::MainWindow *ui;
     ModelManager* modelManager;

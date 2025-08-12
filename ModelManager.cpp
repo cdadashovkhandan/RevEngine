@@ -75,9 +75,21 @@ void ModelManager::recalculateNormals(Model *model)
  * @param model
  * @return
  */
-Model *ModelManager::generateMesh(Model& model) const
+Model *ModelManager::preprocessModel(Model& model) const
 {
-    cadConverter->convertModel(model);
+    cadConverter->preprocess(model);
+
+    return &model;
+}
+
+/**
+ * @brief ModelManager::generateMesh Generate a B-Rep representation out of a Model's Point Cloud.
+ * @param model
+ * @return
+ */
+Model *ModelManager::recognizeShapes(Model& model) const
+{
+    cadConverter->recognizeShapes(model);
 
     return &model;
 }

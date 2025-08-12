@@ -28,7 +28,7 @@
     <property name="geometry">
      <rect>
       <x>680</x>
-      <y>400</y>
+      <y>500</y>
       <width>261</width>
       <height>16</height>
      </rect>
@@ -41,7 +41,7 @@
     <property name="geometry">
      <rect>
       <x>680</x>
-      <y>380</y>
+      <y>480</y>
       <width>81</width>
       <height>17</height>
      </rect>
@@ -70,7 +70,7 @@
     <property name="geometry">
      <rect>
       <x>680</x>
-      <y>340</y>
+      <y>380</y>
       <width>201</width>
       <height>25</height>
      </rect>
@@ -89,7 +89,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Convert</string>
+     <string>Preprocess</string>
     </property>
    </widget>
    <widget class="Line" name="line_2">
@@ -125,7 +125,7 @@
     <property name="geometry">
      <rect>
       <x>680</x>
-      <y>420</y>
+      <y>520</y>
       <width>261</width>
       <height>131</height>
      </rect>
@@ -650,6 +650,19 @@
     </property>
     <property name="text">
      <string>Shapes to recognze:</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="recognizeShapesButton">
+    <property name="geometry">
+     <rect>
+      <x>680</x>
+      <y>340</y>
+      <width>201</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Recognize Shapes</string>
     </property>
    </widget>
   </widget>

@@ -21,12 +21,13 @@ CADConverter::CADConverter(Settings* s)
 }
 
 /**
- * @brief CADConverter::convertModel Generate a B-rep CAD model from a Model's Point Cloud
+ * @brief CADConverter::preprocess Generate a B-rep CAD model from a Model's Point Cloud
  * @param model
  * @return
  */
-Model* CADConverter::convertModel(Model& model) const
+Model* CADConverter::preprocess(Model& model) const
 {
+    qDebug("Begin preprocessing...");
     // Main function for everything:
 
     // I. Preprocessing
@@ -82,6 +83,22 @@ Model* CADConverter::convertModel(Model& model) const
     // temp code to get indices of all points
     model.pointIndices = cluster(cloudPtr); // TODO: temporary!
 
+
+
+    // Pick best shapes across primitive families
+
+    //III. Segmentation
+
+    // model.pointIndices = cluster(cloudPtr);
+    qDebug("Preprocessing completed.");
+    return &model;
+}
+
+Model* CADConverter::recognizeShapes(Model& model) const
+{
+    qDebug("Begin shape recognition...");
+    PointCloud::Ptr cloudPtr = model.pointCloud;
+
     // Recognize shapes for each family
     std::vector<PrimitiveShape*> shapeCandidates;
     model.shapes = new std::vector<PrimitiveShape*>();
@@ -104,14 +121,7 @@ Model* CADConverter::convertModel(Model& model) const
         }
     }
 
-
-
-    // Pick best shapes across primitive families
-
-    //III. Segmentation
-
-    // model.pointIndices = cluster(cloudPtr);
-
+    qDebug("Shape recognition completed.");
     return &model;
 }
 
@@ -177,7 +187,6 @@ void CADConverter::shrink(PointCloud::Ptr cloud) const
 
     qDebug() << "New min point: (" << newMinPoint.x() << ", " <<  newMinPoint.y() << ", " << newMinPoint.z() << ")";
     qDebug() << "New max point: (" << newMaxPoint.x() << ", " <<  newMaxPoint.y() << ", " << newMaxPoint.z() << ")";
-
 }
 
 /**

@@ -31,7 +31,7 @@ void MainWindow::on_importModelButton_clicked()
 
 void MainWindow::on_convertModelButton_clicked()
 {
-    Model* model = modelManager->generateMesh(*modelManager->getActiveModel());
+    Model* model = modelManager->preprocessModel(*modelManager->getActiveModel());
     ui->viewport->showModel(model);
 }
 
@@ -155,5 +155,12 @@ void MainWindow::on_toggleShapesCheckBox_toggled(bool checked)
 void MainWindow::on_forceRansacCheckBox_toggled(bool checked)
 {
     settings.forceRansac = checked;
+}
+
+
+void MainWindow::on_recognizeShapesButton_clicked()
+{
+    Model* model = modelManager->recognizeShapes(*modelManager->getActiveModel());
+    ui->viewport->showModel(model);
 }
 
