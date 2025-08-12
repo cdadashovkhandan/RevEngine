@@ -67,7 +67,7 @@ Model* CADConverter::convertModel(Model& model) const
             ? getNormals(cloudPtr)
             : getNormals(cloudPtrDownsampled);
 
-    // if (model.normals->size() > 3)
+    // if (model.normals->size() > 0)
     // {
     //     alignCloudWithZAxis(cloudPtr, *model.normals);
     // }
@@ -85,19 +85,22 @@ Model* CADConverter::convertModel(Model& model) const
     // Recognize shapes for each family
     std::vector<PrimitiveShape*> shapeCandidates;
     model.shapes = new std::vector<PrimitiveShape*>();
-    for (std::pair<const PrimitiveType, bool> pair : settings->primitiveTypes) {
-        if (pair.second) // The primitive is active
-        {
-            PrimitiveShape* shape = getShape(pair.first);
+    if (model.pointIndices->size() > 0) // TODO: this is temporary. Should be a for loop going through clusters, inside the for loop below
+    {
+        for (std::pair<const PrimitiveType, bool> pair : settings->primitiveTypes) {
+            if (pair.second) // The primitive is active
+            {
+                PrimitiveShape* shape = getShape(pair.first);
 
-            std::vector<float> params = shape->getBestFit(cloudPtr, model.pointIndices->at(0));
+                std::vector<float> params = shape->getBestFit(cloudPtr, model.pointIndices->at(0));
 
-            shapeCandidates.push_back(shape);
+                shapeCandidates.push_back(shape);
 
-            shape->calculateMFE(cloudPtr);
-            model.shapes->push_back(shape); // TODO: temporary
+                shape->calculateMFE(cloudPtr);
+                model.shapes->push_back(shape); // TODO: temporary
 
-            qDebug() << "Shape found. Indices: " << shape->pointIndices->indices.size() << " Params: " << shape->parameters << "MFE: " << shape->mfe;
+                qDebug() << "Shape found. Indices: " << shape->pointIndices->indices.size() << " Params: " << shape->parameters << "MFE: " << shape->mfe;
+            }
         }
     }
 

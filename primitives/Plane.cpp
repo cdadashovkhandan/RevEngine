@@ -115,10 +115,15 @@ std::shared_ptr<RenderShape> Plane::getRenderShape() const
     Eigen::Vector3f normal = getNormal();
 
 
+    // Eigen::Vector3f centroid = std::accumulate(verts.begin(), verts.end(), Eigen::Vector3f(0.0f,0.0f,0.0f)) / (float) verts.size();
+
+
+    Eigen::Vector3f axis = (Eigen::Vector3f::UnitZ()).cross(normal);
+
+    float angle = qAcos(Eigen::Vector3f::UnitZ().dot(normal));
+    axis.normalize();
     for (Eigen::Vector3f& vert : verts)
     {
-        Eigen::Vector3f axis = vert.cross(normal);
-        float angle = qAcos(vert.dot(normal));
         Eigen::Quaternionf quat;
         quat = Eigen::AngleAxisf(angle, axis);
         vert = quat * vert;
@@ -138,9 +143,9 @@ std::vector<Eigen::Vector3f> Plane::getBaseVertices() const
     float scale = 0.5f;
     // Unit plane projected on xy plane.
     vertices.push_back(Eigen::Vector3f(scale, scale, 0.0f)); // top right
-    vertices.push_back(Eigen::Vector3f(scale, 0.0f, 0.0f)); // bottom right
-    vertices.push_back(Eigen::Vector3f(0.0f, 0.0f, 0.0f)); // bottom left
-    vertices.push_back(Eigen::Vector3f(0.0f, scale, 0.0f)); // top left
+    vertices.push_back(Eigen::Vector3f(scale, -scale, 0.0f)); // bottom right
+    vertices.push_back(Eigen::Vector3f(-scale, -scale, 0.0f)); // bottom left
+    vertices.push_back(Eigen::Vector3f(-scale, scale, 0.0f)); // top left
 
 
     return vertices;
