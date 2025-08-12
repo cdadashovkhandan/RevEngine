@@ -13,6 +13,7 @@ find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets OpenGLWidgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS OpenGL)
 find_package(PCL 1.15 REQUIRED)
+find_package(OpenMP)
 
 set(PROJECT_SOURCES
         main.cpp
@@ -85,6 +86,15 @@ target_link_libraries(RevEngine
     ${PCL_FILTERS_LIBRARIES}
     ${PCL_FEATURES_LIBRARIES}
     ${PCL_SEGMENTATION_LIBRARIES})
+
+if(OpenMP_CXX_FOUND)
+    target_link_libraries(RevEngine
+        PUBLIC
+        OpenMP::OpenMP_CXX
+    )
+else()
+    message(SEND_ERROR "OpenMP not found!")
+endif()
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
 # If you are developing for iOS or macOS you should consider setting an

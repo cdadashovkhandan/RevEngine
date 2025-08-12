@@ -2,6 +2,7 @@
 #include <QtMath>
 #include <QDebug>
 #include <Util.h>
+#include <QtMath>
 
 Plane::Plane() {
     shapeType = PrimitiveType::PLANE;
@@ -17,17 +18,23 @@ std::vector<ParamPair> Plane::buildParameters(std::vector<pcl::PointXYZ, Eigen::
     // Rho: from 0 to the largest magnitude across points increments of rho/50
 
     std::vector<ParamPair> output;
-    for (float theta = 0; theta < 2 * M_PI; ++theta)
+    qDebug() << "Building Parameters for Hough Transform...";
+    qDebug() << "Max Magnitude: " << maxMagnitude;
+    for (int theta = 0; theta < 360; ++theta)
     {
-        for(float phi = 0; phi <= M_PI; ++phi)
+        for (int phi = 0; phi <= 180; ++phi)
         {
             for(float rho = 0; rho <= maxMagnitude; rho += maxMagnitude / 50.0f)
             {
-                std::vector<float> params({theta, phi, rho});
+                float phi_rad = qDegreesToRadians(phi);
+                float theta_rad = qDegreesToRadians(theta);
+                std::vector<float> params({theta_rad, phi_rad, rho});
                 output.push_back(ParamPair(pcl::PointIndices::Ptr(new pcl::PointIndices), params));
             }
         }
     }
+
+    qDebug() << "Parameters built: " << output.size();
     return output;
 }
 
@@ -43,6 +50,9 @@ bool Plane::isIntersecting(pcl::PointXYZ const point, std::vector<float> const p
     float eqn = point.x * qCos(tht) * qSin(phi)
                 + point.y * qSin(tht) * qSin(phi)
                 + point.z * qCos(phi);
+
+
+    //a(j)-X(:,1)*cos(b(k))*sin(c(h))-X(:,2)*sin(c(h))*sin(b(k))-X(:,3)*cos(c(h))
 
     // TODO: might need epsilon value
     // qDebug() << eqn;

@@ -29,6 +29,8 @@ std::vector<float> PrimitiveShape::getBestFit(pcl::PointCloud<pcl::PointXYZ>::Pt
     for (int const index : indices->indices)
     {
         pcl::PointXYZ const point = cloud->points[index];
+
+#pragma omp parallel for
         for (ParamPair& pair : params)
         {
             if (isIntersecting(point, pair.second, maxMagnitude))

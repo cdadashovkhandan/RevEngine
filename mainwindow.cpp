@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
 #include <QFileDialog>
+#include <omp.h>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -10,6 +11,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     ui->viewport->settings = &settings;
     modelManager = new ModelManager(&settings);
+    omp_set_num_threads(8);
 }
 
 MainWindow::~MainWindow()
