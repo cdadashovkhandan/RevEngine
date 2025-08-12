@@ -112,6 +112,19 @@ std::shared_ptr<RenderShape> Plane::getRenderShape() const
 
     auto verts = getBaseVertices();
 
+    Eigen::Vector3f normal = getNormal();
+
+
+    for (Eigen::Vector3f& vert : verts)
+    {
+        Eigen::Vector3f axis = vert.cross(normal);
+        float angle = qAcos(vert.dot(normal));
+        Eigen::Quaternionf quat;
+        quat = Eigen::AngleAxisf(angle, axis);
+        vert = quat * vert;
+    }
+
+
     renderShape->vertices = verts;
 
     renderShape->indices = { 0, 1, 3, 1, 2, 3 };
@@ -122,7 +135,6 @@ std::vector<Eigen::Vector3f> Plane::getBaseVertices() const
 {
     std::vector<Eigen::Vector3f> vertices;
 
-
     float scale = 0.5f;
     // Unit plane projected on xy plane.
     vertices.push_back(Eigen::Vector3f(scale, scale, 0.0f)); // top right
@@ -132,4 +144,21 @@ std::vector<Eigen::Vector3f> Plane::getBaseVertices() const
 
 
     return vertices;
+}
+
+Eigen::Vector3f Plane::getNormal() const
+{
+    float tht = parameters[0]; //theta
+    float phi = parameters[1];
+    float rho = parameters[2];
+
+
+    float a = qCos(tht)*qSin(phi);
+    float b = qSin(phi)*qSin(tht);
+    float c = qCos(phi);
+
+    Eigen::Vector3f normal(a, b, c);
+    normal.normalize();
+
+    return normal;
 }

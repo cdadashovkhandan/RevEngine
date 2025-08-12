@@ -17,6 +17,8 @@ public:
 protected:
     std::vector<float> getDistancesToPoints() const;
     std::vector<Eigen::Vector3f> getBaseVertices() const override;
+private:
+    Eigen::Vector3f getNormal() const;
 };
 
 #endif // PLANE_H
