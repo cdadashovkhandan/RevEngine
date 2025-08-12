@@ -149,3 +149,9 @@ void MainWindow::on_toggleShapesCheckBox_toggled(bool checked)
     ui->viewport->update();
 }
 
+
+void MainWindow::on_forceRansacCheckBox_toggled(bool checked)
+{
+    settings.forceRansac = checked;
+}
+

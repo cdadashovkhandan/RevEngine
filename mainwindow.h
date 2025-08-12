@@ -57,6 +57,8 @@ private slots:
 
     void on_toggleShapesCheckBox_toggled(bool checked);
 
+    void on_forceRansacCheckBox_toggled(bool checked);
+
 private:
     Ui::MainWindow *ui;
     ModelManager* modelManager;

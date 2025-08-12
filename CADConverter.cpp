@@ -209,7 +209,7 @@ std::vector<pcl::PointIndices::Ptr>* CADConverter::cluster(PointCloud::Ptr input
     bool useRansac = false; // TODO: move to settings or create proper condition
 
     std::vector<pcl::PointIndices::Ptr>* cluster_indices;
-    if (useRansac) // Partially adapted from https://stackoverflow.com/questions/46826720/pclransac-segmentation-get-all-planes-in-cloud
+    if (useRansac || settings->forceRansac) // Partially adapted from https://stackoverflow.com/questions/46826720/pclransac-segmentation-get-all-planes-in-cloud
     {
         //TODO: maybe move to a separate method ?
         qDebug("Clustering with RANSAC...");
