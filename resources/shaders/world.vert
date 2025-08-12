@@ -3,7 +3,7 @@
 
 layout(location = 0) in vec4 vert_coords_vs;
 layout(location = 1) in vec3 vert_color_vs;
-layout(location = 2) in vec4 vert_normal_vs;
+layout(location = 2) in vec3 vert_normal_vs;
 
 uniform mat4 model_matrix;
 uniform mat4 view_matrix;

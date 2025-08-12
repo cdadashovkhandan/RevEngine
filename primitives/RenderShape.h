@@ -12,7 +12,7 @@ struct RenderShape
     GLuint vbo;
     GLuint ibo;
 
-    std::vector<int32_t> indices;
+    std::vector<uint32_t> indices;
     std::vector<Eigen::Vector3f> vertices;
 };
 

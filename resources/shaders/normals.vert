@@ -3,7 +3,7 @@
 
 layout(location = 0) in vec4 vert_coords_vs;
 layout(location = 1) in vec3 vert_color_vs;
-layout(location = 2) in vec4 vert_normal_vs;
+layout(location = 2) in vec3 vert_normal_vs;
 
 out VS_OUT {
     vec3 normal;
@@ -21,6 +21,6 @@ void main() {
     mat4 view_model = view_matrix * model_matrix;
 
     gl_Position = proj_matrix * view_model * vert_coords;
-    vs_out.normal = normalize(normal_matrix * normalize(vert_normal_vs.xyz));
+    vs_out.normal = normalize(normal_matrix * normalize(vert_normal_vs));
 
 }

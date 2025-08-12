@@ -47,10 +47,10 @@ void ModelRenderer::initBuffers()
     gl->glGenBuffers(1, &nbo);
     gl->glBindBuffer(GL_ARRAY_BUFFER, nbo);
     gl->glEnableVertexAttribArray(2);
-    gl->glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, 0, nullptr);
+    gl->glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
 
-    gl->glGenBuffers(1, &ibo);
-    gl->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+    // gl->glGenBuffers(1, &ibo);
+    // gl->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
 
     gl->glBindVertexArray(0);
 }
@@ -62,34 +62,34 @@ void ModelRenderer::initBuffers()
 void ModelRenderer::update_buffers(Model* model)
 {
     // Point Cloud
+    gl->glBindVertexArray(vao);
 
     if (settings->showPointCloud)
     {
-        std::vector<pcl::PointXYZ, Eigen::aligned_allocator<pcl::PointXYZ>> points =
-            model->pointCloud->points;
+        // std::vector<pcl::PointXYZ, Eigen::aligned_allocator<pcl::PointXYZ>> points =
+        //     model->pointCloud->points;
 
-        gl->glBindVertexArray(vao);
 
         // Coords
         gl->glBindBuffer(GL_ARRAY_BUFFER, vbo);
-        gl->glBufferData(GL_ARRAY_BUFFER, points.size() * sizeof(pcl::PointXYZ),
-                         points.data(), GL_STATIC_DRAW);
+        gl->glBufferData(GL_ARRAY_BUFFER, model->pointCloud->points.size() * sizeof(pcl::PointXYZ),
+                         model->pointCloud->points.data(), GL_STATIC_DRAW);
 
-        gl->glBindVertexArray(0);
-        render_size = points.size();
+        // gl->glBindVertexArray(0);
+        render_size = model->pointCloud->points.size();
     }
 
     // Normals
     if (model->normals != nullptr)
     {
-        gl->glBindVertexArray(vao);
+        // gl->glBindVertexArray(vao);
 
         // Normals
         gl->glBindBuffer(GL_ARRAY_BUFFER, nbo);
         gl->glBufferData(GL_ARRAY_BUFFER, model->normals->size() * sizeof(Eigen::Vector3f),
                          model->normals->data(), GL_STATIC_DRAW);
 
-        gl->glBindVertexArray(0);
+        // gl->glBindVertexArray(0);
     }
 
     // Cluster Colors
@@ -114,7 +114,7 @@ void ModelRenderer::update_buffers(Model* model)
     else
         std::fill(colors.begin(), colors.end(), 1.0f); // initialize to white
 
-    gl->glBindVertexArray(vao);
+    // gl->glBindVertexArray(vao);
 
     // Colors
     gl->glBindBuffer(GL_ARRAY_BUFFER, vbo_colors);
@@ -146,11 +146,11 @@ void ModelRenderer::update_buffers(Model* model)
             gl->glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
 
             gl->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, renderShape->ibo);
-            gl->glBufferData(GL_ELEMENT_ARRAY_BUFFER, renderShape->indices.size() * sizeof(int32_t), renderShape->indices.data(), GL_STATIC_DRAW);
+            gl->glBufferData(GL_ELEMENT_ARRAY_BUFFER, renderShape->indices.size() * sizeof(uint32_t), renderShape->indices.data(), GL_STATIC_DRAW);
 
 
-            // int32_t data[renderShape->indices.size()];
-            // gl->glGetBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, renderShape->indices.size() * sizeof(int32_t), data);
+            // uint32_t data[renderShape->indices.size()];
+            // gl->glGetBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, renderShape->indices.size() * sizeof(uint32_t), data);
 
             gl->glBindVertexArray(0);
 
@@ -248,6 +248,9 @@ void ModelRenderer::drawMaterial(Material &material)
     material.bind();
     {
         gl->glBindVertexArray(vao);
+
+        // gl->glBindBuffer(GL_ARRAY_BUFFER, vbo);
+
         gl->glDrawArrays(GL_POINTS, 0, render_size);
         gl->glBindVertexArray(0);
     }
@@ -266,7 +269,7 @@ void ModelRenderer::drawShape(std::shared_ptr<RenderShape> const renderShape)
         // uint32_t data[renderShape->indices.size()];
         // gl->glGetBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, renderShape->indices.size() * sizeof(uint32_t), data);
 
-        gl->glDrawArrays(GL_POINTS, 0, renderShape->vertices.size());
+        // gl->glDrawArrays(GL_POINTS, 0, renderShape->vertices.size());
         gl->glDrawElements(GL_TRIANGLES, renderShape->indices.size(), GL_UNSIGNED_INT, nullptr);
 
         GLenum err = gl->glGetError();
