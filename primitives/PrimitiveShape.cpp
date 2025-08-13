@@ -22,7 +22,6 @@ std::vector<float> PrimitiveShape::getBestFit(pcl::PointCloud<pcl::PointXYZ>::Pt
     std::vector<ParamPair> params = buildParameters(filteredCloud->points, maxMagnitude);
 
     // Value for best fit chosen by having max votes
-    // TODO: this is naive.
     ParamPair* bestFit = nullptr;
 
     // for (pcl::PointXYZ const point : filteredCloud->points)
@@ -38,8 +37,11 @@ std::vector<float> PrimitiveShape::getBestFit(pcl::PointCloud<pcl::PointXYZ>::Pt
                 pair.first->indices.push_back(index);
 
                 // Check if this is the best fit.
-                    if (bestFit == nullptr || pair.first->indices.size() > bestFit->first->indices.size())
+#pragma omp critical
+                if (bestFit == nullptr || pair.first->indices.size() > bestFit->first->indices.size())
+                {
                     bestFit = &pair;
+                }
             }
         }
     }

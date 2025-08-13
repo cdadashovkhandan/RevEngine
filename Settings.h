@@ -20,7 +20,7 @@ struct Settings
     bool showAxisLines = true;
     bool forceRansac = false;
 
-    float distanceThreshold = 0.73f;
+    float distanceThreshold = 0.05f;
     unsigned int minClusterSize = 50;
     float scaleFactor = 0.01f;
 

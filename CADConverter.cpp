@@ -224,7 +224,6 @@ std::vector<pcl::PointIndices::Ptr>* CADConverter::cluster(PointCloud::Ptr input
         qDebug("Clustering with RANSAC...");
 
         pcl::ModelCoefficients::Ptr coefficients (new pcl::ModelCoefficients);
-        pcl::PointIndices::Ptr inliers (new pcl::PointIndices);
         // Create the segmentation object
         pcl::SACSegmentation<pcl::PointXYZ> seg;
         // Optional
@@ -245,6 +244,7 @@ std::vector<pcl::PointIndices::Ptr>* CADConverter::cluster(PointCloud::Ptr input
         while (cloudCopy->height * cloudCopy->width > original_size * min_percentage/100.0f)
         {
             seg.setInputCloud (cloudCopy);
+            pcl::PointIndices::Ptr inliers (new pcl::PointIndices);
             seg.segment (*inliers, *coefficients);
             cluster_indices->push_back(inliers);
 

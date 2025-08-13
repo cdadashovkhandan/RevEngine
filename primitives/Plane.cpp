@@ -137,6 +137,7 @@ std::shared_ptr<RenderShape> Plane::getRenderShape() const
         Eigen::Quaternionf quat;
         quat = Eigen::AngleAxisf(angle, axis);
         vert = quat * vert;
+        vert += parameters[2] * normal; // move by rho in the direction of the normal
     }
 
 
