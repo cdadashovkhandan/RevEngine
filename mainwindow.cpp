@@ -105,7 +105,7 @@ void MainWindow::on_normalNeighborsSpinBox_valueChanged(int arg1)
 void MainWindow::on_lazyImportButton_clicked()
 {
     // QString fileName = "/home/chingiz/Documents/uni/intproj/Fit4CAD/dataset/training_set/PC6.txt";
-    QString fileName = "/home/chingiz/Documents/uni/intproj/fitting_geometric_primitives/test/pointCloud/pointCloud24.txt";
+    QString fileName = "/home/chingiz/Documents/uni/intproj/fitting_geometric_primitives/test/pointCloud/pointCloud" + QString::number(settings.lazyId) + ".txt";
     Model* model = modelManager->createModel(fileName);
     ui->viewport->showModel(model);
 }
@@ -162,5 +162,11 @@ void MainWindow::on_recognizeShapesButton_clicked()
 {
     Model* model = modelManager->recognizeShapes(*modelManager->getActiveModel());
     ui->viewport->showModel(model);
+}
+
+
+void MainWindow::on_lazyIdSpinBox_valueChanged(int arg1)
+{
+    settings.lazyId = arg1;
 }
 

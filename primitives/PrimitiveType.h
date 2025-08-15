@@ -7,6 +7,7 @@ enum PrimitiveType {
     SPHERE,
     TORUS,
     CONE,
+    CIRCLE // Assisting shape, should not be recognized on its own.
 };
 
 #endif // PRIMITIVETYPE_H

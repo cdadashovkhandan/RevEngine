@@ -61,6 +61,8 @@ private slots:
 
     void on_recognizeShapesButton_clicked();
 
+    void on_lazyIdSpinBox_valueChanged(int arg1);
+
 private:
     Ui::MainWindow *ui;
     ModelManager* modelManager;
