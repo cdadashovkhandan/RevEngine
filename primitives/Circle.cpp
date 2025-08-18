@@ -8,12 +8,6 @@ Circle::Circle() {
 
 std::vector<ParamPair> Circle::buildParameters(const std::vector<pcl::PointXYZ, Eigen::aligned_allocator<pcl::PointXYZ> > points, const float maxMagnitude) const
 {
-    //Three params: theta, phi, rho
-    // Theta: [0 , 2pi)
-    // Phi: [0, pi]
-    // Rho: from 0 to the largest magnitude across points increments of rho/50
-
-
     // Matlab reference
 
     /*
@@ -41,18 +35,33 @@ std::vector<ParamPair> Circle::buildParameters(const std::vector<pcl::PointXYZ, 
         end
 */
 
-    std::vector<ParamPair> output;
     qDebug() << "Building Parameters for Hough Transform...";
-    qDebug() << "Max Magnitude: " << maxMagnitude;
-    for (int theta = 0; theta < 360; ++theta)
+
+
+    float eps = 0.00000000001f; // TODO: better way to write this?
+
+    float step = 2 * M_PI / 1000;
+
+    std::vector<ParamPair> output;
+
+#pragma omp parallel for
+    for (pcl::PointXYZ point : points)
     {
-        for (int phi = 0; phi <= 180; ++phi)
+        for (float t = 0; t < 2 * M_PI; t += step)
         {
-            for(float rho = 0; rho <= maxMagnitude; rho += maxMagnitude / 50.0f)
+            float cos_t = qCos(t);
+            float sin_t = qSin(t);
+            if (cos_t > eps && sin_t > eps)
             {
-                float phi_rad = qDegreesToRadians(phi);
-                float theta_rad = qDegreesToRadians(theta);
-                std::vector<float> params({theta_rad, phi_rad, rho});
+                Eigen::Matrix2f mat {
+                    {cos_t, 0},
+                    {0, sin_t}
+                };
+                Eigen::Vector2f result = mat.completeOrthogonalDecomposition().pseudoInverse() * point.getVector2fMap();
+
+
+                //TODO: the original implementation put these into NxM matrices to deduce index. Maybe this should too.
+                std::vector<float> params({result[0], result[1]});
                 output.push_back(ParamPair(pcl::PointIndices::Ptr(new pcl::PointIndices), params));
             }
         }
@@ -149,6 +158,9 @@ bool Circle::isIntersecting(const pcl::PointXYZ point, const std::vector<float> 
         end
 */
 
+
+
+    // This should somehow account for limited parameter ranges. Though maybe actually BuildParamereterss should be the one responding.
 }
 
 
