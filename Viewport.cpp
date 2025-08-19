@@ -23,8 +23,8 @@ Viewport::~Viewport()
 }
 
 /**
- * @brief Viewport::showMesh Display a given mesh in the viewport by feeding it into the buffers.
- * @param mesh The mesh to be displayed.
+ * @brief Viewport::showModel Display a given model in the viewport by feeding it into the buffers.
+ * @param mesh The model to be displayed.
  */
 void Viewport::showModel(Model *model)
 {
@@ -86,7 +86,6 @@ void Viewport::mousePressEvent(QMouseEvent* event)
 {
     mouse_buttons = event->buttons();
     mouse_position = event->pos();
-    // qDebug() << "Mouse click at (" << mouse_position.x() << ", " << mouse_position.y() << ")";
 }
 
 void Viewport::mouseMoveEvent(QMouseEvent* event)

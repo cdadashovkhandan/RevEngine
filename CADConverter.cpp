@@ -21,7 +21,7 @@ CADConverter::CADConverter(Settings* s)
 }
 
 /**
- * @brief CADConverter::preprocess Generate a B-rep CAD model from a Model's Point Cloud
+ * @brief preprocess Apply pre-processing steps to Point Cloud (downsampling, normal alignment, clustering)
  * @param model
  * @return
  */
@@ -31,8 +31,6 @@ Model* CADConverter::preprocess(Model& model) const
     // Main function for everything:
 
     // I. Preprocessing
-
-    //TODO: move all the preprocessing to a separate class
 
     PointCloud::Ptr cloudPtr = model.pointCloud;
     PointCloud::Ptr cloudPtrDownsampled(new PointCloud());
@@ -75,25 +73,19 @@ Model* CADConverter::preprocess(Model& model) const
 
     shrink(cloudPtr);
 
-
-
-    //II. Recognition
-
-
     // temp code to get indices of all points
     model.pointIndices = cluster(cloudPtr); // TODO: temporary!
-
-
-
-    // Pick best shapes across primitive families
-
-    //III. Segmentation
 
     // model.pointIndices = cluster(cloudPtr);
     qDebug("Preprocessing completed.");
     return &model;
 }
 
+/**
+ * @brief CADConverter::recognizeShapes Attempt to recognize all the primitives present in the Model
+ * @param model
+ * @return
+ */
 Model* CADConverter::recognizeShapes(Model& model) const
 {
     qDebug("Begin shape recognition...");
@@ -125,27 +117,9 @@ Model* CADConverter::recognizeShapes(Model& model) const
     return &model;
 }
 
-
 /**
- * @brief CADConverter::transform Apply transformation to entire point cloud.
- * @param points
- * @param tMatrix The transformation matrix.
- * @return
- */
-QVector<QVector3D>* CADConverter::transform(QVector<QVector3D>& points, QMatrix4x4 const tMatrix) const
-{
-    for (QVector3D& point : points)
-    {
-        QVector4D hPoint = QVector4D(point.x(), point.y(), point.z(), 1);
-        hPoint = tMatrix * hPoint;
-        point = QVector3D(hPoint);
-    }
-    return &points;
-}
-
-/**
- * @brief CADConverter::shrink scale a point cloud down to a unit cube
- * @param input
+ * @brief CADConverter::shrink Scale a point cloud down to a unit cube
+ * @param cloud
  */
 void CADConverter::shrink(PointCloud::Ptr cloud) const
 {
@@ -209,7 +183,7 @@ void CADConverter::downsample(PointCloud::Ptr input, PointCloud::Ptr target) con
 }
 
 /**
- * @brief CADConverter::cluster Perform a clustering algorithm to group points together
+ * @brief cluster Perform a clustering algorithm to group points together
  * @param input the Point Cloud to be clustered
  * @return vector of indices for each cluster
  */
@@ -267,7 +241,7 @@ std::vector<pcl::PointIndices::Ptr>* CADConverter::cluster(PointCloud::Ptr input
 }
 
 /**
- * @brief CADConverter::alignCloudWithZAxis Rotate the entire point cloud to be parallel to the Z axis
+ * @brief CADConverter::alignCloudWithZAxis Rotate the entire point cloud to be parallel to the Z axis.
  * @param cloudPtr
  * @param normals
  */
@@ -360,13 +334,7 @@ std::vector<Eigen::Vector3f>* CADConverter::getNormals(PointCloud::Ptr const clo
 
                 // Calculate distances from each normal to the original point
                 std::vector<float> normalDistances(neighborCount);
-                // std::transform(neighbors.begin(), neighbors.end(), normalDistances.begin(), [&a, &b, &c, &rho](pcl::PointXYZ const point){
-                //     // return (rawNormal - point.getVector3fMap()).norm();
-                //     float d = qAbs(a * point.x + b * point.y + c * point.z + rho);
-                //     return d / (qPow(a, 2) + qPow(b, 2) + qPow(c, 2));
-                // });
 
-                //TODO: MFEs are currently too high across the board. See if fixes can be made.
                 float mfe = normalPlane->calculateMFE(cloudPtr);
                 if (mfe <= settings->mfeThreshold)
                     normals->push_back(rawNormal);
@@ -389,8 +357,6 @@ std::vector<Eigen::Vector3f>* CADConverter::getNormals(PointCloud::Ptr const clo
 
         ne.compute(*cloud_normals);
 
-        // pcl::removeNaNFromPointCloud(*cloud_normals, *cloud_normals, nullptr);
-
         for (pcl::Normal const normal : cloud_normals->points)
         {
             Eigen::Vector3f normalVector = normal.getNormalVector3fMap();
@@ -403,6 +369,11 @@ std::vector<Eigen::Vector3f>* CADConverter::getNormals(PointCloud::Ptr const clo
     return normals;
 }
 
+/**
+ * @brief getShape Retrieve an instant of a shape based on the input Primitive Type.
+ * @param type
+ * @return
+ */
 PrimitiveShape* CADConverter::getShape(PrimitiveType const type) const
 {
     // TODO: Find a more elegant solution

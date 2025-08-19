@@ -17,7 +17,6 @@ public:
     virtual ~PrimitiveShape() = default;
     PrimitiveType  shapeType;
 
-
     std::vector<float> parameters = {};
     float mfe = -1.0f;
     QVector3D position;

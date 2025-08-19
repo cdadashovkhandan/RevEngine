@@ -37,7 +37,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         renderers/Renderer.h renderers/Renderer.cpp
         Camera.h Camera.cpp
         renderers/ModelRenderer.h renderers/ModelRenderer.cpp
-        Settings.h Settings.cpp
+        Settings.h
         resources/shaders/pointcloud.vert
         resources/shaders/pointcloud.frag
         materials/Material.cpp materials/Material.h materials/Phong.cpp materials/Phong.h materials/Wireframe.cpp materials/Wireframe.h
