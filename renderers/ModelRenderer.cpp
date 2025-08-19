@@ -66,12 +66,16 @@ void ModelRenderer::update_buffers(Model* model)
 
     if (settings->showPointCloud)
     {
+        pcl::PointCloud<pcl::PointXYZ>::Ptr cloudPtr = settings->showDownsampledVersion && model->pointCloudDownsampled != nullptr
+            ? model->pointCloudDownsampled
+            : model->pointCloud;
+
         // Coords
         gl->glBindBuffer(GL_ARRAY_BUFFER, vbo);
-        gl->glBufferData(GL_ARRAY_BUFFER, model->pointCloud->points.size() * sizeof(pcl::PointXYZ),
-                         model->pointCloud->points.data(), GL_STATIC_DRAW);
+        gl->glBufferData(GL_ARRAY_BUFFER, cloudPtr->points.size() * sizeof(pcl::PointXYZ),
+                         cloudPtr->points.data(), GL_STATIC_DRAW);
 
-        render_size = model->pointCloud->points.size();
+        render_size = cloudPtr->points.size();
     }
 
     // Normals

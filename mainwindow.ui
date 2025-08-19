@@ -57,7 +57,7 @@
     <property name="geometry">
      <rect>
       <x>680</x>
-      <y>260</y>
+      <y>320</y>
       <width>201</width>
       <height>25</height>
      </rect>
@@ -70,7 +70,7 @@
     <property name="geometry">
      <rect>
       <x>680</x>
-      <y>380</y>
+      <y>440</y>
       <width>201</width>
       <height>25</height>
      </rect>
@@ -83,7 +83,7 @@
     <property name="geometry">
      <rect>
       <x>680</x>
-      <y>300</y>
+      <y>360</y>
       <width>201</width>
       <height>25</height>
      </rect>
@@ -186,7 +186,7 @@
       <x>680</x>
       <y>60</y>
       <width>251</width>
-      <height>136</height>
+      <height>192</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout">
@@ -201,19 +201,16 @@
       </widget>
      </item>
      <item>
-      <widget class="QCheckBox" name="toggleShapesCheckBox">
+      <widget class="QCheckBox" name="showDownsampledCheckBox">
        <property name="text">
-        <string>Show Detected Shapes</string>
-       </property>
-       <property name="checked">
-        <bool>true</bool>
+        <string>Show Downsampled Cloud</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QCheckBox" name="toggleClustersCheckBox">
+      <widget class="QCheckBox" name="toggleShapesCheckBox">
        <property name="text">
-        <string>Show Clusters</string>
+        <string>Show Detected Shapes</string>
        </property>
        <property name="checked">
         <bool>true</bool>
@@ -230,6 +227,23 @@
        </property>
        <property name="checked">
         <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="toggleClustersCheckBox">
+       <property name="text">
+        <string>Show Clusters</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="checkBox">
+       <property name="text">
+        <string>CheckBox</string>
        </property>
       </widget>
      </item>
@@ -252,7 +266,7 @@
     <property name="geometry">
      <rect>
       <x>680</x>
-      <y>210</y>
+      <y>270</y>
       <width>121</width>
       <height>17</height>
      </rect>
@@ -268,7 +282,7 @@
     <property name="geometry">
      <rect>
       <x>680</x>
-      <y>230</y>
+      <y>290</y>
       <width>261</width>
       <height>16</height>
      </rect>
@@ -352,7 +366,7 @@
     <property name="geometry">
      <rect>
       <x>1020</x>
-      <y>230</y>
+      <y>220</y>
       <width>127</width>
       <height>26</height>
      </rect>
@@ -365,7 +379,7 @@
     <property name="geometry">
      <rect>
       <x>1160</x>
-      <y>230</y>
+      <y>220</y>
       <width>126</width>
       <height>26</height>
      </rect>
@@ -461,7 +475,7 @@
     <property name="geometry">
      <rect>
       <x>890</x>
-      <y>260</y>
+      <y>320</y>
       <width>61</width>
       <height>25</height>
      </rect>
@@ -656,7 +670,7 @@
     <property name="geometry">
      <rect>
       <x>680</x>
-      <y>340</y>
+      <y>400</y>
       <width>201</width>
       <height>25</height>
      </rect>
@@ -669,13 +683,45 @@
     <property name="geometry">
      <rect>
       <x>960</x>
-      <y>260</y>
+      <y>320</y>
       <width>42</width>
       <height>26</height>
      </rect>
     </property>
     <property name="value">
      <number>7</number>
+    </property>
+   </widget>
+   <widget class="QLabel" name="downSampleFactorLabel">
+    <property name="geometry">
+     <rect>
+      <x>1020</x>
+      <y>250</y>
+      <width>127</width>
+      <height>26</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Downsample Factor</string>
+    </property>
+   </widget>
+   <widget class="QDoubleSpinBox" name="downSampleFactorSpinBox_2">
+    <property name="geometry">
+     <rect>
+      <x>1160</x>
+      <y>250</y>
+      <width>126</width>
+      <height>26</height>
+     </rect>
+    </property>
+    <property name="decimals">
+     <number>2</number>
+    </property>
+    <property name="singleStep">
+     <double>0.010000000000000</double>
+    </property>
+    <property name="value">
+     <double>0.500000000000000</double>
     </property>
    </widget>
   </widget>

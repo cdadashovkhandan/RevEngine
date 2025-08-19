@@ -12,6 +12,12 @@ ModelManager::ModelManager(Settings* s)
     cadConverter = new CADConverter(s);
 }
 
+ModelManager::~ModelManager()
+{
+    qDeleteAll(models);
+    models.clear();
+}
+
 /**
  * @brief ModelManager::getActiveModel Get the currently active model.
  * @return The active model or nullptr if there isn't one.

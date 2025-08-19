@@ -5,7 +5,7 @@
 //TODO: maybe move to a separate file?
 #include "primitives/PrimitiveType.h"
 #include <map>
-#include <vector>
+
 enum NormalMode {
     PCA = 0,
     NEAREST_NEIGHBORS = 1,
@@ -19,10 +19,12 @@ struct Settings
     bool showNormals = false;
     bool showAxisLines = true;
     bool forceRansac = false;
+    bool showDownsampledVersion = false;
 
     float distanceThreshold = 0.05f;
     unsigned int minClusterSize = 50;
     float scaleFactor = 0.01f;
+    float downSampleFactor = 0.5f;
 
     // Normals
     float normalSearchRadius = 0.3f;

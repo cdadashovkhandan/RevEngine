@@ -18,6 +18,7 @@ private:
     CADConverter* cadConverter;
 public:
     ModelManager(Settings* s);
+    ~ModelManager();
 
     Model* getActiveModel() const;
 
@@ -25,9 +26,8 @@ public:
     Model* createModel(QString fileName);
     void recalculateClusters(Model* model);
     void recalculateNormals(Model* model);
-    //TODO: return type is questionable
     Model* preprocessModel(Model& model) const;
-    Model *recognizeShapes(Model &model) const;
+    Model* recognizeShapes(Model &model) const;
 };
 
 #endif // MODELMANAGER_H

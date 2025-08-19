@@ -15,7 +15,7 @@ class Model
 
 public:
     PointCloud::Ptr pointCloud; // Model cannot exist without pcloud.
-    PointCloud::Ptr pointCloudDownsampled; //TODO: replace with indices?
+    PointCloud::Ptr pointCloudDownsampled = nullptr; //TODO: replace with indices?
     std::vector<PrimitiveShape*>* shapes = nullptr; // Model can exist without shapes.
     std::vector<pcl::PointIndices::Ptr>* pointIndices = nullptr;
     std::vector<Eigen::Vector3f>* normals = nullptr;

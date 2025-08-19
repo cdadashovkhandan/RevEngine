@@ -51,10 +51,8 @@ Model* CADConverter::preprocess(Model& model) const
         tMatrix(1, 3) = -centroid.y();
         tMatrix(2, 3) = -centroid.z();
 
-        // tMatrix.translation() << centroid;
-
         pcl::transformPointCloud(*cloudPtr, *cloudPtr, tMatrix);
-        // transform downsampled version as well for displaying normals
+        // Transform downsampled version as well for displaying normals.
         pcl::transformPointCloud(*cloudPtrDownsampled, *cloudPtrDownsampled, tMatrix);
         qDebug("Centering successful");
     }
@@ -72,6 +70,7 @@ Model* CADConverter::preprocess(Model& model) const
     // }
 
     shrink(cloudPtr);
+    // shrink(cloudPtrDownsampled);
 
     // temp code to get indices of all points
     model.pointIndices = cluster(cloudPtr); // TODO: temporary!
@@ -173,7 +172,7 @@ void CADConverter::downsample(PointCloud::Ptr input, PointCloud::Ptr target) con
     qDebug("Creating downsampled copy...");
     pcl::VoxelGrid<pcl::PointXYZ> voxelGrid;
 
-    float downSampleFactor = 0.5f;
+    float downSampleFactor = settings->downSampleFactor;
 
     voxelGrid.setInputCloud(input);
     voxelGrid.setLeafSize(downSampleFactor, downSampleFactor, downSampleFactor);

@@ -5,14 +5,14 @@
 layout (points) in;
 layout (line_strip, max_vertices = 6) out;
 
-const float MAGNITUDE = 2;
+const float MAGNITUDE = 0.0005;
 
 uniform mat4 proj_matrix;
 uniform mat3 normal_matrix;
 
 vec4 process(vec3 target)
 {
-    return proj_matrix * vec4(normal_matrix * target, 1.0) * 0.0005;
+    return proj_matrix * vec4(normal_matrix * target, 1.0) * MAGNITUDE;
 }
 
 void main()

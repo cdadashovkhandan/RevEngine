@@ -86,7 +86,6 @@ void MainWindow::on_recalcClusterButton_clicked()
 
 void MainWindow::on_togglePointCloudCheckBox_toggled(bool checked)
 {
-    // TODO: This currently doesn't work because of the Renderer
     settings.showPointCloud = checked;
     ui->viewport->showModel(modelManager->getActiveModel());
 }
@@ -191,5 +190,19 @@ void MainWindow::on_recognizeShapesButton_clicked()
 void MainWindow::on_lazyIdSpinBox_valueChanged(int arg1)
 {
     settings.lazyId = arg1;
+}
+
+
+void MainWindow::on_showDownsampledCheckBox_toggled(bool checked)
+{
+    settings.showDownsampledVersion = checked;
+
+    ui->viewport->update();
+}
+
+
+void MainWindow::on_downSampleFactorSpinBox_2_valueChanged(double arg1)
+{
+    settings.downSampleFactor = arg1;
 }
 

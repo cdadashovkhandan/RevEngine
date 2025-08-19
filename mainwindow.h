@@ -63,6 +63,10 @@ private slots:
 
     void on_lazyIdSpinBox_valueChanged(int arg1);
 
+    void on_showDownsampledCheckBox_toggled(bool checked);
+
+    void on_downSampleFactorSpinBox_2_valueChanged(double arg1);
+
 private:
     Ui::MainWindow *ui;
     ModelManager* modelManager;
