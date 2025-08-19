@@ -87,8 +87,8 @@ void MainWindow::on_recalcClusterButton_clicked()
 void MainWindow::on_togglePointCloudCheckBox_toggled(bool checked)
 {
     // TODO: This currently doesn't work because of the Renderer
-    // settings.showPointCloud = checked;
-    // ui->viewport->showModel(modelManager->getActiveModel());
+    settings.showPointCloud = checked;
+    ui->viewport->showModel(modelManager->getActiveModel());
 }
 
 

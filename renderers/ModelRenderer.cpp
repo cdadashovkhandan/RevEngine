@@ -66,30 +66,22 @@ void ModelRenderer::update_buffers(Model* model)
 
     if (settings->showPointCloud)
     {
-        // std::vector<pcl::PointXYZ, Eigen::aligned_allocator<pcl::PointXYZ>> points =
-        //     model->pointCloud->points;
-
-
         // Coords
         gl->glBindBuffer(GL_ARRAY_BUFFER, vbo);
         gl->glBufferData(GL_ARRAY_BUFFER, model->pointCloud->points.size() * sizeof(pcl::PointXYZ),
                          model->pointCloud->points.data(), GL_STATIC_DRAW);
 
-        // gl->glBindVertexArray(0);
         render_size = model->pointCloud->points.size();
     }
 
     // Normals
     if (model->normals != nullptr)
     {
-        // gl->glBindVertexArray(vao);
-
         // Normals
         gl->glBindBuffer(GL_ARRAY_BUFFER, nbo);
         gl->glBufferData(GL_ARRAY_BUFFER, model->normals->size() * sizeof(Eigen::Vector3f),
                          model->normals->data(), GL_STATIC_DRAW);
 
-        // gl->glBindVertexArray(0);
     }
 
     // Cluster Colors
@@ -113,8 +105,6 @@ void ModelRenderer::update_buffers(Model* model)
     }
     else
         std::fill(colors.begin(), colors.end(), 1.0f); // initialize to white
-
-    // gl->glBindVertexArray(vao);
 
     // Colors
     gl->glBindBuffer(GL_ARRAY_BUFFER, vbo_colors);
@@ -206,7 +196,9 @@ void ModelRenderer::render()
     // gl->glEnable(GL_POLYGON_OFFSET_FILL);
     // gl->glPolygonOffset(1, 1);
     gl->glPolygonOffset(1, 1);
-    drawMaterial(*pointCloudMat);
+
+    if (settings->showPointCloud)
+        drawMaterial(*pointCloudMat);
 
     if (settings->showAxisLines)
         drawMaterial(*worldMat);
