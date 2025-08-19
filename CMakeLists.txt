@@ -30,7 +30,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         ${PROJECT_SOURCES}
         Viewport.h Viewport.cpp
         data/Model.h data/Model.cpp
-        data/Mesh.h data/Mesh.cpp
+
 
         ModelManager.h ModelManager.cpp
         Scene.h Scene.cpp
@@ -60,6 +60,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         primitives/Cylinder.h
         primitives/Cylinder.cpp
         primitives/Circle.h primitives/Circle.cpp
+        exceptions/FileReadException.cpp exceptions/FileReadException.h
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET RevEngine APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR

@@ -10,6 +10,12 @@ Plane::Plane() {
 
 Plane::~Plane() {}
 
+/**
+ * @brief Plane::buildParameters
+ * @param points
+ * @param maxMagnitude
+ * @return
+ */
 std::vector<ParamPair> Plane::buildParameters(std::vector<pcl::PointXYZ, Eigen::aligned_allocator<pcl::PointXYZ>> const points, float maxMagnitude) const
 {
     // Three params: theta, phi, rho
@@ -38,8 +44,16 @@ std::vector<ParamPair> Plane::buildParameters(std::vector<pcl::PointXYZ, Eigen::
     return output;
 }
 
+/**
+ * @brief Plane::isIntersecting Check if a given point is intersecting an instance of this shape with given parameters.
+ * @param point Point to be intersected,
+ * @param params Parameters of the shape.
+ * @param maxMagnitude
+ * @return
+ */
 bool Plane::isIntersecting(pcl::PointXYZ const point, std::vector<float> const params, float const maxMagnitude) const
 {
+    //TODO: maybe use getNormal() and multiply it by point?
 
     float threshold = maxMagnitude / 200.0f;
     // Parameters
@@ -52,36 +66,16 @@ bool Plane::isIntersecting(pcl::PointXYZ const point, std::vector<float> const p
                 + point.z * qCos(phi);
 
 
-    //a(j)-X(:,1)*cos(b(k))*sin(c(h))-X(:,2)*sin(c(h))*sin(b(k))-X(:,3)*cos(c(h))
-
-    // TODO: might need epsilon value
-    // qDebug() << eqn;
     return qAbs(eqn - rho) < threshold;
 }
 
 /**
- * @brief Plane::calculateMFE Calculate Mean Fitting error for a given set of points and their distances from estimates.
- * @param points
- * @param distances
+ * @brief Plane::calculateMFE Calculate Mean Fitting error for a given set of points.
+ * @param cloud
  * @return
  */
 float Plane::calculateMFE(pcl::PointCloud<pcl::PointXYZ>::Ptr const cloud)
 {
-    /*
-    Matlab equivalent:
-        function mfe=MFE(xyz,dist)
-
-        base=max(xyz(:,1))-min(xyz(:,1));
-        h=max(xyz(:,2))-min(xyz(:,2));
-        diag=sqrt(base^2+h^2);
-        h=max(xyz(:,3))-min(xyz(:,3));
-        Fin=sqrt(diag^2+h^2);
-
-        mfe=mean(dist)/Fin;
-
-        end
-    */
-
     auto points = cloud->points;
     float tht = parameters[0]; //theta
     float phi = parameters[1];
@@ -105,6 +99,7 @@ float Plane::calculateMFE(pcl::PointCloud<pcl::PointXYZ>::Ptr const cloud)
 
     Eigen::Vector3f maxPoint(0,0,0);
     Eigen::Vector3f minPoint(0,0,0);
+
     // Get min and max values of each axis
     Util::getMinMax(points, minPoint, maxPoint);
 
@@ -116,6 +111,10 @@ float Plane::calculateMFE(pcl::PointCloud<pcl::PointXYZ>::Ptr const cloud)
     return mfe;
 }
 
+/**
+ * @brief Plane::getRenderShape Get a RenderShape with all the parameters and transformations applied.
+ * @return
+ */
 std::shared_ptr<RenderShape> Plane::getRenderShape() const
 {
     std::shared_ptr<RenderShape> renderShape(new RenderShape());
@@ -124,25 +123,26 @@ std::shared_ptr<RenderShape> Plane::getRenderShape() const
 
     Eigen::Vector3f normal = getNormal();
 
-
-    // Eigen::Vector3f centroid = std::accumulate(verts.begin(), verts.end(), Eigen::Vector3f(0.0f,0.0f,0.0f)) / (float) verts.size();
-
-
     Eigen::Vector3f axis = (Eigen::Vector3f::UnitZ()).cross(normal);
 
+    // Get the axis of rotation, which is the cross product of the target normal and the Z-axis
     float angle = qAcos(Eigen::Vector3f::UnitZ().dot(normal));
     axis.normalize();
+
     for (Eigen::Vector3f& vert : verts)
     {
+        // Quaternion rotation.
         Eigen::Quaternionf quat;
         quat = Eigen::AngleAxisf(angle, axis);
         vert = quat * vert;
-        vert += parameters[2] * normal; // move by rho in the direction of the normal
+
+        vert += parameters[2] * normal; // Move by rho in the direction of the normal.
     }
 
 
     renderShape->vertices = verts;
 
+    // Simple indices forming a plane.
     renderShape->indices = { 0, 1, 3, 1, 2, 3 };
     return renderShape;
 }
@@ -162,11 +162,14 @@ std::vector<Eigen::Vector3f> Plane::getBaseVertices() const
     return vertices;
 }
 
+/**
+ * @brief Plane::getNormal Get normal vector of the entire plane.
+ * @return
+ */
 Eigen::Vector3f Plane::getNormal() const
 {
     float tht = parameters[0]; //theta
     float phi = parameters[1];
-    float rho = parameters[2];
 
 
     float a = qCos(tht)*qSin(phi);

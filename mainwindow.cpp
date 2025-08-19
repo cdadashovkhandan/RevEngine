@@ -1,7 +1,10 @@
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
+#include <QErrorMessage>
 #include <QFileDialog>
+#include <QMessageBox>
 #include <omp.h>
+#include <exceptions/FileReadException.h>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -22,17 +25,35 @@ MainWindow::~MainWindow()
 void MainWindow::on_importModelButton_clicked()
 {
     QString fileName = QFileDialog::getOpenFileName(this, "Text File...", {}, "Text Files (*.txt)");
+    Model* model;
+
     if (fileName.isEmpty())
+        return; // Do nothing.
+
+    try
+    {
+        model = modelManager->createModel(fileName);
+    }
+    catch (FileReadException& e)
+    {
+        QMessageBox errorMessage;
+        errorMessage.critical(this, "File Read Error", "File could not be read. Please try another file.");
+        errorMessage.show();
         return;
-    Model* model = modelManager->createModel(fileName);
+    }
+
     ui->viewport->showModel(model);
 }
 
 
 void MainWindow::on_convertModelButton_clicked()
 {
-    Model* model = modelManager->preprocessModel(*modelManager->getActiveModel());
-    ui->viewport->showModel(model);
+    Model* model = modelManager->getActiveModel();
+    if (model != nullptr)
+    {
+        model = modelManager->preprocessModel(*model);
+        ui->viewport->showModel(model);
+    }
 }
 
 
@@ -52,8 +73,6 @@ void MainWindow::on_minClusterSizeSpinBox_valueChanged(int arg1)
 void MainWindow::on_distanceThresholdSpinBox_valueChanged(double arg1)
 {
     settings.distanceThreshold = arg1;
-    // TODO: for the love of god don't leave this in the final code
-    // on_recalcClusterButton_clicked();
 }
 
 
@@ -160,8 +179,12 @@ void MainWindow::on_forceRansacCheckBox_toggled(bool checked)
 
 void MainWindow::on_recognizeShapesButton_clicked()
 {
-    Model* model = modelManager->recognizeShapes(*modelManager->getActiveModel());
-    ui->viewport->showModel(model);
+    Model* model = modelManager->getActiveModel();
+    if (model != nullptr)
+    {
+        model = modelManager->recognizeShapes(*model);
+        ui->viewport->showModel(model);
+    }
 }
 
 

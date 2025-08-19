@@ -1,7 +1,10 @@
 #include "ModelManager.h"
 
 #include <QDir>
+#include <QException>
 #include <QFile>
+
+#include "exceptions/FileReadException.h"
 
 ModelManager::ModelManager(Settings* s)
 {
@@ -9,9 +12,14 @@ ModelManager::ModelManager(Settings* s)
     cadConverter = new CADConverter(s);
 }
 
+/**
+ * @brief ModelManager::getActiveModel Get the currently active model.
+ * @return The active model or nullptr if there isn't one.
+ */
 Model* ModelManager::getActiveModel() const
 {
-    return models.last();
+    return models.isEmpty() ? nullptr
+                            : models.last();
 }
 
 /**
@@ -32,16 +40,20 @@ PointCloud::Ptr ModelManager::parsePointCloud(QString fileName) const
             rawLine = rawLine.trimmed().replace("[", "").replace("]",""); // remove excess chars
             QStringList line = rawLine.split(",");
 
-            if (line.size() == 1) // Either a beginning or end line
+            if (line.size() < 3) // Either a beginning or end line
                 continue;
 
-
-            //TODO: make this neat
-            pcl::PointXYZ newPoint(line[0].toFloat(), line[1].toFloat(), line[2].toFloat());
+            pcl::PointXYZ newPoint(line[0].toFloat(),
+                                   line[1].toFloat(),
+                                   line[2].toFloat());
 
             cloud->push_back(newPoint);
         }
     }
+
+    if (cloud->points.size() < 1)
+        throw FileReadException();
+
     return cloud;
 }
 
@@ -52,17 +64,32 @@ PointCloud::Ptr ModelManager::parsePointCloud(QString fileName) const
  */
 Model* ModelManager::createModel(QString filename)
 {
-    PointCloud::Ptr pointCloud = parsePointCloud(filename);
-    Model* model = new Model(pointCloud);
-    models.append(model);
-    return models.last();
+    try
+    {
+        PointCloud::Ptr pointCloud = parsePointCloud(filename);
+        Model* model = new Model(pointCloud);
+        models.append(model);
+        return models.last();
+    }
+    catch (FileReadException& e)
+    {
+        throw e; // re-throw to UI level.
+    }
 }
 
+/**
+ * @brief ModelManager::recalculateClusters Recalculate all the clusters in the model.
+ * @param model
+ */
 void ModelManager::recalculateClusters(Model *model)
 {
     model->pointIndices = cadConverter->cluster(model->pointCloud);
 }
 
+/**
+ * @brief ModelManager::recalculateNormals Recalculate all the normals in the model.
+ * @param model
+ */
 void ModelManager::recalculateNormals(Model *model)
 {
     model->normals = settings->highPrecisionNormals

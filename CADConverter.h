@@ -2,11 +2,11 @@
 #define CADCONVERTER_H
 
 #include "data/Model.h"
+#include "primitives/PrimitiveShape.h"
 
 #include <QMatrix4x4>
 #include <Settings.h>
 
-#include <primitives/PrimitiveShape.h>
 class CADConverter
 {    
 public:

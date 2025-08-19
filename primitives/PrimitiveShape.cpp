@@ -2,6 +2,13 @@
 
 #include <pcl/filters/extract_indices.h>
 
+
+/**
+ * @brief PrimitiveShape::getBestFit Perform a (series of) Hough Transform(s) to find the best fitting shape for a given set of points.
+ * @param cloud The input point cloud
+ * @param indices The indices indiating the cluster in question
+ * @return Parameters for the best fitting shape.
+ */
 std::vector<float> PrimitiveShape::getBestFit(pcl::PointCloud<pcl::PointXYZ>::Ptr const cloud, pcl::PointIndices::Ptr const indices)
 {
     pcl::PointCloud<pcl::PointXYZ>::Ptr filteredCloud(new pcl::PointCloud<pcl::PointXYZ>);
