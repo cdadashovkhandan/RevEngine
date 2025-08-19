@@ -40,7 +40,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         Settings.h
         resources/shaders/pointcloud.vert
         resources/shaders/pointcloud.frag
-        materials/Material.cpp materials/Material.h materials/Phong.cpp materials/Phong.h materials/Wireframe.cpp materials/Wireframe.h
+        materials/Material.cpp materials/Material.h materials/Phong.cpp materials/Phong.h
         materials/PointCloudMaterial.h materials/PointCloudMaterial.cpp
         resources.qrc
         CADConverter.h CADConverter.cpp
