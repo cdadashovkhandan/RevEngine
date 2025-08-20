@@ -20,7 +20,7 @@ public:
 
     void downsample(PointCloud::Ptr input, PointCloud::Ptr target) const;
 
-    std::vector<pcl::PointIndices::Ptr>* cluster(PointCloud::Ptr input) const;
+    std::vector<pcl::PointIndices::Ptr>* cluster(PointCloud::Ptr input, bool const useRansac) const;
 
     void shrink(PointCloud::Ptr cloud) const;
 private:

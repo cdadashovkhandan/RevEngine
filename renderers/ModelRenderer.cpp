@@ -91,11 +91,11 @@ void ModelRenderer::update_buffers(Model* model)
     // Cluster Colors
     std::vector<float> colors(render_size * 3);
 
-    if (settings->showClusters && model->pointIndices != nullptr)
+    if (settings->showClusters && model->clusterIndices != nullptr)
     {
         std::fill(colors.begin(), colors.end(), 0.2f); // initialize to dark grey
         size_t colorIndex = 0;
-        for (pcl::PointIndices::Ptr const cluster : *model->pointIndices)
+        for (pcl::PointIndices::Ptr const cluster : *model->clusterIndices)
         {
             for (auto const index : cluster->indices)
             {

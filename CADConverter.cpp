@@ -70,12 +70,13 @@ Model* CADConverter::preprocess(Model& model) const
     shrink(cloudPtrDownsampled);
 
     // temp code to get indices of all points
-    model.pointIndices = cluster(cloudPtr); // TODO: temporary!
+    // model.clusterIndices = cluster(cloudPtr); // TODO: temporary!
 
     // model.pointIndices = cluster(cloudPtr);
     qDebug("Preprocessing completed.");
     return &model;
 }
+
 
 /**
  * @brief CADConverter::recognizeShapes Attempt to recognize all the primitives present in the Model
@@ -85,28 +86,87 @@ Model* CADConverter::preprocess(Model& model) const
 Model* CADConverter::recognizeShapes(Model& model) const
 {
     qDebug("Begin shape recognition...");
-    PointCloud::Ptr cloudPtr = model.pointCloud;
 
+    // Work on copy of point cloud instead of the original
+    PointCloud::Ptr cloudPtr(new PointCloud());
+    pcl::copyPointCloud(*model.pointCloud, *cloudPtr);
+
+    std::vector<pcl::PointIndices::Ptr>* clusterIndices;
+    // model.clusterIndices = new std::vector<pcl::PointIndices::Ptr>();
+
+    pcl::PointIndices::Ptr fullIndices(new pcl::PointIndices());
+
+    fullIndices->indices.resize(model.pointCloud->size());
+
+    // Fill with increasing numbers to match all the existing indeces.
+    std::iota(fullIndices->indices.begin(), fullIndices->indices.end(), 0);
+
+    // model.clusterIndices->push_back(fullIndices);
     // Recognize shapes for each family
-    std::vector<PrimitiveShape*> shapeCandidates;
+    QMap<size_t, std::vector<PrimitiveShape*>*> shapeCandidates;
     model.shapes = new std::vector<PrimitiveShape*>();
-    if (model.pointIndices->size() > 0) // TODO: this is temporary. Should be a for loop going through clusters, inside the for loop below
+
+    // if (model.clusterIndices->size() > 0) // TODO: this is temporary. Should be a for loop going through clusters, inside the for loop below
+    while (true)
     {
         for (std::pair<const PrimitiveType, bool> pair : settings->primitiveTypes)
         {
             if (pair.second) // The primitive is active
             {
-                PrimitiveShape* shape = getShape(pair.first);
+                for (size_t idx = 0; idx < clusterIndices->size(); ++idx)
+                {
+                    pcl::PointIndices::Ptr cluster = clusterIndices->at(idx);
+                    PrimitiveShape *shape = getShape(pair.first);
+                    qDebug() << "Investigating shape of type "
+                             << shape->shapeType;
 
-                std::vector<float> params = shape->getBestFit(cloudPtr, model.pointIndices->at(0));
+                    shape->getBestFit(cloudPtr, cluster);
+                    shape->calculateMFE(cloudPtr);
 
-                shapeCandidates.push_back(shape);
+                    std::vector<PrimitiveShape*>* clusterCandidates = shapeCandidates.value(idx);
 
-                shape->calculateMFE(cloudPtr);
-                model.shapes->push_back(shape); // TODO: temporary
-
-                qDebug() << "Shape found. Indices: " << shape->recognizedIndices->indices.size() << " Params: " << shape->parameters << "MFE: " << shape->mfe;
+                    clusterCandidates->push_back(shape); // TODO: temporary
+                    qDebug() << "Shape found. Indices: " <<
+                    shape->recognizedIndices->indices.size() << " Params: " <<
+                    shape->parameters << "MFE: " << shape->mfe;
+                }
             }
+        }
+
+        // Pick the best shape candidate for each cluster
+        for (auto [key, vec] : shapeCandidates.asKeyValueRange())
+        {
+            PrimitiveShape* bestShape = *std::max_element(vec->begin(), vec->end(), [](PrimitiveShape* const a, PrimitiveShape* const b)
+            {
+                return a->mfe < b->mfe;
+            });
+
+            model.shapes->push_back(bestShape);
+
+            // Extract the discovered indices from the cloud copy.
+            pcl::ExtractIndices<pcl::PointXYZ> extract;
+            extract.setInputCloud(cloudPtr);
+            extract.setIndices(bestShape->recognizedIndices);
+            extract.setNegative(true);
+            extract.filter(*cloudPtr);
+        }
+
+        // Segmentation phase
+
+        if (cloudPtr->size() == model.pointCloud->size())
+        {
+            // cluster with RANSAC
+            clusterIndices = cluster(cloudPtr, true);
+        }
+        else if (cloudPtr->size() < model.pointCloud->size() && cloudPtr->size() > 0)
+        {
+            bool isSparse = false;
+            if (isSparse)
+            {
+                break;
+            }
+            // Cluster with DBSCAN
+            clusterIndices = cluster(cloudPtr, false);
         }
     }
 
@@ -184,10 +244,8 @@ void CADConverter::downsample(PointCloud::Ptr input, PointCloud::Ptr target) con
  * @param input the Point Cloud to be clustered
  * @return vector of indices for each cluster
  */
-std::vector<pcl::PointIndices::Ptr>* CADConverter::cluster(PointCloud::Ptr input) const
+std::vector<pcl::PointIndices::Ptr>* CADConverter::cluster(PointCloud::Ptr input, bool const useRansac) const
 {
-    bool useRansac = false; // TODO: move to settings or create proper condition
-
     std::vector<pcl::PointIndices::Ptr>* cluster_indices;
     if (useRansac || settings->forceRansac) // Partially adapted from https://stackoverflow.com/questions/46826720/pclransac-segmentation-get-all-planes-in-cloud
     {
