@@ -89,19 +89,22 @@ Model* CADConverter::recognizeShapes(Model& model) const
 
     // Work on copy of point cloud instead of the original
     PointCloud::Ptr cloudPtr(new PointCloud());
-    pcl::copyPointCloud(*model.pointCloud, *cloudPtr);
+    PointCloud::Ptr ogCloudPtr = model.pointCloudDownsampled;
+    pcl::copyPointCloud(*ogCloudPtr, *cloudPtr);
 
-    std::vector<pcl::PointIndices::Ptr>* clusterIndices;
+    std::vector<pcl::PointIndices::Ptr>* clusterIndices = new std::vector<pcl::PointIndices::Ptr>();
     // model.clusterIndices = new std::vector<pcl::PointIndices::Ptr>();
 
     pcl::PointIndices::Ptr fullIndices(new pcl::PointIndices());
 
-    fullIndices->indices.resize(model.pointCloud->size());
+    fullIndices->indices.resize(ogCloudPtr->size());
 
     // Fill with increasing numbers to match all the existing indeces.
     std::iota(fullIndices->indices.begin(), fullIndices->indices.end(), 0);
 
     // model.clusterIndices->push_back(fullIndices);
+    clusterIndices->push_back(fullIndices);
+
     // Recognize shapes for each family
     QMap<size_t, std::vector<PrimitiveShape*>*> shapeCandidates;
     model.shapes = new std::vector<PrimitiveShape*>();
@@ -115,6 +118,11 @@ Model* CADConverter::recognizeShapes(Model& model) const
             {
                 for (size_t idx = 0; idx < clusterIndices->size(); ++idx)
                 {
+                    // Initialize missing shape candidate list
+                    if (!shapeCandidates.contains(idx))
+                        shapeCandidates.insert(idx, new std::vector<PrimitiveShape*>());
+
+
                     pcl::PointIndices::Ptr cluster = clusterIndices->at(idx);
                     PrimitiveShape *shape = getShape(pair.first);
                     qDebug() << "Investigating shape of type "
@@ -153,12 +161,12 @@ Model* CADConverter::recognizeShapes(Model& model) const
 
         // Segmentation phase
 
-        if (cloudPtr->size() == model.pointCloud->size())
+        if (cloudPtr->size() == ogCloudPtr->size())
         {
             // cluster with RANSAC
             clusterIndices = cluster(cloudPtr, true);
         }
-        else if (cloudPtr->size() < model.pointCloud->size() && cloudPtr->size() > 0)
+        else if (cloudPtr->size() < ogCloudPtr->size() && cloudPtr->size() > 0)
         {
             bool isSparse = false;
             if (isCloudSparse(cloudPtr))
@@ -170,6 +178,7 @@ Model* CADConverter::recognizeShapes(Model& model) const
         }
         else
         {
+            qDebug("All points consumed.");
             break;
         }
     }
