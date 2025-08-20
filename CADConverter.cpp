@@ -161,17 +161,72 @@ Model* CADConverter::recognizeShapes(Model& model) const
         else if (cloudPtr->size() < model.pointCloud->size() && cloudPtr->size() > 0)
         {
             bool isSparse = false;
-            if (isSparse)
+            if (isCloudSparse(cloudPtr))
             {
                 break;
             }
             // Cluster with DBSCAN
             clusterIndices = cluster(cloudPtr, false);
         }
+        else
+        {
+            break;
+        }
     }
 
     qDebug("Shape recognition completed.");
+    qDebug() << model.shapes->size() << " shapes found.";
     return &model;
+}
+
+/**
+ * @brief CADConverter::isCloudSparse Check if a point cloud is sparse by calculating the density of points
+ * @param cloud
+ * @return
+ */
+bool CADConverter::isCloudSparse(PointCloud::Ptr cloud) const
+{
+    qDebug("Checking for sparseness...");
+
+    // Calculate point density
+    float radius = 0.01; // Adjust based on your point cloud's scale
+    int k = 10; // Number of nearest neighbors
+
+    pcl::search::KdTree<pcl::PointXYZ> tree;
+    tree.setInputCloud(cloud);
+
+    std::vector<int> indices;
+    std::vector<float> distances;
+
+    float sumDistances = 0.0f;
+    int count = 0;
+
+    for (size_t i = 0; i < cloud->size(); ++i)
+    {
+        tree.radiusSearch(cloud->points[i], radius, indices, distances);
+        if (indices.size() > 1) // Exclude the point itself
+        {
+            float sum = std::accumulate(indices.begin() + 1, indices.end(), 0.0f);
+            // for (size_t j = 1; j < indices.size(); ++j)
+            // {
+            //     sum += distances[j];
+            // }
+            sumDistances += sum / (indices.size() - 1);
+            count++;
+        }
+    }
+
+    if (count > 0)
+    {
+        float avgDistance = sumDistances / count;
+        float threshold = 0.01f;
+        float pointDensity = 1.0f / (qPow(avgDistance, 3)); // Approximate point density (points per unit volume)
+        qDebug() << "Detected density: " << pointDensity << ". Point cloud is sparse: " << (pointDensity < threshold);
+        return pointDensity < threshold;
+    }
+
+    qDebug("No points found.");
+    return true;
 }
 
 /**

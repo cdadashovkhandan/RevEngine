@@ -31,6 +31,7 @@ private:
     void alignCloudWithZAxis(pcl::PointCloud<pcl::PointXYZ>::Ptr cloudPtr, std::vector<Eigen::Vector3f> normals) const;
 
     PrimitiveShape* getShape(const PrimitiveType type) const;
+    bool isCloudSparse(PointCloud::Ptr cloud) const;
 };
 
 #endif // CADCONVERTER_H
