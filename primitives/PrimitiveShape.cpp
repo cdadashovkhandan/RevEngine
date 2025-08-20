@@ -62,7 +62,7 @@ std::vector<float> PrimitiveShape::getBestFit(pcl::PointCloud<pcl::PointXYZ>::Pt
         //throw; //TODO: proper error handling
     }
 
-    pointIndices = bestFit->first;
+    recognizedIndices = bestFit->first;
     parameters = bestFit->second;
     return parameters;
 }

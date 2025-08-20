@@ -200,7 +200,9 @@ void MainWindow::on_showDownsampledCheckBox_toggled(bool checked)
 {
     settings.showDownsampledVersion = checked;
 
-    ui->viewport->update();
+    Model* model = modelManager->getActiveModel();
+    if (model != nullptr)
+        ui->viewport->showModel(model);
 }
 
 

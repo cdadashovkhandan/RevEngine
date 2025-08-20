@@ -241,13 +241,6 @@
       </widget>
      </item>
      <item>
-      <widget class="QCheckBox" name="checkBox">
-       <property name="text">
-        <string>CheckBox</string>
-       </property>
-      </widget>
-     </item>
-     <item>
       <widget class="QCheckBox" name="toggleAxisLinesCheckBox">
        <property name="enabled">
         <bool>true</bool>

@@ -22,7 +22,7 @@ public:
     QVector3D position;
     QVector3D orientation;
 
-    pcl::PointIndices::Ptr pointIndices; //Indices of the points this shape overlaps with. TODO: better variable name
+    pcl::PointIndices::Ptr recognizedIndices; // Indices of the points this shape overlaps with.
 
     virtual float calculateMFE(pcl::PointCloud<pcl::PointXYZ>::Ptr const cloud) = 0;
     std::vector<float> getBestFit(pcl::PointCloud<pcl::PointXYZ>::Ptr const cloud, pcl::PointIndices::Ptr const indices);

@@ -105,7 +105,7 @@ Model* CADConverter::recognizeShapes(Model& model) const
                 shape->calculateMFE(cloudPtr);
                 model.shapes->push_back(shape); // TODO: temporary
 
-                qDebug() << "Shape found. Indices: " << shape->pointIndices->indices.size() << " Params: " << shape->parameters << "MFE: " << shape->mfe;
+                qDebug() << "Shape found. Indices: " << shape->recognizedIndices->indices.size() << " Params: " << shape->parameters << "MFE: " << shape->mfe;
             }
         }
     }

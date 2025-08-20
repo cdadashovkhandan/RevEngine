@@ -85,9 +85,9 @@ float Plane::calculateMFE(pcl::PointCloud<pcl::PointXYZ>::Ptr const cloud)
     float b = qSin(phi)*qSin(tht);
     float c = qCos(phi);
 
-    std::vector<float> distances(pointIndices->indices.size());
+    std::vector<float> distances(recognizedIndices->indices.size());
 
-    for (int index : pointIndices->indices)
+    for (int index : recognizedIndices->indices)
     {
         pcl::PointXYZ point = points[index];
         float d = qAbs(a * point.x + b * point.y + c * point.z + rho);
