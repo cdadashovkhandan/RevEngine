@@ -26,6 +26,7 @@ public:
     Model* createModel(QString fileName);
     void recalculateClusters(Model* model);
     void recalculateNormals(Model* model);
+    void recalculateDownsample(Model *model);
     Model* preprocessModel(Model& model) const;
     Model* recognizeShapes(Model &model) const;
 };

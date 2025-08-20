@@ -104,6 +104,15 @@ void ModelManager::recalculateNormals(Model *model)
 }
 
 /**
+ * @brief ModelManager::recalculateDownsample Downsample the point cloud again.
+ * @param model
+ */
+void ModelManager::recalculateDownsample(Model *model)
+{
+    cadConverter->downsample(model->pointCloud, model->pointCloudDownsampled);
+}
+
+/**
  * @brief ModelManager::generateMesh Generate a B-Rep representation out of a Model's Point Cloud.
  * @param model
  * @return

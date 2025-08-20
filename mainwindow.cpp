@@ -144,8 +144,11 @@ void MainWindow::on_normalSearchRadiusSpinBox_valueChanged(double arg1)
 void MainWindow::on_recalcNormalsButton_clicked()
 {
     Model* model = modelManager->getActiveModel();
-    modelManager->recalculateNormals(model);
-    ui->viewport->showModel(model);
+    if (model != nullptr)
+    {
+        modelManager->recalculateNormals(model);
+        ui->viewport->showModel(model);
+    }
 }
 
 
@@ -204,5 +207,16 @@ void MainWindow::on_showDownsampledCheckBox_toggled(bool checked)
 void MainWindow::on_downSampleFactorSpinBox_2_valueChanged(double arg1)
 {
     settings.downSampleFactor = arg1;
+}
+
+
+void MainWindow::on_recalcDownsampleButton_clicked()
+{
+    Model* model = modelManager->getActiveModel();
+    if (model != nullptr)
+    {
+        modelManager->recalculateDownsample(model);
+        ui->viewport->showModel(model);
+    }
 }
 

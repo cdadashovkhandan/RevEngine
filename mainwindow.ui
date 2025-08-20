@@ -724,6 +724,19 @@
      <double>0.500000000000000</double>
     </property>
    </widget>
+   <widget class="QPushButton" name="recalcDownsampleButton">
+    <property name="geometry">
+     <rect>
+      <x>1020</x>
+      <y>140</y>
+      <width>201</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Recalculate Downsample</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">

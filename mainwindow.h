@@ -67,6 +67,8 @@ private slots:
 
     void on_downSampleFactorSpinBox_2_valueChanged(double arg1);
 
+    void on_recalcDownsampleButton_clicked();
+
 private:
     Ui::MainWindow *ui;
     ModelManager* modelManager;

@@ -28,9 +28,6 @@ CADConverter::CADConverter(Settings* s)
 Model* CADConverter::preprocess(Model& model) const
 {
     qDebug("Begin preprocessing...");
-    // Main function for everything:
-
-    // I. Preprocessing
 
     PointCloud::Ptr cloudPtr = model.pointCloud;
     PointCloud::Ptr cloudPtrDownsampled(new PointCloud());
@@ -70,7 +67,7 @@ Model* CADConverter::preprocess(Model& model) const
     // }
 
     shrink(cloudPtr);
-    // shrink(cloudPtrDownsampled);
+    shrink(cloudPtrDownsampled);
 
     // temp code to get indices of all points
     model.pointIndices = cluster(cloudPtr); // TODO: temporary!
@@ -95,7 +92,8 @@ Model* CADConverter::recognizeShapes(Model& model) const
     model.shapes = new std::vector<PrimitiveShape*>();
     if (model.pointIndices->size() > 0) // TODO: this is temporary. Should be a for loop going through clusters, inside the for loop below
     {
-        for (std::pair<const PrimitiveType, bool> pair : settings->primitiveTypes) {
+        for (std::pair<const PrimitiveType, bool> pair : settings->primitiveTypes)
+        {
             if (pair.second) // The primitive is active
             {
                 PrimitiveShape* shape = getShape(pair.first);
@@ -124,10 +122,10 @@ void CADConverter::shrink(PointCloud::Ptr cloud) const
 {
     qDebug("Downsizing pointcloud to unit cube.");
     float scaleFactor = 0.01f;
-    // find the scaling factor
+    // Find the scaling factor.
     Eigen::Vector3f maxPoint(0,0,0);
     Eigen::Vector3f minPoint(0,0,0);
-    // Get min and max values of each axis
+    // Get min and max values of each axis.
     Util::getMinMax(cloud->points, minPoint, maxPoint);
 
     Eigen::Vector3f difference = (maxPoint - minPoint).cwiseAbs();
