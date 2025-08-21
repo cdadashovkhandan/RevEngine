@@ -169,21 +169,12 @@ std::vector<Eigen::Vector3f> Plane::getBaseVertices() const
 {
     std::vector<Eigen::Vector3f> vertices;
 
-    //TODO: I don't like the fact that getNormal is used both here and in getRenderShape
-    Eigen::Vector3f normal = getNormal();
-
-
-
     float scale = 0.5f;
     // Unit plane projected on xy plane.
     vertices.push_back(Eigen::Vector3f(scale, scale, 0.0f)); // top right
     vertices.push_back(Eigen::Vector3f(scale, -scale, 0.0f)); // bottom right
     vertices.push_back(Eigen::Vector3f(-scale, -scale, 0.0f)); // bottom left
     vertices.push_back(Eigen::Vector3f(-scale, scale, 0.0f)); // top left
-
-
-
-
 
     return vertices;
 }

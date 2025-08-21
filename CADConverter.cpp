@@ -92,6 +92,7 @@ Model* CADConverter::recognizeShapes(Model& model) const
         : model.pointCloud;
     pcl::copyPointCloud(*ogCloudPtr, *cloudPtr);
 
+    int prevCloudSize = ogCloudPtr->size();
     qDebug() << "# Points in model: " << cloudPtr->points.size();
 
     // Generate a range from 0 to cloudPtr->points.size(), acting as a list of all indices.
@@ -105,11 +106,11 @@ Model* CADConverter::recognizeShapes(Model& model) const
     // A map where:
     //  - The Key is the index of a given cluster.
     //  - The Value is a list of potential shapes that could fit this cluster.
-    QMap<size_t, std::vector<PrimitiveShape*>*> shapeCandidates;
     model.shapes = new std::vector<PrimitiveShape*>();
 
     while (true)
     {
+        QMap<size_t, std::vector<PrimitiveShape*>*> shapeCandidates;
         for (std::pair<const PrimitiveType, bool> pair : settings->primitiveTypes)
         {
             if (pair.second) // The primitive is active
@@ -158,6 +159,9 @@ Model* CADConverter::recognizeShapes(Model& model) const
 
             model.shapes->push_back(bestShape);
 
+
+            prevCloudSize = cloudPtr->size();
+
             // Extract the discovered indices from the cloud copy.
             pcl::ExtractIndices<pcl::PointXYZ> extract;
             extract.setInputCloud(cloudPtr);
@@ -168,12 +172,12 @@ Model* CADConverter::recognizeShapes(Model& model) const
 
         // Segmentation phase
 
-        if (cloudPtr->size() == ogCloudPtr->size())
+        if (cloudPtr->size() == prevCloudSize)
         {
             // Cluster with RANSAC.
             clusterIndices = cluster(cloudPtr, true);
         }
-        else if (cloudPtr->size() < ogCloudPtr->size() && cloudPtr->size() > 0)
+        else if (cloudPtr->size() < prevCloudSize && cloudPtr->size() > 0)
         {
             bool isSparse = false;
             if (isCloudSparse(cloudPtr))
@@ -188,6 +192,9 @@ Model* CADConverter::recognizeShapes(Model& model) const
             qDebug("All points consumed.");
             break;
         }
+        shapeCandidates.clear();
+        if (clusterIndices->empty())
+            break;
     }
 
     qDebug("Shape recognition completed.");
@@ -234,7 +241,7 @@ bool CADConverter::isCloudSparse(PointCloud::Ptr cloud) const
     if (count > 0)
     {
         float avgDistance = sumDistances / count;
-        float threshold = 0.01f;
+        float threshold = 0.0001f;
         float pointDensity = avgDistance; // Approximate point density (points per unit volume)
         qDebug() << "Detected density: " << pointDensity << ". Point cloud is sparse: " << (pointDensity < threshold);
         return pointDensity < threshold;
