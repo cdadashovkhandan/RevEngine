@@ -66,7 +66,7 @@ void ModelRenderer::update_buffers(Model* model)
 
     if (settings->showPointCloud)
     {
-        pcl::PointCloud<pcl::PointXYZ>::Ptr cloudPtr = settings->showDownsampledVersion && model->pointCloudDownsampled != nullptr
+        pcl::PointCloud<pcl::PointXYZ>::Ptr cloudPtr = settings->useDownsampledVersion && model->pointCloudDownsampled != nullptr
             ? model->pointCloudDownsampled
             : model->pointCloud;
 

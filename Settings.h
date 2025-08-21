@@ -36,8 +36,8 @@ struct Settings
     // Skip DBSCAN and segment using only RANSAC.
     bool forceRansac = false;
 
-    // Show the downsampled version of the point cloud instead of the original.
-    bool showDownsampledVersion = false;
+    // Show & use the downsampled version of the point cloud in the recognition pipeline.
+    bool useDownsampledVersion = true;
 
     // ----Clustering----
 
@@ -75,10 +75,6 @@ struct Settings
         { PrimitiveType::TORUS, false },
         { PrimitiveType::CONE, false },
     };
-
-
-    // Use the downsampled version of the point cloud in the recognition pipeline.
-    bool useDownsampledVersion = true;
 
     //TODO: remove on release
 

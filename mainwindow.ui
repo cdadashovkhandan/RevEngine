@@ -201,16 +201,19 @@
       </widget>
      </item>
      <item>
-      <widget class="QCheckBox" name="showDownsampledCheckBox">
+      <widget class="QCheckBox" name="toggleShapesCheckBox">
        <property name="text">
-        <string>Show Downsampled Cloud</string>
+        <string>Show Detected Shapes</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QCheckBox" name="toggleShapesCheckBox">
+      <widget class="QCheckBox" name="toggleRunOnDownsampledCloudCheckBox">
        <property name="text">
-        <string>Show Detected Shapes</string>
+        <string>Use Downsampled Cloud</string>
        </property>
        <property name="checked">
         <bool>true</bool>
@@ -728,22 +731,6 @@
     </property>
     <property name="text">
      <string>Recalculate Downsample</string>
-    </property>
-   </widget>
-   <widget class="QCheckBox" name="toggleRunOnDownsampledCloudCheckBox">
-    <property name="geometry">
-     <rect>
-      <x>1190</x>
-      <y>530</y>
-      <width>249</width>
-      <height>22</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Run on Downsampled Cloud</string>
-    </property>
-    <property name="checked">
-     <bool>true</bool>
     </property>
    </widget>
   </widget>

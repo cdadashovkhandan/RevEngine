@@ -89,7 +89,11 @@ Model* ModelManager::createModel(QString filename)
  */
 void ModelManager::recalculateClusters(Model *model)
 {
-    model->clusterIndices = cadConverter->cluster(model->pointCloud, false);
+    PointCloud::Ptr cloudPtr = settings->useDownsampledVersion
+                                   ? model->pointCloudDownsampled
+                                   : model->pointCloud;
+
+    model->clusterIndices = cadConverter->cluster(cloudPtr, false);
 }
 
 /**

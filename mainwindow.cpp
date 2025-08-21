@@ -198,11 +198,11 @@ void MainWindow::on_lazyIdSpinBox_valueChanged(int arg1)
 
 void MainWindow::on_showDownsampledCheckBox_toggled(bool checked)
 {
-    settings.showDownsampledVersion = checked;
+    // settings.showDownsampledVersion = checked;
 
-    Model* model = modelManager->getActiveModel();
-    if (model != nullptr)
-        ui->viewport->showModel(model);
+    // Model* model = modelManager->getActiveModel();
+    // if (model != nullptr)
+    //     ui->viewport->showModel(model);
 }
 
 
@@ -218,6 +218,13 @@ void MainWindow::on_recalcDownsampleButton_clicked()
     if (model != nullptr)
     {
         modelManager->recalculateDownsample(model);
+        // This must be cleared to avoid mismatches and segfaults.
+        if (model->clusterIndices != nullptr && !model->clusterIndices->empty())
+            model->clusterIndices->clear();
+
+        if (model->normals != nullptr && !model->normals->empty())
+            model->normals->clear();
+
         ui->viewport->showModel(model);
     }
 }
@@ -226,5 +233,19 @@ void MainWindow::on_recalcDownsampleButton_clicked()
 void MainWindow::on_toggleRunOnDownsampledCloudCheckBox_toggled(bool checked)
 {
     settings.useDownsampledVersion = checked;
+
+    Model* model = modelManager->getActiveModel();
+    if (model != nullptr)
+    {
+        //TODO: move this to Model or ModelManager.
+        // This must be cleared to avoid mismatches and segfaults.
+        if (model->clusterIndices != nullptr && !model->clusterIndices->empty())
+            model->clusterIndices->clear();
+
+        if (model->normals != nullptr && !model->normals->empty())
+            model->normals->clear();
+
+        ui->viewport->showModel(model);
+    }
 }
 

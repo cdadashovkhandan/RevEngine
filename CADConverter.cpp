@@ -169,7 +169,7 @@ Model* CADConverter::recognizeShapes(Model& model) const
 
         if (cloudPtr->size() == ogCloudPtr->size())
         {
-            // cluster with RANSAC
+            // Cluster with RANSAC.
             clusterIndices = cluster(cloudPtr, true);
         }
         else if (cloudPtr->size() < ogCloudPtr->size() && cloudPtr->size() > 0)
@@ -179,7 +179,7 @@ Model* CADConverter::recognizeShapes(Model& model) const
             {
                 break;
             }
-            // Cluster with DBSCAN
+            // Cluster with DBSCAN.
             clusterIndices = cluster(cloudPtr, false);
         }
         else
