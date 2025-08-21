@@ -7,9 +7,9 @@
  * @brief PrimitiveShape::getBestFit Perform a (series of) Hough Transform(s) to find the best fitting shape for a given set of points.
  * @param cloud The input point cloud
  * @param indices The indices indiating the cluster in question
- * @return Parameters for the best fitting shape.
+ * @return If the shape was successfully found.
  */
-std::vector<float> PrimitiveShape::getBestFit(pcl::PointCloud<pcl::PointXYZ>::Ptr const cloud, pcl::PointIndices::Ptr const indices)
+bool PrimitiveShape::getBestFit(pcl::PointCloud<pcl::PointXYZ>::Ptr const cloud, pcl::PointIndices::Ptr const indices)
 {
     pcl::PointCloud<pcl::PointXYZ>::Ptr filteredCloud(new pcl::PointCloud<pcl::PointXYZ>);
     pcl::ExtractIndices<pcl::PointXYZ> extract;
@@ -57,14 +57,12 @@ std::vector<float> PrimitiveShape::getBestFit(pcl::PointCloud<pcl::PointXYZ>::Pt
     if (bestFit == nullptr)
     {
         qDebug("Best Hough Transform fit not found");
-        parameters = std::vector<float>({0,0,0});
-        return parameters;
-        //throw; //TODO: proper error handling
+        return false;
     }
 
     recognizedIndices = bestFit->first;
     parameters = bestFit->second;
-    return parameters;
+    return true;
 }
 
 

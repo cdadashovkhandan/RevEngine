@@ -123,7 +123,7 @@ void MainWindow::on_normalNeighborsSpinBox_valueChanged(int arg1)
 void MainWindow::on_lazyImportButton_clicked()
 {
     // QString fileName = "/home/chingiz/Documents/uni/intproj/Fit4CAD/dataset/training_set/PC6.txt";
-    QString fileName = "/home/chingiz/Documents/uni/intproj/fitting_geometric_primitives/test/pointCloud/pointCloud" + QString::number(settings.lazyId) + ".txt";
+    QString fileName = "/home/chingiz/Documents/uni/intproj/Fit4CAD/dataset/training_set/PC" + QString::number(settings.lazyId) + ".txt";
     Model* model = modelManager->createModel(fileName);
     ui->viewport->showModel(model);
 }
@@ -220,5 +220,11 @@ void MainWindow::on_recalcDownsampleButton_clicked()
         modelManager->recalculateDownsample(model);
         ui->viewport->showModel(model);
     }
+}
+
+
+void MainWindow::on_toggleRunOnDownsampledCloudCheckBox_toggled(bool checked)
+{
+    settings.useDownsampledVersion = checked;
 }
 

@@ -69,10 +69,7 @@ Model* CADConverter::preprocess(Model& model) const
     shrink(cloudPtr);
     shrink(cloudPtrDownsampled);
 
-    // temp code to get indices of all points
-    // model.clusterIndices = cluster(cloudPtr); // TODO: temporary!
 
-    // model.pointIndices = cluster(cloudPtr);
     qDebug("Preprocessing completed.");
     return &model;
 }
@@ -87,29 +84,30 @@ Model* CADConverter::recognizeShapes(Model& model) const
 {
     qDebug("Begin shape recognition...");
 
+
     // Work on copy of point cloud instead of the original
     PointCloud::Ptr cloudPtr(new PointCloud());
-    PointCloud::Ptr ogCloudPtr = model.pointCloudDownsampled;
+    PointCloud::Ptr ogCloudPtr = settings->useDownsampledVersion
+        ? model.pointCloudDownsampled
+        : model.pointCloud;
     pcl::copyPointCloud(*ogCloudPtr, *cloudPtr);
 
+    qDebug() << "# Points in model: " << cloudPtr->points.size();
+
+    // Generate a range from 0 to cloudPtr->points.size(), acting as a list of all indices.
     std::vector<pcl::PointIndices::Ptr>* clusterIndices = new std::vector<pcl::PointIndices::Ptr>();
-    // model.clusterIndices = new std::vector<pcl::PointIndices::Ptr>();
-
     pcl::PointIndices::Ptr fullIndices(new pcl::PointIndices());
-
     fullIndices->indices.resize(ogCloudPtr->size());
-
-    // Fill with increasing numbers to match all the existing indeces.
     std::iota(fullIndices->indices.begin(), fullIndices->indices.end(), 0);
 
-    // model.clusterIndices->push_back(fullIndices);
     clusterIndices->push_back(fullIndices);
 
-    // Recognize shapes for each family
+    // A map where:
+    //  - The Key is the index of a given cluster.
+    //  - The Value is a list of potential shapes that could fit this cluster.
     QMap<size_t, std::vector<PrimitiveShape*>*> shapeCandidates;
     model.shapes = new std::vector<PrimitiveShape*>();
 
-    // if (model.clusterIndices->size() > 0) // TODO: this is temporary. Should be a for loop going through clusters, inside the for loop below
     while (true)
     {
         for (std::pair<const PrimitiveType, bool> pair : settings->primitiveTypes)
@@ -128,15 +126,21 @@ Model* CADConverter::recognizeShapes(Model& model) const
                     qDebug() << "Investigating shape of type "
                              << shape->shapeType;
 
-                    shape->getBestFit(cloudPtr, cluster);
-                    shape->calculateMFE(cloudPtr);
+                    bool success = shape->getBestFit(cloudPtr, cluster);
 
-                    std::vector<PrimitiveShape*>* clusterCandidates = shapeCandidates.value(idx);
+                    if (success)
+                    {
+                        shape->calculateMFE(cloudPtr);
 
-                    clusterCandidates->push_back(shape); // TODO: temporary
-                    qDebug() << "Shape found. Indices: " <<
-                    shape->recognizedIndices->indices.size() << " Params: " <<
-                    shape->parameters << "MFE: " << shape->mfe;
+                        std::vector<PrimitiveShape*>* clusterCandidates = shapeCandidates.value(idx);
+
+                        clusterCandidates->push_back(shape);
+                        qDebug() << "Shape found. Indices: " <<
+                            shape->recognizedIndices->indices.size() << " Params: " <<
+                            shape->parameters << "MFE: " << shape->mfe;
+                    }
+                    else
+                        qDebug("Shape not found.");
                 }
             }
         }
@@ -144,10 +148,12 @@ Model* CADConverter::recognizeShapes(Model& model) const
         // Pick the best shape candidate for each cluster
         for (auto [key, vec] : shapeCandidates.asKeyValueRange())
         {
-            PrimitiveShape* bestShape = *std::max_element(vec->begin(), vec->end(), [](PrimitiveShape* const a, PrimitiveShape* const b)
-            {
-                return a->mfe < b->mfe;
-            });
+            PrimitiveShape* bestShape = *std::max_element(vec->begin(),
+                                              vec->end(),
+                                              [](PrimitiveShape* const a, PrimitiveShape* const b)
+                                                {
+                                                    return a->mfe < b->mfe;
+                                                });
 
             model.shapes->push_back(bestShape);
 
@@ -189,7 +195,7 @@ Model* CADConverter::recognizeShapes(Model& model) const
 }
 
 /**
- * @brief CADConverter::isCloudSparse Check if a point cloud is sparse by calculating the density of points
+ * @brief CADConverter::isCloudSparse Check if a point cloud is sparse by calculating the density of points.
  * @param cloud
  * @return
  */
@@ -197,8 +203,7 @@ bool CADConverter::isCloudSparse(PointCloud::Ptr cloud) const
 {
     qDebug("Checking for sparseness...");
 
-    // Calculate point density
-    float radius = 0.01; // Adjust based on your point cloud's scale
+    float radius = 0.05;
     int k = 10; // Number of nearest neighbors
 
     pcl::search::KdTree<pcl::PointXYZ> tree;
@@ -215,7 +220,7 @@ bool CADConverter::isCloudSparse(PointCloud::Ptr cloud) const
         tree.radiusSearch(cloud->points[i], radius, indices, distances);
         if (indices.size() > 1) // Exclude the point itself
         {
-            float sum = std::accumulate(indices.begin() + 1, indices.end(), 0.0f);
+            float sum = std::accumulate(distances.begin() + 1, distances.end(), 0.0f);
             // for (size_t j = 1; j < indices.size(); ++j)
             // {
             //     sum += distances[j];
@@ -229,12 +234,12 @@ bool CADConverter::isCloudSparse(PointCloud::Ptr cloud) const
     {
         float avgDistance = sumDistances / count;
         float threshold = 0.01f;
-        float pointDensity = 1.0f / (qPow(avgDistance, 3)); // Approximate point density (points per unit volume)
+        float pointDensity = avgDistance; // Approximate point density (points per unit volume)
         qDebug() << "Detected density: " << pointDensity << ". Point cloud is sparse: " << (pointDensity < threshold);
         return pointDensity < threshold;
     }
 
-    qDebug("No points found.");
+    qDebug("Point cloud too sparse for density calculations.");
     return true;
 }
 
@@ -313,7 +318,6 @@ std::vector<pcl::PointIndices::Ptr>* CADConverter::cluster(PointCloud::Ptr input
     std::vector<pcl::PointIndices::Ptr>* cluster_indices;
     if (useRansac || settings->forceRansac) // Partially adapted from https://stackoverflow.com/questions/46826720/pclransac-segmentation-get-all-planes-in-cloud
     {
-        //TODO: maybe move to a separate method ?
         qDebug("Clustering with RANSAC...");
 
         pcl::ModelCoefficients::Ptr coefficients (new pcl::ModelCoefficients);
@@ -436,27 +440,32 @@ std::vector<Eigen::Vector3f>* CADConverter::getNormals(PointCloud::Ptr const clo
 
                 Plane* normalPlane = new Plane();
 
-                std::vector<float> params = normalPlane->getBestFit(cloudPtr, neighborIndices);
+                bool success = normalPlane->getBestFit(cloudPtr, neighborIndices);
+                //TODO: this could cause an index mismatch if unsuccessful normals aren't being added.
+                if (success)
+                {
+                    std::vector<float> params = normalPlane->parameters;
 
-                float tht = params[0]; //theta
-                float phi = params[1];
-                // float rho = params[2];
+                    float tht = params[0]; //theta
+                    float phi = params[1];
+                    // float rho = params[2];
 
-                // Build normal vector from chosen parameters
+                    // Build normal vector from chosen parameters
 
-                float a = qCos(tht)*qSin(phi);
-                float b = qSin(phi)*qSin(tht);
-                float c = qCos(phi);
+                    float a = qCos(tht)*qSin(phi);
+                    float b = qSin(phi)*qSin(tht);
+                    float c = qCos(phi);
 
-                Eigen::Vector3f rawNormal(a, b, c);
-                rawNormal.normalize();
+                    Eigen::Vector3f rawNormal(a, b, c);
+                    rawNormal.normalize();
 
-                // Calculate distances from each normal to the original point
-                std::vector<float> normalDistances(neighborCount);
+                    // Calculate distances from each normal to the original point
+                    std::vector<float> normalDistances(neighborCount);
 
-                float mfe = normalPlane->calculateMFE(cloudPtr);
-                if (mfe <= settings->mfeThreshold)
-                    normals->push_back(rawNormal);
+                    float mfe = normalPlane->calculateMFE(cloudPtr);
+                    if (mfe <= settings->mfeThreshold)
+                        normals->push_back(rawNormal);
+                }
             }
         }
     }

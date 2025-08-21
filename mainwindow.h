@@ -69,6 +69,8 @@ private slots:
 
     void on_recalcDownsampleButton_clicked();
 
+    void on_toggleRunOnDownsampledCloudCheckBox_toggled(bool checked);
+
 private:
     Ui::MainWindow *ui;
     ModelManager* modelManager;

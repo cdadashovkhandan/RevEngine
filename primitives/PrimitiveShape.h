@@ -25,7 +25,7 @@ public:
     pcl::PointIndices::Ptr recognizedIndices; // Indices of the points this shape overlaps with.
 
     virtual float calculateMFE(pcl::PointCloud<pcl::PointXYZ>::Ptr const cloud) = 0;
-    std::vector<float> getBestFit(pcl::PointCloud<pcl::PointXYZ>::Ptr const cloud, pcl::PointIndices::Ptr const indices);
+    bool getBestFit(pcl::PointCloud<pcl::PointXYZ>::Ptr const cloud, pcl::PointIndices::Ptr const indices);
     virtual std::vector<ParamPair> buildParameters(std::vector<pcl::PointXYZ, Eigen::aligned_allocator<pcl::PointXYZ>> const points, float const maxMagnitude) const = 0;
     virtual bool isIntersecting(pcl::PointXYZ const point, std::vector<float> const params, float const maxMagnitude) const = 0;
 
