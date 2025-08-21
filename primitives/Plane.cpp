@@ -128,15 +128,33 @@ std::shared_ptr<RenderShape> Plane::getRenderShape() const
     // Get the axis of rotation, which is the cross product of the target normal and the Z-axis
     float angle = qAcos(Eigen::Vector3f::UnitZ().dot(normal));
     axis.normalize();
+    Eigen::Quaternionf quat;
 
+
+    BoundingBox bBoxCopy(*boundingBox);
+    quat = Eigen::AngleAxisf(-angle, axis);
+
+    // Align bounding box with z-axis (XY plane)
+    Eigen::Vector3f rotMin = quat * bBoxCopy.min;
+    Eigen::Vector3f rotMax = quat * bBoxCopy.max;
+
+    float lenX = rotMax.x() - rotMin.x();
+    float lenY = rotMax.y() - rotMin.y();
+
+    Eigen::Vector3f scale(lenX, lenY, 0);
+
+
+    quat = Eigen::AngleAxisf(angle, axis);
     for (Eigen::Vector3f& vert : verts)
     {
-        // Quaternion rotation.
-        Eigen::Quaternionf quat;
-        quat = Eigen::AngleAxisf(angle, axis);
+        // Scale to match target plane
+        vert = vert.cwiseProduct(scale);
+
+        // Align with target plane
         vert = quat * vert;
 
-        vert += parameters[2] * normal; // Move by rho in the direction of the normal.
+        // Move by rho in the direction of the normal.
+        vert += parameters[2] * normal;
     }
 
 
@@ -151,12 +169,20 @@ std::vector<Eigen::Vector3f> Plane::getBaseVertices() const
 {
     std::vector<Eigen::Vector3f> vertices;
 
+    //TODO: I don't like the fact that getNormal is used both here and in getRenderShape
+    Eigen::Vector3f normal = getNormal();
+
+
+
     float scale = 0.5f;
     // Unit plane projected on xy plane.
     vertices.push_back(Eigen::Vector3f(scale, scale, 0.0f)); // top right
     vertices.push_back(Eigen::Vector3f(scale, -scale, 0.0f)); // bottom right
     vertices.push_back(Eigen::Vector3f(-scale, -scale, 0.0f)); // bottom left
     vertices.push_back(Eigen::Vector3f(-scale, scale, 0.0f)); // top left
+
+
+
 
 
     return vertices;

@@ -1,7 +1,7 @@
 #ifndef RENDERSHAPE_H
 #define RENDERSHAPE_H
 
-#include <Eigen/src/Core/Matrix.h>
+#include <Eigen/Dense>
 #include <GL/gl.h>
 
 #include <vector>

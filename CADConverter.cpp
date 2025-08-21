@@ -130,6 +130,7 @@ Model* CADConverter::recognizeShapes(Model& model) const
 
                     if (success)
                     {
+                        shape->getBoundingBox(cloudPtr);
                         shape->calculateMFE(cloudPtr);
 
                         std::vector<PrimitiveShape*>* clusterCandidates = shapeCandidates.value(idx);

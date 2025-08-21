@@ -1,11 +1,14 @@
 #ifndef PRIMITIVESHAPE_H
 #define PRIMITIVESHAPE_H
 
+#include "data/BoundingBox.h"
 #include "primitives/PrimitiveType.h"
-#include <pcl/point_cloud.h>
+
+
 #include <vector>
 #include <QVector3D>
 #include <QPair>
+#include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/PointIndices.h>
 #include "primitives/RenderShape.h"
@@ -21,6 +24,7 @@ public:
     float mfe = -1.0f;
     QVector3D position;
     QVector3D orientation;
+    BoundingBox* boundingBox = nullptr;
 
     pcl::PointIndices::Ptr recognizedIndices; // Indices of the points this shape overlaps with.
 
@@ -30,6 +34,7 @@ public:
     virtual bool isIntersecting(pcl::PointXYZ const point, std::vector<float> const params, float const maxMagnitude) const = 0;
 
     virtual std::shared_ptr<RenderShape> getRenderShape() const = 0;
+    BoundingBox* getBoundingBox(pcl::PointCloud<pcl::PointXYZ>::Ptr cloudPtr);
 protected:
     virtual std::vector<Eigen::Vector3f> getBaseVertices() const = 0;
 };

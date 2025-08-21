@@ -61,6 +61,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         primitives/Cylinder.cpp
         primitives/Circle.h primitives/Circle.cpp
         exceptions/FileReadException.cpp exceptions/FileReadException.h
+        data/BoundingBox.h
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET RevEngine APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
