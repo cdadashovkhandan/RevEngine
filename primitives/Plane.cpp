@@ -165,6 +165,15 @@ std::shared_ptr<RenderShape> Plane::getRenderShape() const
     return renderShape;
 }
 
+QString Plane::toString() const
+{
+    QString output("Plane | %1 points | theta: %2, phi: %3, rho: %4");
+    return output.arg(QString::number(recognizedIndices->indices.size()),
+                    QString::number(parameters[0], 'g', 3),
+                    QString::number(parameters[1], 'g', 3),
+                    QString::number(parameters[2], 'g', 3));
+}
+
 std::vector<Eigen::Vector3f> Plane::getBaseVertices() const
 {
     std::vector<Eigen::Vector3f> vertices;

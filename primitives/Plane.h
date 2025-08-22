@@ -18,6 +18,7 @@ public:
     float calculateMFE(pcl::PointCloud<pcl::PointXYZ>::Ptr const cloud) override;
 
     std::shared_ptr<RenderShape> getRenderShape() const override;
+    QString toString() const override;
 protected:
     std::vector<float> getDistancesToPoints() const; //TODO: make virtual?
 

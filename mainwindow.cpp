@@ -203,6 +203,11 @@ void MainWindow::on_recognizeShapesButton_clicked()
             model = modelManager->recognizeShapes(*model);
             ui->viewport->showModel(model);
         }
+
+        for (auto shape : *model->shapes)
+        {
+            new QListWidgetItem(shape->toString(), ui->detectedShapesListWidget);
+        }
         updateInfoText();
     }
 }

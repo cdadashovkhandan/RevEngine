@@ -35,6 +35,7 @@ public:
 
     virtual std::shared_ptr<RenderShape> getRenderShape() const = 0;
     BoundingBox* getBoundingBox(pcl::PointCloud<pcl::PointXYZ>::Ptr cloudPtr);
+    virtual QString toString() const = 0;
 protected:
     virtual std::vector<Eigen::Vector3f> getBaseVertices() const = 0;
 };
