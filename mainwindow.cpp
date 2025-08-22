@@ -43,6 +43,7 @@ void MainWindow::on_importModelButton_clicked()
     }
 
     ui->viewport->showModel(model);
+    updateInfoText();
 }
 
 
@@ -54,6 +55,8 @@ void MainWindow::on_convertModelButton_clicked()
         model = modelManager->preprocessModel(*model);
         ui->viewport->showModel(model);
     }
+
+    updateInfoText();
 }
 
 
@@ -130,6 +133,8 @@ void MainWindow::on_lazyImportButton_clicked()
     // QString fileName = "/home/chingiz/Documents/uni/intproj/fitting_geometric_primitives/test/pointCloud/pointCloud" + QString::number(settings.lazyId) + ".txt";
     Model* model = modelManager->createModel(fileName);
     ui->viewport->showModel(model);
+
+    updateInfoText();
 }
 
 
@@ -155,6 +160,8 @@ void MainWindow::on_recalcNormalsButton_clicked()
             modelManager->recalculateNormals(model);
             ui->viewport->showModel(model);
         }
+
+        updateInfoText();
     }
 }
 
@@ -196,6 +203,7 @@ void MainWindow::on_recognizeShapesButton_clicked()
             model = modelManager->recognizeShapes(*model);
             ui->viewport->showModel(model);
         }
+        updateInfoText();
     }
 }
 
@@ -250,6 +258,8 @@ void MainWindow::on_recalcDownsampleButton_clicked()
                 model->normals->clear();
 
             ui->viewport->showModel(model);
+
+            updateInfoText();
         }
     }
 }
@@ -272,5 +282,28 @@ void MainWindow::on_toggleRunOnDownsampledCloudCheckBox_toggled(bool checked)
 
         ui->viewport->showModel(model);
     }
+}
+
+void MainWindow::updateInfoText()
+{
+    Model* model = modelManager->getActiveModel();
+    if (model != nullptr)
+    {
+        ui->infoTextEdit->clear();
+
+        ui->infoTextEdit->append(QString("Full cloud: %1 points").arg(QString::number(model->pointCloud->points.size())));
+        if (modelManager->modelStatus >= ModelStatus::PREPROCESSED)
+        {
+            ui->infoTextEdit->append(QString("Downsampled cloud: %1 points").arg(QString::number(model->pointCloudDownsampled->points.size())));
+        }
+
+        if (modelManager->modelStatus >= ModelStatus::ANALYZED)
+        {
+            ui->infoTextEdit->append(QString("Detected shape count: %1").arg(QString::number(model->shapes->size())));
+        }
+
+        // ui->infoTextEdit->append(QString("Model status: %1").arg(Util::QtEnumToString(modelManager->modelStatus)));
+    }
+
 }
 

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1422</width>
-    <height>740</height>
+    <width>1563</width>
+    <height>743</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -27,7 +27,7 @@
    <widget class="Line" name="line">
     <property name="geometry">
      <rect>
-      <x>680</x>
+      <x>940</x>
       <y>500</y>
       <width>261</width>
       <height>16</height>
@@ -40,7 +40,7 @@
    <widget class="QLabel" name="label">
     <property name="geometry">
      <rect>
-      <x>680</x>
+      <x>940</x>
       <y>480</y>
       <width>81</width>
       <height>17</height>
@@ -56,7 +56,7 @@
    <widget class="QPushButton" name="importModelButton">
     <property name="geometry">
      <rect>
-      <x>680</x>
+      <x>940</x>
       <y>320</y>
       <width>201</width>
       <height>25</height>
@@ -69,7 +69,7 @@
    <widget class="QPushButton" name="exportModelButton">
     <property name="geometry">
      <rect>
-      <x>680</x>
+      <x>940</x>
       <y>440</y>
       <width>201</width>
       <height>25</height>
@@ -82,7 +82,7 @@
    <widget class="QPushButton" name="convertModelButton">
     <property name="geometry">
      <rect>
-      <x>680</x>
+      <x>940</x>
       <y>360</y>
       <width>201</width>
       <height>25</height>
@@ -95,7 +95,7 @@
    <widget class="Line" name="line_2">
     <property name="geometry">
      <rect>
-      <x>680</x>
+      <x>940</x>
       <y>40</y>
       <width>261</width>
       <height>16</height>
@@ -108,7 +108,7 @@
    <widget class="QLabel" name="label_2">
     <property name="geometry">
      <rect>
-      <x>680</x>
+      <x>940</x>
       <y>20</y>
       <width>81</width>
       <height>17</height>
@@ -124,7 +124,7 @@
    <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
-      <x>680</x>
+      <x>940</x>
       <y>520</y>
       <width>261</width>
       <height>131</height>
@@ -183,7 +183,7 @@
    <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
-      <x>680</x>
+      <x>940</x>
       <y>60</y>
       <width>251</width>
       <height>192</height>
@@ -261,7 +261,7 @@
    <widget class="QLabel" name="label_3">
     <property name="geometry">
      <rect>
-      <x>680</x>
+      <x>940</x>
       <y>270</y>
       <width>121</width>
       <height>17</height>
@@ -277,7 +277,7 @@
    <widget class="Line" name="line_3">
     <property name="geometry">
      <rect>
-      <x>680</x>
+      <x>940</x>
       <y>290</y>
       <width>261</width>
       <height>16</height>
@@ -290,7 +290,7 @@
    <widget class="Line" name="line_4">
     <property name="geometry">
      <rect>
-      <x>1020</x>
+      <x>1280</x>
       <y>50</y>
       <width>261</width>
       <height>16</height>
@@ -303,7 +303,7 @@
    <widget class="QLabel" name="label_4">
     <property name="geometry">
      <rect>
-      <x>1020</x>
+      <x>1280</x>
       <y>30</y>
       <width>121</width>
       <height>17</height>
@@ -319,7 +319,7 @@
    <widget class="QPushButton" name="recalcClusterButton">
     <property name="geometry">
      <rect>
-      <x>1020</x>
+      <x>1280</x>
       <y>100</y>
       <width>201</width>
       <height>25</height>
@@ -332,7 +332,7 @@
    <widget class="Line" name="line_5">
     <property name="geometry">
      <rect>
-      <x>1020</x>
+      <x>1280</x>
       <y>200</y>
       <width>261</width>
       <height>16</height>
@@ -345,7 +345,7 @@
    <widget class="QLabel" name="label_5">
     <property name="geometry">
      <rect>
-      <x>1020</x>
+      <x>1280</x>
       <y>180</y>
       <width>81</width>
       <height>17</height>
@@ -361,7 +361,7 @@
    <widget class="QLabel" name="scaleFactorLabel">
     <property name="geometry">
      <rect>
-      <x>1020</x>
+      <x>1280</x>
       <y>220</y>
       <width>127</width>
       <height>26</height>
@@ -374,7 +374,7 @@
    <widget class="QDoubleSpinBox" name="scaleFactorSpinBox">
     <property name="geometry">
      <rect>
-      <x>1160</x>
+      <x>1420</x>
       <y>220</y>
       <width>126</width>
       <height>26</height>
@@ -393,7 +393,7 @@
    <widget class="QCheckBox" name="highPrecisionNormalsCheckBox">
     <property name="geometry">
      <rect>
-      <x>1020</x>
+      <x>1280</x>
       <y>330</y>
       <width>171</width>
       <height>22</height>
@@ -406,7 +406,7 @@
    <widget class="QLabel" name="label_6">
     <property name="geometry">
      <rect>
-      <x>1020</x>
+      <x>1280</x>
       <y>290</y>
       <width>81</width>
       <height>17</height>
@@ -422,7 +422,7 @@
    <widget class="Line" name="line_6">
     <property name="geometry">
      <rect>
-      <x>1020</x>
+      <x>1280</x>
       <y>310</y>
       <width>261</width>
       <height>16</height>
@@ -435,7 +435,7 @@
    <widget class="QSpinBox" name="normalNeighborsSpinBox">
     <property name="geometry">
      <rect>
-      <x>1153</x>
+      <x>1413</x>
       <y>360</y>
       <width>126</width>
       <height>26</height>
@@ -457,7 +457,7 @@
    <widget class="QLabel" name="normalNeighborsSpinBoxLabel">
     <property name="geometry">
      <rect>
-      <x>1020</x>
+      <x>1280</x>
       <y>360</y>
       <width>127</width>
       <height>26</height>
@@ -470,7 +470,7 @@
    <widget class="QPushButton" name="lazyImportButton">
     <property name="geometry">
      <rect>
-      <x>890</x>
+      <x>1150</x>
       <y>320</y>
       <width>61</width>
       <height>25</height>
@@ -483,7 +483,7 @@
    <widget class="QComboBox" name="comboBox">
     <property name="geometry">
      <rect>
-      <x>1150</x>
+      <x>1410</x>
       <y>400</y>
       <width>121</width>
       <height>25</height>
@@ -503,7 +503,7 @@
    <widget class="QLabel" name="estimationMethodComboBoxLabel">
     <property name="geometry">
      <rect>
-      <x>1020</x>
+      <x>1280</x>
       <y>400</y>
       <width>111</width>
       <height>26</height>
@@ -516,7 +516,7 @@
    <widget class="QDoubleSpinBox" name="normalSearchRadiusSpinBox">
     <property name="geometry">
      <rect>
-      <x>1150</x>
+      <x>1410</x>
       <y>440</y>
       <width>126</width>
       <height>26</height>
@@ -535,7 +535,7 @@
    <widget class="QLabel" name="normalSearchRadiusSpinBoxLabel">
     <property name="geometry">
      <rect>
-      <x>1020</x>
+      <x>1280</x>
       <y>440</y>
       <width>121</width>
       <height>26</height>
@@ -548,7 +548,7 @@
    <widget class="QPushButton" name="recalcNormalsButton">
     <property name="geometry">
      <rect>
-      <x>1020</x>
+      <x>1280</x>
       <y>60</y>
       <width>201</width>
       <height>25</height>
@@ -561,7 +561,7 @@
    <widget class="QLabel" name="label_7">
     <property name="geometry">
      <rect>
-      <x>1020</x>
+      <x>1280</x>
       <y>490</y>
       <width>231</width>
       <height>17</height>
@@ -577,7 +577,7 @@
    <widget class="Line" name="line_7">
     <property name="geometry">
      <rect>
-      <x>1020</x>
+      <x>1280</x>
       <y>510</y>
       <width>261</width>
       <height>16</height>
@@ -590,7 +590,7 @@
    <widget class="QWidget" name="gridLayoutWidget">
     <property name="geometry">
      <rect>
-      <x>1030</x>
+      <x>1290</x>
       <y>550</y>
       <width>131</width>
       <height>136</height>
@@ -652,7 +652,7 @@
    <widget class="QLabel" name="label_8">
     <property name="geometry">
      <rect>
-      <x>1020</x>
+      <x>1280</x>
       <y>530</y>
       <width>121</width>
       <height>17</height>
@@ -665,7 +665,7 @@
    <widget class="QPushButton" name="recognizeShapesButton">
     <property name="geometry">
      <rect>
-      <x>680</x>
+      <x>940</x>
       <y>400</y>
       <width>201</width>
       <height>25</height>
@@ -678,7 +678,7 @@
    <widget class="QSpinBox" name="lazyIdSpinBox">
     <property name="geometry">
      <rect>
-      <x>960</x>
+      <x>1220</x>
       <y>320</y>
       <width>42</width>
       <height>26</height>
@@ -691,7 +691,7 @@
    <widget class="QLabel" name="downSampleFactorLabel">
     <property name="geometry">
      <rect>
-      <x>1020</x>
+      <x>1280</x>
       <y>250</y>
       <width>127</width>
       <height>26</height>
@@ -704,7 +704,7 @@
    <widget class="QDoubleSpinBox" name="downSampleFactorSpinBox_2">
     <property name="geometry">
      <rect>
-      <x>1160</x>
+      <x>1420</x>
       <y>250</y>
       <width>126</width>
       <height>26</height>
@@ -723,7 +723,7 @@
    <widget class="QPushButton" name="recalcDownsampleButton">
     <property name="geometry">
      <rect>
-      <x>1020</x>
+      <x>1280</x>
       <y>140</y>
       <width>201</width>
       <height>25</height>
@@ -733,13 +733,100 @@
      <string>Recalculate Downsample</string>
     </property>
    </widget>
+   <widget class="QListView" name="listView">
+    <property name="geometry">
+     <rect>
+      <x>670</x>
+      <y>70</y>
+      <width>211</width>
+      <height>351</height>
+     </rect>
+    </property>
+    <property name="autoFillBackground">
+     <bool>false</bool>
+    </property>
+    <property name="wordWrap">
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_9">
+    <property name="geometry">
+     <rect>
+      <x>670</x>
+      <y>20</y>
+      <width>171</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>**DETECTED SHAPES**</string>
+    </property>
+    <property name="textFormat">
+     <enum>Qt::TextFormat::MarkdownText</enum>
+    </property>
+   </widget>
+   <widget class="Line" name="line_8">
+    <property name="geometry">
+     <rect>
+      <x>670</x>
+      <y>40</y>
+      <width>211</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Orientation::Horizontal</enum>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_10">
+    <property name="geometry">
+     <rect>
+      <x>670</x>
+      <y>430</y>
+      <width>171</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>**INFO**</string>
+    </property>
+    <property name="textFormat">
+     <enum>Qt::TextFormat::MarkdownText</enum>
+    </property>
+   </widget>
+   <widget class="Line" name="line_9">
+    <property name="geometry">
+     <rect>
+      <x>670</x>
+      <y>450</y>
+      <width>211</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Orientation::Horizontal</enum>
+    </property>
+   </widget>
+   <widget class="QTextEdit" name="infoTextEdit">
+    <property name="geometry">
+     <rect>
+      <x>670</x>
+      <y>470</y>
+      <width>211</width>
+      <height>211</height>
+     </rect>
+    </property>
+    <property name="readOnly">
+     <bool>true</bool>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1422</width>
+     <width>1563</width>
      <height>22</height>
     </rect>
    </property>

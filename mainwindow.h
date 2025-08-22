@@ -76,5 +76,6 @@ private:
     ModelManager* modelManager;
     Settings settings;
     bool enforceStatus(ModelStatus modelStatus);
+    void updateInfoText();
 };
 #endif // MAINWINDOW_H

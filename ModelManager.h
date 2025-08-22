@@ -18,6 +18,7 @@ private:
     PointCloud::Ptr parsePointCloud(QString fileName) const;
     CADConverter* cadConverter;
 public:
+
     ModelManager(Settings* s);
     ~ModelManager();
 

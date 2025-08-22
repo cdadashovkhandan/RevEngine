@@ -1,7 +1,6 @@
 #ifndef MODELSTATUS_H
 #define MODELSTATUS_H
 
-
 enum ModelStatus
 {
     EMPTY = 0,

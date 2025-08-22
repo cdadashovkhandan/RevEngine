@@ -6,33 +6,6 @@
 
 #include "exceptions/FileReadException.h"
 
-ModelManager::ModelManager(Settings* s)
-{
-    settings = s;
-    cadConverter = new CADConverter(s);
-}
-
-ModelManager::~ModelManager()
-{
-    qDeleteAll(models);
-    models.clear();
-}
-
-/**
- * @brief ModelManager::getActiveModel Get the currently active model.
- * @return The active model or nullptr if there isn't one.
- */
-Model* ModelManager::getActiveModel() const
-{
-    return models.isEmpty() ? nullptr
-                            : models.last();
-}
-
-/**
- * @brief ModelManager::parsePointCloud Parse a point cloud from file.
- * @param fileName
- * @return
- */
 PointCloud::Ptr ModelManager::parsePointCloud(QString fileName) const
 {
     QFile cloudFile(fileName);
@@ -61,6 +34,33 @@ PointCloud::Ptr ModelManager::parsePointCloud(QString fileName) const
         throw FileReadException();
 
     return cloud;
+}
+
+ModelManager::ModelManager(Settings* s)
+{
+    settings = s;
+    cadConverter = new CADConverter(s);
+}
+
+/**
+ * @brief ModelManager::getActiveModel Get the currently active model.
+ * @return The active model or nullptr if there isn't one.
+ */
+ModelManager::~ModelManager()
+{
+    qDeleteAll(models);
+    models.clear();
+}
+
+/**
+ * @brief ModelManager::parsePointCloud Parse a point cloud from file.
+ * @param fileName
+ * @return
+ */
+Model* ModelManager::getActiveModel() const
+{
+    return models.isEmpty() ? nullptr
+                            : models.last();
 }
 
 /**
