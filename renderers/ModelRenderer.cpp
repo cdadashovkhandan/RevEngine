@@ -117,9 +117,10 @@ void ModelRenderer::update_buffers(Model* model)
 
     gl->glBindVertexArray(0);
 
+    clearRenderShapes();
+
     if (settings->showShapes && model->shapes != nullptr)
     {
-        clearRenderShapes();
         for (PrimitiveShape* shape : *model->shapes)
         {
             qDebug() << "Rendering shape of type " << shape->shapeType;
