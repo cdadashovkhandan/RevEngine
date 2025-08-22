@@ -66,7 +66,6 @@ struct Settings
 
     // ----Recognition----
 
-
     // Primitive types that are available for the recognition stage.
     std::map<PrimitiveType, bool> primitiveTypes = {
         { PrimitiveType::PLANE, true },

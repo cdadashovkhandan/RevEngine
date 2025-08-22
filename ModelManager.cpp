@@ -114,11 +114,11 @@ void ModelManager::recalculateNormals(Model *model)
  */
 void ModelManager::recalculateDownsample(Model *model)
 {
-    cadConverter->downsample(model->pointCloud, model->pointCloudDownsampled);
+    cadConverter->downsample(model->pointCloud, model->pointCloudDownsampled, model->scaleFactor);
 }
 
 /**
- * @brief ModelManager::generateMesh Generate a B-Rep representation out of a Model's Point Cloud.
+ * @brief ModelManager::preprocessModel Execute the preprocessing stage for a model.
  * @param model
  * @return
  */
@@ -131,7 +131,7 @@ Model *ModelManager::preprocessModel(Model& model)
 }
 
 /**
- * @brief ModelManager::generateMesh Generate a B-Rep representation out of a Model's Point Cloud.
+ * @brief ModelManager::recognizeShapes Execute the shape recognition stage for a model.
  * @param model
  * @return
  */

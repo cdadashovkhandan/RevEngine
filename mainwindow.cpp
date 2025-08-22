@@ -295,6 +295,7 @@ void MainWindow::updateInfoText()
         if (modelManager->modelStatus >= ModelStatus::PREPROCESSED)
         {
             ui->infoTextEdit->append(QString("Downsampled cloud: %1 points").arg(QString::number(model->pointCloudDownsampled->points.size())));
+            ui->infoTextEdit->append(QString("Downsizing scale factor: %1").arg(QString::number(model->scaleFactor, 'g', 3)));
         }
 
         if (modelManager->modelStatus >= ModelStatus::ANALYZED)

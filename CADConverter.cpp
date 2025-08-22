@@ -32,7 +32,7 @@ Model* CADConverter::preprocess(Model& model) const
     PointCloud::Ptr cloudPtr = model.pointCloud;
     PointCloud::Ptr cloudPtrDownsampled(new PointCloud());
 
-    downsample(cloudPtr, cloudPtrDownsampled);
+    downsample(cloudPtr, cloudPtrDownsampled, model.scaleFactor);
 
     model.pointCloudDownsampled = cloudPtrDownsampled;
 
@@ -66,7 +66,7 @@ Model* CADConverter::preprocess(Model& model) const
     //     alignCloudWithZAxis(cloudPtr, *model.normals);
     // }
 
-    shrink(cloudPtr);
+    model.scaleFactor = shrink(cloudPtr);
     shrink(cloudPtrDownsampled);
 
 
@@ -254,8 +254,9 @@ bool CADConverter::isCloudSparse(PointCloud::Ptr cloud) const
 /**
  * @brief CADConverter::shrink Scale a point cloud down to a unit cube
  * @param cloud
+ * @return the scale factor by which the cloud was shrunk
  */
-void CADConverter::shrink(PointCloud::Ptr cloud) const
+float CADConverter::shrink(PointCloud::Ptr cloud) const
 {
     qDebug("Downsizing pointcloud to unit cube.");
     float scaleFactor = 0.01f;
@@ -295,6 +296,7 @@ void CADConverter::shrink(PointCloud::Ptr cloud) const
 
     qDebug() << "New min point: (" << newMinPoint.x() << ", " <<  newMinPoint.y() << ", " << newMinPoint.z() << ")";
     qDebug() << "New max point: (" << newMaxPoint.x() << ", " <<  newMaxPoint.y() << ", " << newMaxPoint.z() << ")";
+    return scaleFactor;
 }
 
 /**
@@ -302,12 +304,12 @@ void CADConverter::shrink(PointCloud::Ptr cloud) const
  * @param input Input point cloud pointer
  * @param target target point cloud pointer (NB: input and target can be the same)
  */
-void CADConverter::downsample(PointCloud::Ptr input, PointCloud::Ptr target) const
+void CADConverter::downsample(PointCloud::Ptr input, PointCloud::Ptr target, float scaleFactor) const
 {
     qDebug("Creating downsampled copy...");
     pcl::VoxelGrid<pcl::PointXYZ> voxelGrid;
 
-    float downSampleFactor = settings->downSampleFactor;
+    float downSampleFactor = settings->downSampleFactor * scaleFactor;
 
     voxelGrid.setInputCloud(input);
     voxelGrid.setLeafSize(downSampleFactor, downSampleFactor, downSampleFactor);

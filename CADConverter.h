@@ -18,11 +18,11 @@ public:
 
     std::vector<Eigen::Vector3f>*  getNormals(pcl::PointCloud<pcl::PointXYZ>::Ptr const cloudPtr) const;
 
-    void downsample(PointCloud::Ptr input, PointCloud::Ptr target) const;
+    void downsample(PointCloud::Ptr input, PointCloud::Ptr target, float scaleFactor) const;
 
     std::vector<pcl::PointIndices::Ptr>* cluster(PointCloud::Ptr input, bool const useRansac) const;
 
-    void shrink(PointCloud::Ptr cloud) const;
+    float shrink(PointCloud::Ptr cloud) const;
 private:
     Settings* settings;
 
