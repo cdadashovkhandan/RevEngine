@@ -44,6 +44,7 @@ void MainWindow::on_importModelButton_clicked()
 
     ui->viewport->showModel(model);
     updateInfoText();
+    ui->detectedShapesListWidget->clear();
 }
 
 
@@ -135,6 +136,7 @@ void MainWindow::on_lazyImportButton_clicked()
     ui->viewport->showModel(model);
 
     updateInfoText();
+    ui->detectedShapesListWidget->clear();
 }
 
 
@@ -204,6 +206,8 @@ void MainWindow::on_recognizeShapesButton_clicked()
             ui->viewport->showModel(model);
         }
 
+
+        ui->detectedShapesListWidget->clear();
         for (auto shape : *model->shapes)
         {
             new QListWidgetItem(shape->toString(), ui->detectedShapesListWidget);
