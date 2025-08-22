@@ -18,7 +18,6 @@ ModelRenderer::ModelRenderer(QOpenGLFunctions_4_1_Core* gl, Scene* scene)
     shapeMat(new ShapeMaterial(gl))
 {
     gl->glEnable(GL_DEPTH_TEST);
-    // GLuint vertArrays[2] = {vao, renderShape->vao};
     gl->glGenVertexArrays(1, &vao);
 }
 

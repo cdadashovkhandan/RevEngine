@@ -75,5 +75,6 @@ private:
     Ui::MainWindow *ui;
     ModelManager* modelManager;
     Settings settings;
+    bool enforceStatus(ModelStatus modelStatus);
 };
 #endif // MAINWINDOW_H

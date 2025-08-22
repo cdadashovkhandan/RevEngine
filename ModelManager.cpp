@@ -75,6 +75,7 @@ Model* ModelManager::createModel(QString filename)
         PointCloud::Ptr pointCloud = parsePointCloud(filename);
         Model* model = new Model(pointCloud);
         models.append(model);
+        modelStatus = ModelStatus::RAW;
         return models.last();
     }
     catch (FileReadException& e)
@@ -121,9 +122,10 @@ void ModelManager::recalculateDownsample(Model *model)
  * @param model
  * @return
  */
-Model *ModelManager::preprocessModel(Model& model) const
+Model *ModelManager::preprocessModel(Model& model)
 {
     cadConverter->preprocess(model);
+    modelStatus = ModelStatus::PREPROCESSED;
 
     return &model;
 }
@@ -133,9 +135,10 @@ Model *ModelManager::preprocessModel(Model& model) const
  * @param model
  * @return
  */
-Model *ModelManager::recognizeShapes(Model& model) const
+Model *ModelManager::recognizeShapes(Model& model)
 {
     cadConverter->recognizeShapes(model);
+    modelStatus = ModelStatus::ANALYZED;
 
     return &model;
 }

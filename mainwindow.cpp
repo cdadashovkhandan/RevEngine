@@ -78,9 +78,12 @@ void MainWindow::on_distanceThresholdSpinBox_valueChanged(double arg1)
 
 void MainWindow::on_recalcClusterButton_clicked()
 {
-    Model* model = modelManager->getActiveModel();
-    modelManager->recalculateClusters(model);
-    ui->viewport->showModel(model);
+    if (enforceStatus(ModelStatus::PREPROCESSED))
+    {
+        Model* model = modelManager->getActiveModel();
+        modelManager->recalculateClusters(model);
+        ui->viewport->showModel(model);
+    }
 }
 
 
@@ -144,11 +147,14 @@ void MainWindow::on_normalSearchRadiusSpinBox_valueChanged(double arg1)
 
 void MainWindow::on_recalcNormalsButton_clicked()
 {
-    Model* model = modelManager->getActiveModel();
-    if (model != nullptr)
+    if (enforceStatus(ModelStatus::PREPROCESSED))
     {
-        modelManager->recalculateNormals(model);
-        ui->viewport->showModel(model);
+        Model* model = modelManager->getActiveModel();
+        if (model != nullptr) //TODO: null check is probably redundant if status is enforced.
+        {
+            modelManager->recalculateNormals(model);
+            ui->viewport->showModel(model);
+        }
     }
 }
 
@@ -182,14 +188,29 @@ void MainWindow::on_forceRansacCheckBox_toggled(bool checked)
 
 void MainWindow::on_recognizeShapesButton_clicked()
 {
-    Model* model = modelManager->getActiveModel();
-    if (model != nullptr)
+    if (enforceStatus(ModelStatus::PREPROCESSED))
     {
-        model = modelManager->recognizeShapes(*model);
-        ui->viewport->showModel(model);
+        Model* model = modelManager->getActiveModel();
+        if (model != nullptr)
+        {
+            model = modelManager->recognizeShapes(*model);
+            ui->viewport->showModel(model);
+        }
     }
 }
 
+bool MainWindow::enforceStatus(ModelStatus modelStatus)
+{
+    if (modelManager->modelStatus < modelStatus)
+    {
+        QMessageBox errorMessage;
+        errorMessage.warning(this, "Point Cloud not ready", "Please pre-process the point cloud first.");
+        errorMessage.show();
+        return false;
+    }
+
+    return true;
+}
 
 void MainWindow::on_lazyIdSpinBox_valueChanged(int arg1)
 {
@@ -215,18 +236,21 @@ void MainWindow::on_downSampleFactorSpinBox_2_valueChanged(double arg1)
 
 void MainWindow::on_recalcDownsampleButton_clicked()
 {
-    Model* model = modelManager->getActiveModel();
-    if (model != nullptr)
+    if (enforceStatus(ModelStatus::PREPROCESSED))
     {
-        modelManager->recalculateDownsample(model);
-        // This must be cleared to avoid mismatches and segfaults.
-        if (model->clusterIndices != nullptr && !model->clusterIndices->empty())
-            model->clusterIndices->clear();
+        Model* model = modelManager->getActiveModel();
+        if (model != nullptr)
+        {
+            modelManager->recalculateDownsample(model);
+            // This must be cleared to avoid mismatches and segfaults.
+            if (model->clusterIndices != nullptr && !model->clusterIndices->empty())
+                model->clusterIndices->clear();
 
-        if (model->normals != nullptr && !model->normals->empty())
-            model->normals->clear();
+            if (model->normals != nullptr && !model->normals->empty())
+                model->normals->clear();
 
-        ui->viewport->showModel(model);
+            ui->viewport->showModel(model);
+        }
     }
 }
 
