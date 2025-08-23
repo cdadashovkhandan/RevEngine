@@ -10,6 +10,8 @@ struct RenderShape
     GLuint vao;
 
     GLuint vbo;
+    GLuint vbo_colors;
+
     GLuint ibo;
 
     std::vector<uint32_t> indices;

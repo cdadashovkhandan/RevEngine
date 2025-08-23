@@ -120,6 +120,8 @@ void ModelRenderer::update_buffers(Model* model)
 
     if (settings->showShapes && model->shapes != nullptr)
     {
+
+        size_t colorIndex = 0;
         for (PrimitiveShape* shape : *model->shapes)
         {
             qDebug() << "Rendering shape of type " << shape->shapeType;
@@ -130,6 +132,7 @@ void ModelRenderer::update_buffers(Model* model)
 
             gl->glBindVertexArray(renderShape->vao);
             gl->glGenBuffers(1, &renderShape->vbo);
+            gl->glGenBuffers(1, &renderShape->vbo_colors);
             gl->glGenBuffers(1, &renderShape->ibo);
 
             gl->glBindBuffer(GL_ARRAY_BUFFER, renderShape->vbo);
@@ -138,6 +141,25 @@ void ModelRenderer::update_buffers(Model* model)
 
             gl->glEnableVertexAttribArray(0);
             gl->glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
+
+            // Shape Colors
+            std::vector<float> colors(renderShape->vertices.size() * 3);
+
+            for (size_t idx = 0; idx < renderShape->vertices.size(); ++idx)
+            {
+                QColor newColor = clusterColors[colorIndex];
+                colors[3 * idx] = newColor.red();
+                colors[3 * idx + 1] = newColor.green();
+                colors[3 * idx + 2] = newColor.blue();
+            }
+            colorIndex = (colorIndex + 1) % CLUSTER_COLOR_COUNT;
+
+            gl->glBindBuffer(GL_ARRAY_BUFFER, renderShape->vbo_colors);
+            gl->glBufferData(GL_ARRAY_BUFFER, colors.size() * sizeof(float),
+                             colors.data(), GL_STATIC_DRAW);
+
+            gl->glEnableVertexAttribArray(1);
+            gl->glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
 
             gl->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, renderShape->ibo);
             gl->glBufferData(GL_ELEMENT_ARRAY_BUFFER, renderShape->indices.size() * sizeof(uint32_t), renderShape->indices.data(), GL_STATIC_DRAW);
@@ -158,6 +180,7 @@ void ModelRenderer::clearRenderShapes()
     for (const std::shared_ptr<RenderShape> &renderShape : renderShapes) {
         gl->glDeleteVertexArrays(1, &renderShape->vao);
         gl->glDeleteBuffers(1, &renderShape->vbo);
+        gl->glDeleteBuffers(1, &renderShape->vbo_colors);
         gl->glDeleteBuffers(1, &renderShape->ibo);
     }
 
@@ -268,6 +291,10 @@ void ModelRenderer::drawShape(std::shared_ptr<RenderShape> const renderShape)
         gl->glEnableVertexAttribArray(0);
         gl->glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
 
+        gl->glBindBuffer(GL_ARRAY_BUFFER, renderShape->vbo_colors);
+        gl->glEnableVertexAttribArray(1);
+        gl->glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
+
         gl->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, renderShape->ibo);
 
         // uint32_t data[renderShape->indices.size()];
@@ -276,8 +303,8 @@ void ModelRenderer::drawShape(std::shared_ptr<RenderShape> const renderShape)
         // gl->glDrawArrays(GL_POINTS, 0, renderShape->vertices.size());
         gl->glDrawElements(GL_TRIANGLES, renderShape->indices.size(), GL_UNSIGNED_INT, nullptr);
 
-        GLenum err = gl->glGetError();
-        if (err != GL_NO_ERROR) qDebug() << "OpenGL error:" << err;
+        // GLenum err = gl->glGetError();
+        // if (err != GL_NO_ERROR) qDebug() << "OpenGL error:" << err;
         gl->glBindVertexArray(0);
     }
     shapeMat->release();

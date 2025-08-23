@@ -93,7 +93,6 @@ Model* CADConverter::recognizeShapes(Model& model) const
     pcl::copyPointCloud(*ogCloudPtr, *cloudPtr);
 
     int prevCloudSize = ogCloudPtr->size();
-    qDebug() << "# Points in model: " << cloudPtr->points.size();
 
     // Generate a range from 0 to cloudPtr->points.size(), acting as a list of all indices.
     std::vector<pcl::PointIndices::Ptr>* clusterIndices = new std::vector<pcl::PointIndices::Ptr>();
@@ -110,6 +109,7 @@ Model* CADConverter::recognizeShapes(Model& model) const
 
     while (true)
     {
+        qDebug() << "# Points: " << cloudPtr->points.size();
         QMap<size_t, std::vector<PrimitiveShape*>*> shapeCandidates;
         for (std::pair<const PrimitiveType, bool> pair : settings->primitiveTypes)
         {
