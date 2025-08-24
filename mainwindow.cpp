@@ -318,3 +318,14 @@ void MainWindow::updateInfoText()
 
 }
 
+
+void MainWindow::on_finalizeButton_clicked()
+{
+    Model* model = modelManager->getActiveModel();
+    if (model != nullptr)
+    {
+        model = modelManager->finalizeModel(*model);
+        ui->viewport->showModel(model);
+    }
+}
+

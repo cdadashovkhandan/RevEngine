@@ -28,7 +28,7 @@
     <property name="geometry">
      <rect>
       <x>940</x>
-      <y>500</y>
+      <y>540</y>
       <width>261</width>
       <height>16</height>
      </rect>
@@ -41,7 +41,7 @@
     <property name="geometry">
      <rect>
       <x>940</x>
-      <y>480</y>
+      <y>520</y>
       <width>81</width>
       <height>17</height>
      </rect>
@@ -70,7 +70,7 @@
     <property name="geometry">
      <rect>
       <x>940</x>
-      <y>440</y>
+      <y>480</y>
       <width>201</width>
       <height>25</height>
      </rect>
@@ -125,7 +125,7 @@
     <property name="geometry">
      <rect>
       <x>940</x>
-      <y>520</y>
+      <y>560</y>
       <width>261</width>
       <height>131</height>
      </rect>
@@ -824,6 +824,19 @@
     </property>
     <property name="selectionRectVisible">
      <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="finalizeButton">
+    <property name="geometry">
+     <rect>
+      <x>940</x>
+      <y>440</y>
+      <width>201</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Finalize</string>
     </property>
    </widget>
   </widget>

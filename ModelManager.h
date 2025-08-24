@@ -14,6 +14,7 @@ class ModelManager
 {
 
 private:
+    // TODO: this shouldn't be a vector, one model is enough.
     QVector<Model*> models;
     PointCloud::Ptr parsePointCloud(QString fileName) const;
     CADConverter* cadConverter;
@@ -33,6 +34,7 @@ public:
     void recalculateDownsample(Model *model);
     Model* preprocessModel(Model& model);
     Model* recognizeShapes(Model &model);
+    Model* finalizeModel(Model &model);
 };
 
 #endif // MODELMANAGER_H

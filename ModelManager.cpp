@@ -143,3 +143,11 @@ Model *ModelManager::recognizeShapes(Model& model)
     return &model;
 }
 
+Model* ModelManager::finalizeModel(Model &model)
+{
+    cadConverter->finalize(model);
+    modelStatus = ModelStatus::FINALIZED;
+
+    return &model;
+}
+

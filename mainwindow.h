@@ -71,6 +71,8 @@ private slots:
 
     void on_toggleRunOnDownsampledCloudCheckBox_toggled(bool checked);
 
+    void on_finalizeButton_clicked();
+
 private:
     Ui::MainWindow *ui;
     ModelManager* modelManager;

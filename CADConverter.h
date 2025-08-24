@@ -23,6 +23,7 @@ public:
     std::vector<pcl::PointIndices::Ptr>* cluster(PointCloud::Ptr input, bool const useRansac) const;
 
     float shrink(PointCloud::Ptr cloud) const;
+    Model *finalize(Model &model) const;
 private:
     Settings* settings;
 
