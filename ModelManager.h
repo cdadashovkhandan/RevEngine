@@ -13,28 +13,27 @@ using PointCloud = pcl::PointCloud<pcl::PointXYZ>;
 class ModelManager
 {
 
-private:
-    // TODO: this shouldn't be a vector, one model is enough.
-    QVector<Model*> models;
-    PointCloud::Ptr parsePointCloud(QString fileName) const;
-    CADConverter* cadConverter;
+
 public:
 
     ModelManager(Settings* s);
     ~ModelManager();
+    Model* model = nullptr;
 
     ModelStatus modelStatus = ModelStatus::EMPTY;
 
-    Model* getActiveModel() const;
-
     Settings* settings;
     Model* createModel(QString fileName);
-    void recalculateClusters(Model* model);
-    void recalculateNormals(Model* model);
-    void recalculateDownsample(Model *model);
-    Model* preprocessModel(Model& model);
-    Model* recognizeShapes(Model &model);
-    Model* finalizeModel(Model &model);
+    void recalculateClusters() const;
+    void recalculateNormals() const;
+    void recalculateDownsample() const;
+    void preprocessModel();
+    void recognizeShapes();
+    void finalizeModel();
+
+private:
+    PointCloud::Ptr parsePointCloud(QString fileName) const;
+    CADConverter* cadConverter;
 };
 
 #endif // MODELMANAGER_H

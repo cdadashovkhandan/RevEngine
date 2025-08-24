@@ -51,11 +51,10 @@ void MainWindow::on_importModelButton_clicked()
 
 void MainWindow::on_convertModelButton_clicked()
 {
-    Model* model = modelManager->getActiveModel();
-    if (model != nullptr)
+    if (modelManager->model != nullptr) // Redundant but wouldn't hurt to prevent a segfault.
     {
-        model = modelManager->preprocessModel(*model);
-        ui->viewport->showModel(model);
+        modelManager->preprocessModel();
+        ui->viewport->showModel(modelManager->model);
     }
 
     updateInfoText();
@@ -65,7 +64,7 @@ void MainWindow::on_convertModelButton_clicked()
 void MainWindow::on_toggleClustersCheckBox_toggled(bool checked)
 {
     settings.showClusters = checked;
-    ui->viewport->showModel(modelManager->getActiveModel());
+    ui->viewport->showModel(modelManager->model);
 }
 
 
@@ -85,9 +84,8 @@ void MainWindow::on_recalcClusterButton_clicked()
 {
     if (enforceStatus(ModelStatus::PREPROCESSED))
     {
-        Model* model = modelManager->getActiveModel();
-        modelManager->recalculateClusters(model);
-        ui->viewport->showModel(model);
+        modelManager->recalculateClusters();
+        ui->viewport->showModel(modelManager->model);
     }
 }
 
@@ -95,7 +93,7 @@ void MainWindow::on_recalcClusterButton_clicked()
 void MainWindow::on_togglePointCloudCheckBox_toggled(bool checked)
 {
     settings.showPointCloud = checked;
-    ui->viewport->showModel(modelManager->getActiveModel());
+    ui->viewport->showModel(modelManager->model);
 }
 
 
@@ -116,7 +114,6 @@ void MainWindow::on_scaleFactorSpinBox_valueChanged(double arg1)
 void MainWindow::on_highPrecisionNormalsCheckBox_toggled(bool checked)
 {
     settings.highPrecisionNormals = checked;
-    //TODO: proper modelmanager updating
     ui->viewport->update();
 }
 
@@ -157,11 +154,10 @@ void MainWindow::on_recalcNormalsButton_clicked()
 {
     if (enforceStatus(ModelStatus::PREPROCESSED))
     {
-        Model* model = modelManager->getActiveModel();
-        if (model != nullptr) //TODO: null check is probably redundant if status is enforced.
+        if (modelManager->model != nullptr) // Redundant but wouldn't hurt to prevent a segfault.
         {
-            modelManager->recalculateNormals(model);
-            ui->viewport->showModel(model);
+            modelManager->recalculateNormals();
+            ui->viewport->showModel(modelManager->model);
         }
 
         updateInfoText();
@@ -200,16 +196,15 @@ void MainWindow::on_recognizeShapesButton_clicked()
 {
     if (enforceStatus(ModelStatus::PREPROCESSED))
     {
-        Model* model = modelManager->getActiveModel();
-        if (model != nullptr)
+        if (modelManager->model != nullptr) // Redundant but wouldn't hurt to prevent a segfault.
         {
-            model = modelManager->recognizeShapes(*model);
-            ui->viewport->showModel(model);
+            modelManager->recognizeShapes();
+            ui->viewport->showModel(modelManager->model);
         }
 
 
         ui->detectedShapesListWidget->clear();
-        for (auto shape : *model->shapes)
+        for (auto shape : *modelManager->model->shapes)
         {
             new QListWidgetItem(shape->toString(), ui->detectedShapesListWidget);
         }
@@ -241,7 +236,7 @@ void MainWindow::on_showDownsampledCheckBox_toggled(bool checked)
     // settings.showDownsampledVersion = checked;
 
     // Model* model = modelManager->getActiveModel();
-    // if (model != nullptr)
+    // if (modelManager->model != nullptr) // Redundant but wouldn't hurt to prevent a segfault.
     //     ui->viewport->showModel(model);
 }
 
@@ -256,10 +251,10 @@ void MainWindow::on_recalcDownsampleButton_clicked()
 {
     if (enforceStatus(ModelStatus::PREPROCESSED))
     {
-        Model* model = modelManager->getActiveModel();
-        if (model != nullptr)
+        Model* model = modelManager->model;
+        if (model != nullptr) // Redundant but wouldn't hurt to prevent a segfault.
         {
-            modelManager->recalculateDownsample(model);
+            modelManager->recalculateDownsample();
             // This must be cleared to avoid mismatches and segfaults.
             if (model->clusterIndices != nullptr && !model->clusterIndices->empty())
                 model->clusterIndices->clear();
@@ -279,8 +274,8 @@ void MainWindow::on_toggleRunOnDownsampledCloudCheckBox_toggled(bool checked)
 {
     settings.useDownsampledVersion = checked;
 
-    Model* model = modelManager->getActiveModel();
-    if (model != nullptr)
+    Model* model = modelManager->model;
+    if (model != nullptr) // Redundant but wouldn't hurt to prevent a segfault.
     {
         //TODO: move this to Model or ModelManager.
         // This must be cleared to avoid mismatches and segfaults.
@@ -296,8 +291,8 @@ void MainWindow::on_toggleRunOnDownsampledCloudCheckBox_toggled(bool checked)
 
 void MainWindow::updateInfoText()
 {
-    Model* model = modelManager->getActiveModel();
-    if (model != nullptr)
+    Model* model = modelManager->model;
+    if (model != nullptr) // Redundant but wouldn't hurt to prevent a segfault.
     {
         ui->infoTextEdit->clear();
 
@@ -321,10 +316,10 @@ void MainWindow::updateInfoText()
 
 void MainWindow::on_finalizeButton_clicked()
 {
-    Model* model = modelManager->getActiveModel();
-    if (model != nullptr)
+    Model* model = modelManager->model;
+    if (model != nullptr) // Redundant but wouldn't hurt to prevent a segfault.
     {
-        model = modelManager->finalizeModel(*model);
+        modelManager->finalizeModel();
         ui->viewport->showModel(model);
     }
 }

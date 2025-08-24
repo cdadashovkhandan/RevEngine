@@ -48,21 +48,8 @@ ModelManager::ModelManager(Settings* s)
  */
 ModelManager::~ModelManager()
 {
-    qDeleteAll(models);
-    models.clear();
+    delete model;
 }
-
-/**
- * @brief ModelManager::parsePointCloud Parse a point cloud from file.
- * @param fileName
- * @return
- */
-Model* ModelManager::getActiveModel() const
-{
-    return models.isEmpty() ? nullptr
-                            : models.last();
-}
-
 /**
  * @brief ModelManager::createModel Parse a point cloud from a File and generate a point cloud from it
  * @param filename
@@ -73,10 +60,9 @@ Model* ModelManager::createModel(QString filename)
     try
     {
         PointCloud::Ptr pointCloud = parsePointCloud(filename);
-        Model* model = new Model(pointCloud);
-        models.append(model);
+        model = new Model(pointCloud);
         modelStatus = ModelStatus::RAW;
-        return models.last();
+        return model;
     }
     catch (FileReadException& e)
     {
@@ -88,7 +74,7 @@ Model* ModelManager::createModel(QString filename)
  * @brief ModelManager::recalculateClusters Recalculate all the clusters in the model.
  * @param model
  */
-void ModelManager::recalculateClusters(Model *model)
+void ModelManager::recalculateClusters() const
 {
     PointCloud::Ptr cloudPtr = settings->useDownsampledVersion
                                    ? model->pointCloudDownsampled
@@ -101,7 +87,7 @@ void ModelManager::recalculateClusters(Model *model)
  * @brief ModelManager::recalculateNormals Recalculate all the normals in the model.
  * @param model
  */
-void ModelManager::recalculateNormals(Model *model)
+void ModelManager::recalculateNormals() const
 {
     model->normals = settings->highPrecisionNormals
         ? cadConverter->getNormals(model->pointCloud)
@@ -112,7 +98,7 @@ void ModelManager::recalculateNormals(Model *model)
  * @brief ModelManager::recalculateDownsample Downsample the point cloud again.
  * @param model
  */
-void ModelManager::recalculateDownsample(Model *model)
+void ModelManager::recalculateDownsample() const
 {
     cadConverter->downsample(model->pointCloud, model->pointCloudDownsampled, model->scaleFactor);
 }
@@ -122,12 +108,10 @@ void ModelManager::recalculateDownsample(Model *model)
  * @param model
  * @return
  */
-Model *ModelManager::preprocessModel(Model& model)
+void ModelManager::preprocessModel()
 {
-    cadConverter->preprocess(model);
+    cadConverter->preprocess(*model);
     modelStatus = ModelStatus::PREPROCESSED;
-
-    return &model;
 }
 
 /**
@@ -135,19 +119,15 @@ Model *ModelManager::preprocessModel(Model& model)
  * @param model
  * @return
  */
-Model *ModelManager::recognizeShapes(Model& model)
+void ModelManager::recognizeShapes()
 {
-    cadConverter->recognizeShapes(model);
+    cadConverter->recognizeShapes(*model);
     modelStatus = ModelStatus::ANALYZED;
-
-    return &model;
 }
 
-Model* ModelManager::finalizeModel(Model &model)
+void ModelManager::finalizeModel()
 {
-    cadConverter->finalize(model);
+    cadConverter->finalize(*model);
     modelStatus = ModelStatus::FINALIZED;
-
-    return &model;
 }
 
