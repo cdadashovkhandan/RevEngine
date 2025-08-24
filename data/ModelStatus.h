@@ -8,7 +8,6 @@ enum ModelStatus
     PREPROCESSED = 2,
     ANALYZED = 3,
     FINALIZED = 4
-
 };
 
 #endif // MODELSTATUS_H

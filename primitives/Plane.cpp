@@ -8,7 +8,9 @@ Plane::Plane() {
     shapeType = PrimitiveType::PLANE;
 }
 
-Plane::~Plane() {}
+Plane::~Plane() {
+    delete boundingBox;
+}
 
 /**
  * @brief Plane::buildParameters
@@ -115,50 +117,14 @@ float Plane::calculateMFE(pcl::PointCloud<pcl::PointXYZ>::Ptr const cloud)
  * @brief Plane::getRenderShape Get a RenderShape with all the parameters and transformations applied.
  * @return
  */
-std::shared_ptr<RenderShape> Plane::getRenderShape() const
+std::shared_ptr<RenderShape> Plane::getRenderShape()
 {
     std::shared_ptr<RenderShape> renderShape(new RenderShape());
 
-    auto verts = getBaseVertices();
+    if (vertices.empty())
+        getBaseVertices();
 
-    Eigen::Vector3f normal = getNormal();
-
-    Eigen::Vector3f axis = (Eigen::Vector3f::UnitZ()).cross(normal);
-
-    // Get the axis of rotation, which is the cross product of the target normal and the Z-axis
-    float angle = qAcos(Eigen::Vector3f::UnitZ().dot(normal));
-    axis.normalize();
-    Eigen::Quaternionf quat;
-
-
-    BoundingBox bBoxCopy(*boundingBox);
-    quat = Eigen::AngleAxisf(-angle, axis);
-
-    // Align bounding box with z-axis (XY plane)
-    Eigen::Vector3f rotMin = quat * bBoxCopy.min;
-    Eigen::Vector3f rotMax = quat * bBoxCopy.max;
-
-    float lenX = rotMax.x() - rotMin.x();
-    float lenY = rotMax.y() - rotMin.y();
-
-    Eigen::Vector3f scale(lenX, lenY, 0);
-
-
-    quat = Eigen::AngleAxisf(angle, axis);
-    for (Eigen::Vector3f& vert : verts)
-    {
-        // Scale to match target plane
-        vert = vert.cwiseProduct(scale);
-
-        // Align with target plane
-        vert = quat * vert;
-
-        // Move by rho in the direction of the normal.
-        vert += parameters[2] * normal;
-    }
-
-
-    renderShape->vertices = verts;
+    renderShape->vertices = vertices;
 
     // Simple indices forming a plane.
     renderShape->indices = { 0, 1, 3, 1, 2, 3 };
@@ -174,18 +140,48 @@ QString Plane::toString() const
                     QString::number(parameters[2], 'g', 3));
 }
 
-std::vector<Eigen::Vector3f> Plane::getBaseVertices() const
+void Plane::getBaseVertices() //TODO: is this a getter or a setter/generator? Make this clearer.
 {
-    std::vector<Eigen::Vector3f> vertices;
-
-    float scale = 0.5f;
+    float size = 0.5f;
     // Unit plane projected on xy plane.
-    vertices.push_back(Eigen::Vector3f(scale, scale, 0.0f)); // top right
-    vertices.push_back(Eigen::Vector3f(scale, -scale, 0.0f)); // bottom right
-    vertices.push_back(Eigen::Vector3f(-scale, -scale, 0.0f)); // bottom left
-    vertices.push_back(Eigen::Vector3f(-scale, scale, 0.0f)); // top left
+    vertices.push_back(Eigen::Vector3f(size, size, 0.0f)); // top right
+    vertices.push_back(Eigen::Vector3f(size, -size, 0.0f)); // bottom right
+    vertices.push_back(Eigen::Vector3f(-size, -size, 0.0f)); // bottom left
+    vertices.push_back(Eigen::Vector3f(-size, size, 0.0f)); // top left
 
-    return vertices;
+    Eigen::Vector3f normal = getNormal();
+
+    Eigen::Vector3f axis = (Eigen::Vector3f::UnitZ()).cross(normal);
+
+    // Get the axis of rotation, which is the cross product of the target normal and the Z-axis
+    float angle = qAcos(Eigen::Vector3f::UnitZ().dot(normal));
+    axis.normalize();
+    Eigen::Quaternionf quat;
+
+    BoundingBox bBoxCopy(*boundingBox);
+    quat = Eigen::AngleAxisf(-angle, axis);
+
+    // Align bounding box with z-axis (XY plane)
+    Eigen::Vector3f rotMin = quat * bBoxCopy.min;
+    Eigen::Vector3f rotMax = quat * bBoxCopy.max;
+
+    float lenX = qAbs(rotMax.x() - rotMin.x());
+    float lenY = qAbs(rotMax.y() - rotMin.y());
+
+    Eigen::Vector3f scale(lenX, lenY, 0);
+
+    quat = Eigen::AngleAxisf(angle, axis);
+    for (Eigen::Vector3f& vert : vertices)
+    {
+        // Scale to match target plane
+        vert = vert.cwiseProduct(scale);
+
+        // Align with target plane
+        vert = quat * vert;
+
+        // Move by rho in the direction of the normal.
+        vert += parameters[2] * normal;
+    }
 }
 
 /**

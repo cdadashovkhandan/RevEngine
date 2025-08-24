@@ -202,6 +202,24 @@ Model* CADConverter::recognizeShapes(Model& model) const
     return &model;
 }
 
+// /**
+//  * @brief CADConverter::finalize Reverse all the preprocessing operations.
+//  * @param model
+//  * @return
+//  */
+// Model* CADConverter::finalize(Model& model) const
+// {
+
+//     // Scale the model back up to its original size.
+
+//     float inverseScale = 1.0f / model.scaleFactor;
+//     Eigen::Transform<float, 3, Eigen::Affine> tMatrix =
+//         Eigen::Transform<float, 3, Eigen::Affine>{Eigen::Transform<float, 3, Eigen::Affine>::Identity()}
+//             .scale(inverseScale);
+
+//     pcl::transformPointCloud(*model.pointCloud, *model.pointCloud, tMatrix);
+// }
+
 /**
  * @brief CADConverter::isCloudSparse Check if a point cloud is sparse by calculating the density of points.
  * @param cloud

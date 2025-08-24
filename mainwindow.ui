@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string/>
   </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="Viewport" name="viewport">
@@ -836,12 +836,6 @@
      <height>22</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menuRevEngine">
-    <property name="title">
-     <string>RevEngine</string>
-    </property>
-   </widget>
-   <addaction name="menuRevEngine"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>

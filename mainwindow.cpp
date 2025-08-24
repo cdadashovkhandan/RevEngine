@@ -20,6 +20,7 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow()
 {
     delete ui;
+    delete modelManager;
 }
 
 void MainWindow::on_importModelButton_clicked()

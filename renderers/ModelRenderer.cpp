@@ -48,15 +48,12 @@ void ModelRenderer::initBuffers()
     gl->glEnableVertexAttribArray(2);
     gl->glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
 
-    // gl->glGenBuffers(1, &ibo);
-    // gl->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-
     gl->glBindVertexArray(0);
 }
 
 /**
- * Updates the buffer data with the mesh data provided
- * @param mesh
+ * Updates the buffer data with the model data provided
+ * @param model
  */
 void ModelRenderer::update_buffers(Model* model)
 {
@@ -94,7 +91,7 @@ void ModelRenderer::update_buffers(Model* model)
     {
         std::fill(colors.begin(), colors.end(), 0.2f); // initialize to dark grey
         size_t colorIndex = 0;
-        for (pcl::PointIndices::Ptr const cluster : *model->clusterIndices)
+        for (pcl::PointIndices::Ptr const &cluster : *model->clusterIndices)
         {
             for (auto const index : cluster->indices)
             {
@@ -217,11 +214,7 @@ void ModelRenderer::render()
     gl->glClear(GL_COLOR_BUFFER_BIT);
     gl->glEnable(GL_PROGRAM_POINT_SIZE);
 
-    // gl->glDepthFunc(GL_LEQUAL);
     gl->glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    // gl->glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    // gl->glEnable(GL_POLYGON_OFFSET_FILL);
-    // gl->glPolygonOffset(1, 1);
     gl->glPolygonOffset(1, 1);
 
     if (settings->showPointCloud)
@@ -229,27 +222,11 @@ void ModelRenderer::render()
 
     if (settings->showAxisLines)
         drawMaterial(*worldMat);
-    // gl->glDisable(GL_POLYGON_OFFSET_FILL);
 
-    // gl->glClearColor(0, 0, 0, 1.0f);
-    // gl->glClear(GL_COLOR_BUFFER_BIT);
-
-    // gl->glDepthFunc(GL_LEQUAL);
-
-    // gl->glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    // gl->glEnable(GL_POLYGON_OFFSET_FILL);
-    // gl->glPolygonOffset(1, 1);
-    // drawMaterial(*pointCloudMat);
-    // gl->glDisable(GL_POLYGON_OFFSET_FILL);
-
-    //TODO: this is a bit weird. Scene->model is not used in updateBuffers, so this seems kind of disconnected and flimsy.
     if (settings->showNormals && scene->model->normals != nullptr)
     {
-        //   gl->glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         drawMaterial(*normalsMat);
     }
-
-    // gl->glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
 
     if (settings->showShapes && renderShapes.size() > 0)
     {
@@ -268,12 +245,13 @@ void ModelRenderer::drawMaterial(Material &material)
     {
         gl->glBindVertexArray(vao);
 
-        // gl->glBindBuffer(GL_ARRAY_BUFFER, vbo);
-
         gl->glBindBuffer(GL_ARRAY_BUFFER, vbo);
         gl->glEnableVertexAttribArray(0);
         gl->glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, nullptr);
 
+        gl->glBindBuffer(GL_ARRAY_BUFFER, vbo_colors);
+        gl->glEnableVertexAttribArray(1);
+        gl->glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
 
         gl->glDrawArrays(GL_POINTS, 0, render_size);
         gl->glBindVertexArray(0);

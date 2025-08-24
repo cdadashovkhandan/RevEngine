@@ -17,12 +17,12 @@ public:
 
     float calculateMFE(pcl::PointCloud<pcl::PointXYZ>::Ptr const cloud) override;
 
-    std::shared_ptr<RenderShape> getRenderShape() const override;
+    std::shared_ptr<RenderShape> getRenderShape() override;
     QString toString() const override;
 protected:
     std::vector<float> getDistancesToPoints() const; //TODO: make virtual?
 
-    std::vector<Eigen::Vector3f> getBaseVertices() const override;
+    void getBaseVertices() override;
 private:
     Eigen::Vector3f getNormal() const;
 };
