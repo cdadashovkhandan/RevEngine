@@ -193,7 +193,6 @@ Eigen::Vector3f Plane::getNormal() const
     float tht = parameters[0]; //theta
     float phi = parameters[1];
 
-
     float a = qCos(tht)*qSin(phi);
     float b = qSin(phi)*qSin(tht);
     float c = qCos(phi);

@@ -3,6 +3,9 @@
 
 #include <Eigen/Dense>
 
+/**
+ * @brief Basic bounding box information for a shape/cloud.
+ */
 struct BoundingBox
 {
     BoundingBox(Eigen::Vector3f min, Eigen::Vector3f max)

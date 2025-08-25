@@ -6,6 +6,26 @@
 
 #include "exceptions/FileReadException.h"
 
+ModelManager::ModelManager(Settings* s)
+{
+    settings = s;
+    cadConverter = new CADConverter(s);
+}
+
+/**
+ * @brief ModelManager::getActiveModel Get the currently active model.
+ * @return The active model or nullptr if there isn't one.
+ */
+ModelManager::~ModelManager()
+{
+    delete model;
+}
+
+/**
+ * @brief ModelManager::parsePointCloud Parse a text file of point cloud points.
+ * @param fileName
+ * @return
+ */
 PointCloud::Ptr ModelManager::parsePointCloud(QString fileName) const
 {
     QFile cloudFile(fileName);
@@ -36,20 +56,7 @@ PointCloud::Ptr ModelManager::parsePointCloud(QString fileName) const
     return cloud;
 }
 
-ModelManager::ModelManager(Settings* s)
-{
-    settings = s;
-    cadConverter = new CADConverter(s);
-}
 
-/**
- * @brief ModelManager::getActiveModel Get the currently active model.
- * @return The active model or nullptr if there isn't one.
- */
-ModelManager::~ModelManager()
-{
-    delete model;
-}
 /**
  * @brief ModelManager::createModel Parse a point cloud from a File and generate a point cloud from it
  * @param filename
@@ -125,6 +132,9 @@ void ModelManager::recognizeShapes()
     modelStatus = ModelStatus::ANALYZED;
 }
 
+/**
+ * @brief ModelManager::finalizeModel Reverse all the transformation operations to bring the shape model to its original state.
+ */
 void ModelManager::finalizeModel()
 {
     cadConverter->finalize(*model);

@@ -19,11 +19,11 @@ public:
     void render() override;
 
 protected:
-    // void initShaders() override;
     void initBuffers() override;
 
 private:
-    static const size_t CLUSTER_COLOR_COUNT = 5;
+
+    // Primary buffers for rendering the point cloud.
     GLuint vao;
     GLuint vbo;
     GLuint vbo_colors;
@@ -31,8 +31,7 @@ private:
     GLuint ibo;
     int render_size = 0;
 
-    GLuint testVao;
-
+    // Shapes to be rendered.
     std::vector<std::shared_ptr<RenderShape>> renderShapes;
 
     Material* pointCloudMat { nullptr };
@@ -45,7 +44,9 @@ private:
 
     void drawShape(std::shared_ptr<RenderShape> const renderShape);
 
-    QColor clusterColors[CLUSTER_COLOR_COUNT] { QColorConstants::Svg::red, QColorConstants::Svg::green, QColorConstants::Svg::cyan, QColorConstants::Svg::magenta, QColorConstants::Svg::yellow };
+    // Colors for visually differentiating between clusters or shapes.
+    static const size_t CLUSTER_COLOR_COUNT = 5;
+    QColor colors[CLUSTER_COLOR_COUNT] { QColorConstants::Svg::red, QColorConstants::Svg::green, QColorConstants::Svg::cyan, QColorConstants::Svg::magenta, QColorConstants::Svg::yellow };
 
     void clearRenderShapes();
 };

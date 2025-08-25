@@ -77,39 +77,37 @@ void ModelRenderer::update_buffers(Model* model)
     // Normals
     if (model->normals != nullptr)
     {
-        // Normals
         gl->glBindBuffer(GL_ARRAY_BUFFER, nbo);
         gl->glBufferData(GL_ARRAY_BUFFER, model->normals->size() * sizeof(Eigen::Vector3f),
                          model->normals->data(), GL_STATIC_DRAW);
-
     }
 
     // Cluster Colors
-    std::vector<float> colors(render_size * 3);
+    std::vector<float> clusterColors(render_size * 3);
 
     if (settings->showClusters && model->clusterIndices != nullptr)
     {
-        std::fill(colors.begin(), colors.end(), 0.2f); // initialize to dark grey
+        std::fill(clusterColors.begin(), clusterColors.end(), 0.4f); // initialize to dark grey
         size_t colorIndex = 0;
         for (pcl::PointIndices::Ptr const &cluster : *model->clusterIndices)
         {
             for (auto const index : cluster->indices)
             {
-                QColor newColor = clusterColors[colorIndex];
-                colors[3 * index] = newColor.red();
-                colors[3 * index + 1] = newColor.green();
-                colors[3 * index + 2] = newColor.blue();
+                QColor newColor = colors[colorIndex];
+                clusterColors[3 * index] = newColor.red();
+                clusterColors[3 * index + 1] = newColor.green();
+                clusterColors[3 * index + 2] = newColor.blue();
             }
             colorIndex = (colorIndex + 1) % CLUSTER_COLOR_COUNT;
         }
     }
     else
-        std::fill(colors.begin(), colors.end(), 1.0f); // initialize to white
+        std::fill(clusterColors.begin(), clusterColors.end(), 1.0f); // initialize to white
 
     // Colors
     gl->glBindBuffer(GL_ARRAY_BUFFER, vbo_colors);
-    gl->glBufferData(GL_ARRAY_BUFFER, colors.size() * sizeof(float),
-                     colors.data(), GL_STATIC_DRAW);
+    gl->glBufferData(GL_ARRAY_BUFFER, clusterColors.size() * sizeof(float),
+                     clusterColors.data(), GL_STATIC_DRAW);
 
     gl->glBindVertexArray(0);
 
@@ -140,30 +138,26 @@ void ModelRenderer::update_buffers(Model* model)
             gl->glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
 
             // Shape Colors
-            std::vector<float> colors(renderShape->vertices.size() * 3);
+            std::vector<float> shapeColors(renderShape->vertices.size() * 3);
 
             for (size_t idx = 0; idx < renderShape->vertices.size(); ++idx)
             {
-                QColor newColor = clusterColors[colorIndex];
-                colors[3 * idx] = newColor.red();
-                colors[3 * idx + 1] = newColor.green();
-                colors[3 * idx + 2] = newColor.blue();
+                QColor newColor = colors[colorIndex];
+                shapeColors[3 * idx] = newColor.red();
+                shapeColors[3 * idx + 1] = newColor.green();
+                shapeColors[3 * idx + 2] = newColor.blue();
             }
             colorIndex = (colorIndex + 1) % CLUSTER_COLOR_COUNT;
 
             gl->glBindBuffer(GL_ARRAY_BUFFER, renderShape->vbo_colors);
-            gl->glBufferData(GL_ARRAY_BUFFER, colors.size() * sizeof(float),
-                             colors.data(), GL_STATIC_DRAW);
+            gl->glBufferData(GL_ARRAY_BUFFER, shapeColors.size() * sizeof(float),
+                             shapeColors.data(), GL_STATIC_DRAW);
 
             gl->glEnableVertexAttribArray(1);
             gl->glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
 
             gl->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, renderShape->ibo);
             gl->glBufferData(GL_ELEMENT_ARRAY_BUFFER, renderShape->indices.size() * sizeof(uint32_t), renderShape->indices.data(), GL_STATIC_DRAW);
-
-
-            // uint32_t data[renderShape->indices.size()];
-            // gl->glGetBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, renderShape->indices.size() * sizeof(uint32_t), data);
 
             gl->glBindVertexArray(0);
 
@@ -172,6 +166,9 @@ void ModelRenderer::update_buffers(Model* model)
     }
 }
 
+/**
+ * @brief ModelRenderer::clearRenderShapes Delete all current render shapes.
+ */
 void ModelRenderer::clearRenderShapes()
 {
     for (const std::shared_ptr<RenderShape> &renderShape : renderShapes) {
@@ -185,7 +182,7 @@ void ModelRenderer::clearRenderShapes()
 }
 
 /**
- * Updates the uniforms for the scene
+ * @brief ModelRenderer::update_uniforms Update all the uniforms in the scene.
  */
 void ModelRenderer::update_uniforms()
 {
@@ -206,7 +203,7 @@ void ModelRenderer::update_uniforms()
 }
 
 /**
- * Renders the mesh to the screen
+ * @brief ModelRenderer::render Render the model to the screen.
  */
 void ModelRenderer::render()
 {
@@ -236,7 +233,7 @@ void ModelRenderer::render()
 }
 
 /**
- * Draws the elements to the screen using the provided material
+ * @brief ModelRenderer::drawMaterial Draws the elements to the screen using the provided material.
  * @param material
  */
 void ModelRenderer::drawMaterial(Material &material)
@@ -259,6 +256,10 @@ void ModelRenderer::drawMaterial(Material &material)
     material.release();
 }
 
+/**
+ * @brief ModelRenderer::drawShape Render a given RenderShape.
+ * @param renderShape
+ */
 void ModelRenderer::drawShape(std::shared_ptr<RenderShape> const renderShape)
 {
     shapeMat->bind();
@@ -275,14 +276,8 @@ void ModelRenderer::drawShape(std::shared_ptr<RenderShape> const renderShape)
 
         gl->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, renderShape->ibo);
 
-        // uint32_t data[renderShape->indices.size()];
-        // gl->glGetBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, renderShape->indices.size() * sizeof(uint32_t), data);
-
-        // gl->glDrawArrays(GL_POINTS, 0, renderShape->vertices.size());
         gl->glDrawElements(GL_TRIANGLES, renderShape->indices.size(), GL_UNSIGNED_INT, nullptr);
 
-        // GLenum err = gl->glGetError();
-        // if (err != GL_NO_ERROR) qDebug() << "OpenGL error:" << err;
         gl->glBindVertexArray(0);
     }
     shapeMat->release();

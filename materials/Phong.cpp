@@ -21,7 +21,6 @@ void Phong::update_uniforms(QMatrix4x4 model_mat, QMatrix4x4 view_mat, QMatrix4x
     const GLint view_uni = shader->uniformLocation("view_matrix");
     const GLint proj_uni = shader->uniformLocation("proj_matrix");
     const GLint norm_uni = shader->uniformLocation("normal_matrix");
-    // const GLint norm_bool_uni = shader->uniformLocation("render_normals");
 
     const GLint diffuse_col_uni = shader->uniformLocation("mat_diffuse_color");
     const GLint specular_col_uni = shader->uniformLocation("mat_specular_color");

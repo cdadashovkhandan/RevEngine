@@ -21,22 +21,27 @@ public:
     PrimitiveType  shapeType;
 
     std::vector<float> parameters = {};
+
     float mfe = -1.0f;
-    QVector3D position;
-    QVector3D orientation;
+
     BoundingBox* boundingBox = nullptr;
+
     std::vector<Eigen::Vector3f> vertices = {};
 
     pcl::PointIndices::Ptr recognizedIndices; // Indices of the points this shape overlaps with.
 
     virtual float calculateMFE(pcl::PointCloud<pcl::PointXYZ>::Ptr const cloud) = 0;
-    bool getBestFit(pcl::PointCloud<pcl::PointXYZ>::Ptr const cloud, pcl::PointIndices::Ptr const indices);
-    virtual std::vector<ParamPair> buildParameters(std::vector<pcl::PointXYZ, Eigen::aligned_allocator<pcl::PointXYZ>> const points, float const maxMagnitude) const = 0;
+    virtual std::vector<ParamPair> buildParameters(
+            std::vector<pcl::PointXYZ, Eigen::aligned_allocator<pcl::PointXYZ>> const points,
+            float const maxMagnitude) const = 0;
+
     virtual bool isIntersecting(pcl::PointXYZ const point, std::vector<float> const params, float const maxMagnitude) const = 0;
 
     virtual std::shared_ptr<RenderShape> getRenderShape() = 0;
-    BoundingBox* getBoundingBox(pcl::PointCloud<pcl::PointXYZ>::Ptr cloudPtr);
     virtual QString toString() const = 0;
+
+    BoundingBox* getBoundingBox(pcl::PointCloud<pcl::PointXYZ>::Ptr cloudPtr);
+    bool getBestFit(pcl::PointCloud<pcl::PointXYZ>::Ptr const cloud, pcl::PointIndices::Ptr const indices);
 protected:
     virtual void getBaseVertices() = 0;
 };

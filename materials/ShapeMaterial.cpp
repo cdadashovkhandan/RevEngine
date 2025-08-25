@@ -4,7 +4,6 @@ ShapeMaterial::ShapeMaterial(QOpenGLFunctions_4_1_Core* gl) : Material(gl)
 {
     shader = new QOpenGLShaderProgram();
     shader->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/shape.vert");
-    // shader->addShaderFromSourceFile(QOpenGLShader::Geometry, ":/shaders/shape.geom");
     shader->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/shape.frag");
     shader->link();
 }

@@ -18,9 +18,7 @@ bool PrimitiveShape::getBestFit(pcl::PointCloud<pcl::PointXYZ>::Ptr const cloud,
     extract.setInputCloud(cloud);
     extract.setIndices(indices);
     extract.filter(*filteredCloud);
-    // std::vector<pcl::PointXYZ> points = cloud->points
 
-    //TODO: pick a better place for this
     float maxMagnitude = std::max_element(filteredCloud->points.begin(),
                                           filteredCloud->points.end(),
                                           [](pcl::PointXYZ const a, pcl::PointXYZ const b)
@@ -33,7 +31,6 @@ bool PrimitiveShape::getBestFit(pcl::PointCloud<pcl::PointXYZ>::Ptr const cloud,
     // Value for best fit chosen by having max votes
     ParamPair* bestFit = nullptr;
 
-    // for (pcl::PointXYZ const point : filteredCloud->points)
     for (int const index : indices->indices)
     {
         pcl::PointXYZ const point = cloud->points[index];

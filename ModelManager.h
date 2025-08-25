@@ -15,7 +15,6 @@ class ModelManager
 
 
 public:
-
     ModelManager(Settings* s);
     ~ModelManager();
     Model* model = nullptr;
@@ -24,9 +23,13 @@ public:
 
     Settings* settings;
     Model* createModel(QString fileName);
+
+    // Individual steps.
     void recalculateClusters() const;
     void recalculateNormals() const;
     void recalculateDownsample() const;
+
+    // Main controls.
     void preprocessModel();
     void recognizeShapes();
     void finalizeModel();
