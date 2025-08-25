@@ -12,18 +12,16 @@ class CADConverter
 public:
     CADConverter(Settings* s);
 
+    // Main steps.
     Model* preprocess(Model& model) const;
-
-    Model *recognizeShapes(Model &model) const;
+    Model* recognizeShapes(Model &model) const;
+    Model *finalize(Model &model) const;
 
     std::vector<Eigen::Vector3f>*  getNormals(pcl::PointCloud<pcl::PointXYZ>::Ptr const cloudPtr) const;
-
     void downsample(PointCloud::Ptr input, PointCloud::Ptr target, float scaleFactor) const;
-
     std::vector<pcl::PointIndices::Ptr>* cluster(PointCloud::Ptr input, bool const useRansac) const;
 
     float shrink(PointCloud::Ptr cloud) const;
-    Model *finalize(Model &model) const;
 private:
     Settings* settings;
 

@@ -223,7 +223,7 @@ Model* CADConverter::finalize(Model& model) const
     {
         for (auto shape : *model.shapes)
         {
-            // scale all the points in place.
+            // Scale all the points in place.
             std::transform(shape->vertices.begin(),
                            shape->vertices.end(),
                            shape->vertices.begin(),
@@ -329,8 +329,6 @@ float CADConverter::shrink(PointCloud::Ptr cloud) const
 
     Util::getMinMax(cloud->points, newMinPoint, newMaxPoint);
 
-    // Eigen::Vector3f ranges = newMaxPoint - newMinPoint;
-
     qDebug() << "New min point: (" << newMinPoint.x() << ", " <<  newMinPoint.y() << ", " << newMinPoint.z() << ")";
     qDebug() << "New max point: (" << newMaxPoint.x() << ", " <<  newMaxPoint.y() << ", " << newMaxPoint.z() << ")";
     return scaleFactor;
@@ -417,7 +415,7 @@ std::vector<pcl::PointIndices::Ptr>* CADConverter::cluster(PointCloud::Ptr input
  */
 void CADConverter::alignCloudWithZAxis(PointCloud::Ptr cloudPtr, std::vector<Eigen::Vector3f> const normals) const
 {
-    // vote for major normal direction
+    // Vote for major normal direction.
     qDebug("Aligning with z-axis...");
     Eigen::Vector3f average = std::accumulate(normals.begin(), normals.end(), Eigen::Vector3f(0.0f, 0.0f, 0.0f));
     average /= float(normals.size());
@@ -447,7 +445,7 @@ Eigen::Matrix4f CADConverter::buildRotationMatrix(Eigen::Vector3f const target, 
     Eigen::Matrix3f rotation = FFi * GG * FFi.inverse();
 
     //TODO: maybe there's a way to do this better?
-    // rebuild in homogeneous coordinates
+    // Rebuild in homogeneous coordinates.
     Eigen::Matrix4f rotMatrix;
     rotMatrix.setIdentity();
     rotMatrix.block<3,3>(0,0) = rotation;

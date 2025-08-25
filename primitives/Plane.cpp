@@ -69,8 +69,7 @@ bool Plane::isIntersecting(pcl::PointXYZ const point, std::vector<float> const p
 
 
     return qAbs(eqn - rho) < threshold;
-}
-
+}                                 
 /**
  * @brief Plane::calculateMFE Calculate Mean Fitting error for a given set of points.
  * @param cloud
@@ -102,7 +101,7 @@ float Plane::calculateMFE(pcl::PointCloud<pcl::PointXYZ>::Ptr const cloud)
     Eigen::Vector3f maxPoint(0,0,0);
     Eigen::Vector3f minPoint(0,0,0);
 
-    // Get min and max values of each axis
+    // Get min and max values of each axis.
     Util::getMinMax(points, minPoint, maxPoint);
 
     float base = maxPoint.x() - minPoint.x();
