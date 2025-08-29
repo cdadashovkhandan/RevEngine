@@ -14,7 +14,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     ui->viewport->settings = &settings;
     modelManager = new ModelManager(&settings);
-    omp_set_num_threads(8);
+    omp_set_num_threads(12);
 }
 
 MainWindow::~MainWindow()
@@ -38,7 +38,7 @@ void MainWindow::on_importModelButton_clicked()
     catch (FileReadException& e)
     {
         QMessageBox errorMessage;
-        errorMessage.critical(this, "File Read Error", "File could not be read. Please try another file.");
+        errorMessage.critical(this, "File Read Error", "File could not be read.");
         errorMessage.show();
         return;
     }
@@ -128,8 +128,8 @@ void MainWindow::on_normalNeighborsSpinBox_valueChanged(int arg1)
 void MainWindow::on_lazyImportButton_clicked()
 {
     // QString fileName = "/home/chingiz/Documents/uni/intproj/Fit4CAD/dataset/training_set/PC6.txt";
-    QString fileName = "/home/chingiz/Documents/uni/intproj/Fit4CAD/dataset/training_set/PC" + QString::number(settings.lazyId) + ".txt";
-    // QString fileName = "/home/chingiz/Documents/uni/intproj/fitting_geometric_primitives/test/pointCloud/pointCloud" + QString::number(settings.lazyId) + ".txt";
+    // QString fileName = "/home/chingiz/Documents/uni/intproj/Fit4CAD/dataset/training_set/PC" + QString::number(settings.lazyId) + ".txt";
+    QString fileName = "/home/chingiz/Documents/uni/intproj/fitting_geometric_primitives/test/pointCloud/pointCloud" + QString::number(settings.lazyId) + ".txt";
     Model* model = modelManager->createModel(fileName);
     ui->viewport->showModel(model);
 

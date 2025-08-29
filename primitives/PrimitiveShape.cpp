@@ -64,23 +64,6 @@ bool PrimitiveShape::getBestFit(pcl::PointCloud<pcl::PointXYZ>::Ptr const cloud,
     return true;
 }
 
-BoundingBox* PrimitiveShape::getBoundingBox(pcl::PointCloud<pcl::PointXYZ>::Ptr cloudPtr)
-{
-    pcl::PointCloud<pcl::PointXYZ>::Ptr filteredCloud(new pcl::PointCloud<pcl::PointXYZ>);
-    pcl::ExtractIndices<pcl::PointXYZ> extract;
-    extract.setInputCloud(cloudPtr);
-    extract.setIndices(recognizedIndices);
-    extract.filter(*filteredCloud);
 
-    // Get min and max points
-    Eigen::Vector3f minPoint(0,0,0);
-    Eigen::Vector3f maxPoint(0,0,0);
-
-    Util::getMinMax(filteredCloud->points, minPoint, maxPoint);
-
-    boundingBox = new BoundingBox(minPoint, maxPoint);
-
-    return boundingBox;
-}
 
 

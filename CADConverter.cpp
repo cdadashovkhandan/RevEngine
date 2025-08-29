@@ -249,7 +249,6 @@ bool CADConverter::isCloudSparse(PointCloud::Ptr cloud) const
     qDebug("Checking for sparseness...");
 
     float radius = 0.05;
-    int k = 10; // Number of nearest neighbors
 
     pcl::search::KdTree<pcl::PointXYZ> tree;
     tree.setInputCloud(cloud);
@@ -257,32 +256,24 @@ bool CADConverter::isCloudSparse(PointCloud::Ptr cloud) const
     std::vector<int> indices;
     std::vector<float> distances;
 
-    float sumDistances = 0.0f;
-    int count = 0;
-
+    std::vector<float> densities = {};
+    float density = 0.0f;
     for (size_t i = 0; i < cloud->size(); ++i)
     {
         tree.radiusSearch(cloud->points[i], radius, indices, distances);
-        if (indices.size() > 1) // Exclude the point itself
-        {
-            float sum = std::accumulate(distances.begin() + 1, distances.end(), 0.0f);
-            // for (size_t j = 1; j < indices.size(); ++j)
-            // {
-            //     sum += distances[j];
-            // }
-            sumDistances += sum / (indices.size() - 1);
-            count++;
-        }
+
+        density += indices.size() / (4.0f / 3.0f * M_PI * qPow(radius, 3));
     }
 
-    if (count > 0)
-    {
-        float avgDistance = sumDistances / count;
-        float threshold = 0.0001f;
-        float pointDensity = avgDistance; // Approximate point density (points per unit volume)
-        qDebug() << "Detected density: " << pointDensity << ". Point cloud is sparse: " << (pointDensity < threshold);
-        return pointDensity < threshold;
-    }
+    // Get average density.
+    density /= cloud->size();
+
+    density = 1.0f / density;
+
+    float densityThreshold = 0.00001f;
+
+    qDebug() << "Detected density: " << density << ". Point cloud is sparse: " << (density < densityThreshold);
+    return density < densityThreshold;
 
     qDebug("Point cloud too sparse for density calculations.");
     return true;

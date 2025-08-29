@@ -20,8 +20,10 @@ public:
     std::shared_ptr<RenderShape> getRenderShape() override;
 
     QString toString() const override;
+
+    BoundingBox* getBoundingBox(pcl::PointCloud<pcl::PointXYZ>::Ptr cloudPtr) override;
 protected:
-    void getBaseVertices() override;
+    void generateVertices() override;
 private:
     Eigen::Vector3f getNormal() const;
 };

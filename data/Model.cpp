@@ -6,13 +6,22 @@ Model::Model(PointCloud::Ptr pointCloud) {
 
 Model::~Model()
 {
-    normals->clear();
-    delete normals;
+    if (normals != nullptr)
+    {
+        normals->clear();
+        delete normals;
+    }
 
-    clusterIndices->clear();
-    delete clusterIndices;
+    if (clusterIndices != nullptr)
+    {
+        clusterIndices->clear();
+        delete clusterIndices;
+    }
 
-    qDeleteAll(*shapes);
-    shapes->clear();
-    delete shapes;
+    if (shapes != nullptr)
+    {
+        qDeleteAll(*shapes);
+        shapes->clear();
+        delete shapes;
+    }
 }

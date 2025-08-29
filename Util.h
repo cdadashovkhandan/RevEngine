@@ -8,6 +8,8 @@
 class Util
 {
 public:
+
+    //TODO: turns out there's an existing implementation in PCL itself, this can be removed
     /**
      * @brief Util::getMinMax Get the minimum and maximum value for each dimension and store them in vectors.
      * @param points

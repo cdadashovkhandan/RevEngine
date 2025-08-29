@@ -3,6 +3,9 @@
 #include <QDebug>
 #include <Util.h>
 #include <QtMath>
+#include <pcl/common/transforms.h>
+#include <pcl/filters/extract_indices.h>
+#include <pcl/filters/voxel_grid.h>
 
 Plane::Plane() {
     shapeType = PrimitiveType::PLANE;
@@ -121,7 +124,7 @@ std::shared_ptr<RenderShape> Plane::getRenderShape()
     std::shared_ptr<RenderShape> renderShape(new RenderShape());
 
     if (vertices.empty())
-        getBaseVertices();
+        generateVertices();
 
     renderShape->vertices = vertices;
 
@@ -139,7 +142,7 @@ QString Plane::toString() const
                     QString::number(parameters[2], 'g', 3));
 }
 
-void Plane::getBaseVertices() //TODO: is this a getter or a setter/generator? Make this clearer.
+void Plane::generateVertices()
 {
     float size = 0.5f;
     // Unit plane projected on xy plane.
@@ -157,17 +160,10 @@ void Plane::getBaseVertices() //TODO: is this a getter or a setter/generator? Ma
     axis.normalize();
     Eigen::Quaternionf quat;
 
-    BoundingBox bBoxCopy(*boundingBox);
-    quat = Eigen::AngleAxisf(-angle, axis);
+    float lenX = qAbs(boundingBox->max.x() - boundingBox->min.x());
+    float lenY = qAbs(boundingBox->max.y() - boundingBox->min.y());
 
-    // Align bounding box with z-axis (XY plane)
-    Eigen::Vector3f rotMin = quat * bBoxCopy.min;
-    Eigen::Vector3f rotMax = quat * bBoxCopy.max;
-
-    float lenX = qAbs(rotMax.x() - rotMin.x());
-    float lenY = qAbs(rotMax.y() - rotMin.y());
-
-    Eigen::Vector3f scale(lenX, lenY, 0);
+    Eigen::Vector3f scale(lenX, lenY, 1.0f);
 
     quat = Eigen::AngleAxisf(angle, axis);
     for (Eigen::Vector3f& vert : vertices)
@@ -200,4 +196,42 @@ Eigen::Vector3f Plane::getNormal() const
     normal.normalize();
 
     return normal;
+}
+
+/**
+ * @brief Plane::getBoundingBox Get an oriented bounding box of the plane
+ * @param cloudPtr
+ * @return
+ */
+BoundingBox* Plane::getBoundingBox(pcl::PointCloud<pcl::PointXYZ>::Ptr cloudPtr)
+{
+    pcl::PointCloud<pcl::PointXYZ>::Ptr filteredCloud(new pcl::PointCloud<pcl::PointXYZ>);
+    pcl::ExtractIndices<pcl::PointXYZ> extract;
+    extract.setInputCloud(cloudPtr);
+    extract.setIndices(recognizedIndices);
+    extract.filter(*filteredCloud);
+
+    Eigen::Vector3f normal = getNormal();
+
+    Eigen::Vector3f axis = (Eigen::Vector3f::UnitZ()).cross(normal);
+
+    float angle = qAcos(Eigen::Vector3f::UnitZ().dot(normal));
+    axis.normalize();
+    Eigen::Affine3f transform = Eigen::Affine3f::Identity();
+    Eigen::AngleAxisf rot(angle, axis);
+
+    transform.rotate(rot);
+
+    pcl::PointCloud<pcl::PointXYZ>::Ptr transformedCloud(new pcl::PointCloud<pcl::PointXYZ>);
+    pcl::transformPointCloud(*cloudPtr, *transformedCloud, transform.inverse());
+
+    // Get min and max points
+    Eigen::Vector3f minPoint(0,0,0);
+    Eigen::Vector3f maxPoint(0,0,0);
+
+    Util::getMinMax(transformedCloud->points, minPoint, maxPoint);
+
+    boundingBox = new BoundingBox(minPoint, maxPoint);
+
+    return boundingBox;
 }

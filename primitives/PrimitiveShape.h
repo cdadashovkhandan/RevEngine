@@ -40,10 +40,10 @@ public:
     virtual std::shared_ptr<RenderShape> getRenderShape() = 0;
     virtual QString toString() const = 0;
 
-    BoundingBox* getBoundingBox(pcl::PointCloud<pcl::PointXYZ>::Ptr cloudPtr);
+    virtual BoundingBox* getBoundingBox(pcl::PointCloud<pcl::PointXYZ>::Ptr cloudPtr) = 0;
     bool getBestFit(pcl::PointCloud<pcl::PointXYZ>::Ptr const cloud, pcl::PointIndices::Ptr const indices);
 protected:
-    virtual void getBaseVertices() = 0;
+    virtual void generateVertices() = 0;
 };
 
 #endif // PRIMITIVESHAPE_H
