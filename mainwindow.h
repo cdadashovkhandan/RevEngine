@@ -73,11 +73,14 @@ private slots:
 
     void on_finalizeButton_clicked();
 
+    void on_liveClusteringPreviewCheckBox_toggled(bool checked);
+
 private:
     Ui::MainWindow *ui;
     ModelManager* modelManager;
     Settings settings;
     bool enforceStatus(ModelStatus modelStatus);
     void updateInfoText();
+    void recalculateClusters();
 };
 #endif // MAINWINDOW_H

@@ -46,6 +46,7 @@ struct Settings
     unsigned int minClusterSize = 50;
     float scaleFactor = 0.01f;
     float downSampleFactor = 0.5f;
+    bool liveClusterPreview = false;
 
     // ----Normals----
 

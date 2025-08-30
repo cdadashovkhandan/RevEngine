@@ -71,16 +71,26 @@ void MainWindow::on_toggleClustersCheckBox_toggled(bool checked)
 void MainWindow::on_minClusterSizeSpinBox_valueChanged(int arg1)
 {
     settings.minClusterSize = arg1;
+    if (settings.liveClusterPreview)
+        recalculateClusters();
 }
 
 
 void MainWindow::on_distanceThresholdSpinBox_valueChanged(double arg1)
 {
     settings.distanceThreshold = arg1;
+
+    if (settings.liveClusterPreview)
+        recalculateClusters();
 }
 
 
 void MainWindow::on_recalcClusterButton_clicked()
+{
+    recalculateClusters();
+}
+
+void MainWindow::recalculateClusters()
 {
     if (enforceStatus(ModelStatus::PREPROCESSED))
     {
@@ -128,8 +138,8 @@ void MainWindow::on_normalNeighborsSpinBox_valueChanged(int arg1)
 void MainWindow::on_lazyImportButton_clicked()
 {
     // QString fileName = "/home/chingiz/Documents/uni/intproj/Fit4CAD/dataset/training_set/PC6.txt";
-    // QString fileName = "/home/chingiz/Documents/uni/intproj/Fit4CAD/dataset/training_set/PC" + QString::number(settings.lazyId) + ".txt";
-    QString fileName = "/home/chingiz/Documents/uni/intproj/fitting_geometric_primitives/test/pointCloud/pointCloud" + QString::number(settings.lazyId) + ".txt";
+    QString fileName = "/home/chingiz/Documents/uni/intproj/Fit4CAD/dataset/training_set/PC" + QString::number(settings.lazyId) + ".txt";
+    // QString fileName = "/home/chingiz/Documents/uni/intproj/fitting_geometric_primitives/test/pointCloud/pointCloud" + QString::number(settings.lazyId) + ".txt";
     Model* model = modelManager->createModel(fileName);
     ui->viewport->showModel(model);
 
@@ -322,5 +332,11 @@ void MainWindow::on_finalizeButton_clicked()
         modelManager->finalizeModel();
         ui->viewport->showModel(model);
     }
+}
+
+
+void MainWindow::on_liveClusteringPreviewCheckBox_toggled(bool checked)
+{
+    settings.liveClusterPreview = checked;
 }
 

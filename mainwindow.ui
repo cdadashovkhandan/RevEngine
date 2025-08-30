@@ -131,6 +131,13 @@
      </rect>
     </property>
     <layout class="QGridLayout" name="gridLayout">
+     <item row="1" column="0">
+      <widget class="QLabel" name="distanceThresholdLabel">
+       <property name="text">
+        <string>Distance Threshold</string>
+       </property>
+      </widget>
+     </item>
      <item row="0" column="1">
       <widget class="QSpinBox" name="minClusterSizeSpinBox">
        <property name="maximum">
@@ -144,17 +151,13 @@
        </property>
       </widget>
      </item>
-     <item row="1" column="0">
-      <widget class="QLabel" name="distanceThresholdLabel">
-       <property name="text">
-        <string>Distance Threshold</string>
-       </property>
-      </widget>
-     </item>
      <item row="1" column="1">
       <widget class="QDoubleSpinBox" name="distanceThresholdSpinBox">
        <property name="decimals">
         <number>4</number>
+       </property>
+       <property name="minimum">
+        <double>0.010000000000000</double>
        </property>
        <property name="singleStep">
         <double>0.001000000000000</double>
@@ -171,10 +174,23 @@
        </property>
       </widget>
      </item>
-     <item row="2" column="0">
+     <item row="3" column="0">
       <widget class="QCheckBox" name="forceRansacCheckBox">
        <property name="text">
         <string>Force RANSAC</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QCheckBox" name="liveClusteringPreviewCheckBox">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="text">
+        <string>Live Preview</string>
+       </property>
+       <property name="checked">
+        <bool>false</bool>
        </property>
       </widget>
      </item>
@@ -593,7 +609,7 @@
       <x>1290</x>
       <y>550</y>
       <width>131</width>
-      <height>136</height>
+      <height>141</height>
      </rect>
     </property>
     <layout class="QGridLayout" name="gridLayout_2">
