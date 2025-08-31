@@ -42,10 +42,10 @@ struct Settings
     // ----Clustering----
 
     // Distance threshold for clustering
-    float distanceThreshold = 0.05f;
+    float distanceThreshold = 0.2f;
     unsigned int minClusterSize = 50;
     float scaleFactor = 0.01f;
-    float downSampleFactor = 0.5f;
+    float downSampleFactor = 12.0f;
     bool liveClusterPreview = false;
 
     // ----Normals----

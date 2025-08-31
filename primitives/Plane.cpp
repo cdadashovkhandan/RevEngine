@@ -205,6 +205,7 @@ Eigen::Vector3f Plane::getNormal() const
  */
 BoundingBox* Plane::getBoundingBox(pcl::PointCloud<pcl::PointXYZ>::Ptr cloudPtr)
 {
+    qDebug("Calculating bounding box...");
     pcl::PointCloud<pcl::PointXYZ>::Ptr filteredCloud(new pcl::PointCloud<pcl::PointXYZ>);
     pcl::ExtractIndices<pcl::PointXYZ> extract;
     extract.setInputCloud(cloudPtr);
@@ -229,8 +230,17 @@ BoundingBox* Plane::getBoundingBox(pcl::PointCloud<pcl::PointXYZ>::Ptr cloudPtr)
     Eigen::Vector3f minPoint(0,0,0);
     Eigen::Vector3f maxPoint(0,0,0);
 
+    //TODO: remove once debugged.
+    Util::getMinMax(cloudPtr->points, minPoint, maxPoint);
+    qDebug() << "OG Min point: (" << minPoint.x() << ", " <<  minPoint.y() << ", " << minPoint.z() << ")";
+    qDebug() << "OG Max point: (" << maxPoint.x() << ", " <<  maxPoint.y() << ", " << maxPoint.z() << ")";
+
+
     Util::getMinMax(transformedCloud->points, minPoint, maxPoint);
 
+    qDebug("Bounding box calculated.");
+    qDebug() << "Min point: (" << minPoint.x() << ", " <<  minPoint.y() << ", " << minPoint.z() << ")";
+    qDebug() << "Max point: (" << maxPoint.x() << ", " <<  maxPoint.y() << ", " << maxPoint.z() << ")";
     boundingBox = new BoundingBox(minPoint, maxPoint);
 
     return boundingBox;
