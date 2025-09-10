@@ -34,6 +34,7 @@ public:
     void recognizeShapes();
     void finalizeModel();
 
+    void writeToFile(QString filename) const;
 private:
     PointCloud::Ptr parsePointCloud(QString fileName) const;
     CADConverter* cadConverter;

@@ -340,3 +340,13 @@ void MainWindow::on_liveClusteringPreviewCheckBox_toggled(bool checked)
     settings.liveClusterPreview = checked;
 }
 
+
+void MainWindow::on_exportModelButton_clicked()
+{
+    if (enforceStatus(ModelStatus::ANALYZED))
+    {
+        QString dirName = QFileDialog::getExistingDirectory(this, "Select Directory to Save...", QString(), QFileDialog::ShowDirsOnly);
+
+        modelManager->writeToFile(dirName);
+    }
+}

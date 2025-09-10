@@ -2,7 +2,6 @@
 #ifndef SETTINGS_H
 #define SETTINGS_H
 
-//TODO: maybe move to a separate file?
 #include "primitives/PrimitiveType.h"
 #include <map>
 

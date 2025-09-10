@@ -58,8 +58,6 @@ std::vector<ParamPair> Plane::buildParameters(std::vector<pcl::PointXYZ, Eigen::
  */
 bool Plane::isIntersecting(pcl::PointXYZ const point, std::vector<float> const params, float const maxMagnitude) const
 {
-    //TODO: maybe use getNormal() and multiply it by point?
-
     float threshold = maxMagnitude / 200.0f;
     // Parameters
     float tht = params[0]; //theta
@@ -142,6 +140,9 @@ QString Plane::toString() const
                     QString::number(parameters[2], 'g', 3));
 }
 
+/**
+ * @brief Plane::generateVertices Generate the vertices defining the plane and transform them based on the shape's parameters.
+ */
 void Plane::generateVertices()
 {
     float size = 0.5f;
@@ -229,12 +230,6 @@ BoundingBox* Plane::getBoundingBox(pcl::PointCloud<pcl::PointXYZ>::Ptr cloudPtr)
     // Get min and max points
     Eigen::Vector3f minPoint(0,0,0);
     Eigen::Vector3f maxPoint(0,0,0);
-
-    //TODO: remove once debugged.
-    Util::getMinMax(cloudPtr->points, minPoint, maxPoint);
-    qDebug() << "OG Min point: (" << minPoint.x() << ", " <<  minPoint.y() << ", " << minPoint.z() << ")";
-    qDebug() << "OG Max point: (" << maxPoint.x() << ", " <<  maxPoint.y() << ", " << maxPoint.z() << ")";
-
 
     Util::getMinMax(transformedCloud->points, minPoint, maxPoint);
 

@@ -22,5 +22,5 @@ void main() {
     gl_Position = proj_matrix * view_model * vert_coords;
     vert_color_fs = vert_color_vs;
 
-    gl_PointSize = 1;
+    gl_PointSize = 2;
 }

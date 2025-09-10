@@ -207,7 +207,7 @@ void ModelRenderer::update_uniforms()
  */
 void ModelRenderer::render()
 {
-    gl->glClearColor(0, 0, 0, 1.0f);
+    gl->glClearColor(0.6, 0.6, 0.6, 1.0f);
     gl->glClear(GL_COLOR_BUFFER_BIT);
     gl->glEnable(GL_PROGRAM_POINT_SIZE);
 

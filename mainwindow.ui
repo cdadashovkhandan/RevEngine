@@ -484,6 +484,9 @@
     </property>
    </widget>
    <widget class="QPushButton" name="lazyImportButton">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
     <property name="geometry">
      <rect>
       <x>1150</x>
@@ -692,6 +695,9 @@
     </property>
    </widget>
    <widget class="QSpinBox" name="lazyIdSpinBox">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
     <property name="geometry">
      <rect>
       <x>1220</x>

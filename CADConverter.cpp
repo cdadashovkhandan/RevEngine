@@ -270,7 +270,7 @@ bool CADConverter::isCloudSparse(PointCloud::Ptr cloud) const
 
     density = 1.0f / density;
 
-    float densityThreshold = 0.00001f;
+    float densityThreshold = 0.000001f;
 
     qDebug() << "Detected density: " << density << ". Point cloud is sparse: " << (density < densityThreshold);
     return density < densityThreshold;
@@ -296,12 +296,6 @@ float CADConverter::shrink(PointCloud::Ptr cloud) const
 
     Eigen::Vector3f difference = (maxPoint - minPoint).cwiseAbs();
     float maxRange = qMax(qMax(difference.x(), difference.y()), difference.z());
-
-    //TODO: unused
-    size_t index = (maxRange == difference.x()) ? 0 :
-                    (maxRange == difference.y()) ? 1 :
-                    2;
-
 
     scaleFactor = 1.0f / maxRange;
     qDebug() << "Detected scale factor: " << scaleFactor;
@@ -370,7 +364,6 @@ std::vector<pcl::PointIndices::Ptr>* CADConverter::cluster(PointCloud::Ptr input
         pcl::copyPointCloud(*input, *cloudCopy);
         int original_size(cloudCopy->height*cloudCopy->width);
 
-        // TODO: put into Settings
         float min_percentage = 2.0f;
         cluster_indices = new std::vector<pcl::PointIndices::Ptr>();
 
@@ -435,7 +428,6 @@ Eigen::Matrix4f CADConverter::buildRotationMatrix(Eigen::Vector3f const target, 
 
     Eigen::Matrix3f rotation = FFi * GG * FFi.inverse();
 
-    //TODO: maybe there's a way to do this better?
     // Rebuild in homogeneous coordinates.
     Eigen::Matrix4f rotMatrix;
     rotMatrix.setIdentity();
@@ -484,7 +476,6 @@ std::vector<Eigen::Vector3f>* CADConverter::getNormals(PointCloud::Ptr const clo
 
                     float tht = params[0]; //theta
                     float phi = params[1];
-                    // float rho = params[2];
 
                     // Build normal vector from chosen parameters
 
@@ -508,7 +499,6 @@ std::vector<Eigen::Vector3f>* CADConverter::getNormals(PointCloud::Ptr const clo
     else if (settings->normalMode == NormalMode::PCA)
     {
         qDebug("Normal Method: PCA");
-        //TODO: set parallel method
         pcl::NormalEstimation<pcl::PointXYZ, pcl::Normal> ne;
         ne.setInputCloud(cloudPtr);
 
@@ -540,7 +530,6 @@ std::vector<Eigen::Vector3f>* CADConverter::getNormals(PointCloud::Ptr const clo
  */
 PrimitiveShape* CADConverter::getShape(PrimitiveType const type) const
 {
-    // TODO: Find a more elegant solution
     switch (type)
     {
     case PrimitiveType::PLANE:

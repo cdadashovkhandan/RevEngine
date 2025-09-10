@@ -75,6 +75,8 @@ private slots:
 
     void on_liveClusteringPreviewCheckBox_toggled(bool checked);
 
+    void on_exportModelButton_clicked();
+
 private:
     Ui::MainWindow *ui;
     ModelManager* modelManager;

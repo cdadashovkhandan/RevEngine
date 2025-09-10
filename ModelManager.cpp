@@ -141,3 +141,39 @@ void ModelManager::finalizeModel()
     modelStatus = ModelStatus::FINALIZED;
 }
 
+/**
+ * @brief ModelManager::writeToFile Export all the detected shapes into file(s)
+ * NOTE: this is a last minute addition just to prove that it works.
+ * It would instead be advisable to implement file writing within each Shape specifically and then call the writing methods here.
+ * @param filename
+ */
+void ModelManager::writeToFile(QString filename) const
+{
+    QDir dir(filename);
+    for (size_t idx = 0; idx < model->shapes->size(); ++idx)
+    {
+
+        QString indexedFileName = dir.filePath("Plane" + QString::number(idx) + ".obj");
+        qDebug() << "Writing file " + indexedFileName;
+
+        QFile file( indexedFileName );
+        if (file.open(QIODevice::ReadWrite))
+        {
+            QTextStream stream( &file );
+
+            std::shared_ptr<RenderShape> renderShape = model->shapes->at(idx)->getRenderShape();
+            for (const Eigen::Vector3f point : renderShape->vertices) {
+                stream << "v " << point.x() << " " << point.y() << " " << point.z() << "\n";
+            }
+            for (int pointIdx = 0; pointIdx < renderShape->indices.size(); pointIdx += 3) {
+                stream << "f " << renderShape->indices[pointIdx] << " " << renderShape->indices[pointIdx + 1] << " " << renderShape->indices[pointIdx + 2] << '\n';;
+            }
+        }
+        else
+        {
+            qDebug("Failed to write to file!");
+        }
+        file.close();
+    }
+}
+
