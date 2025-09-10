@@ -159,6 +159,9 @@
        <property name="minimum">
         <double>0.010000000000000</double>
        </property>
+       <property name="maximum">
+        <double>10.000000000000000</double>
+       </property>
        <property name="singleStep">
         <double>0.001000000000000</double>
        </property>
@@ -349,7 +352,7 @@
     <property name="geometry">
      <rect>
       <x>1280</x>
-      <y>200</y>
+      <y>210</y>
       <width>261</width>
       <height>16</height>
      </rect>
@@ -362,7 +365,7 @@
     <property name="geometry">
      <rect>
       <x>1280</x>
-      <y>180</y>
+      <y>190</y>
       <width>81</width>
       <height>17</height>
      </rect>
@@ -372,38 +375,6 @@
     </property>
     <property name="textFormat">
      <enum>Qt::TextFormat::MarkdownText</enum>
-    </property>
-   </widget>
-   <widget class="QLabel" name="scaleFactorLabel">
-    <property name="geometry">
-     <rect>
-      <x>1280</x>
-      <y>220</y>
-      <width>127</width>
-      <height>26</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>(Visual) Scale Factor</string>
-    </property>
-   </widget>
-   <widget class="QDoubleSpinBox" name="scaleFactorSpinBox">
-    <property name="geometry">
-     <rect>
-      <x>1420</x>
-      <y>220</y>
-      <width>126</width>
-      <height>26</height>
-     </rect>
-    </property>
-    <property name="decimals">
-     <number>2</number>
-    </property>
-    <property name="singleStep">
-     <double>0.010000000000000</double>
-    </property>
-    <property name="value">
-     <double>0.010000000000000</double>
     </property>
    </widget>
    <widget class="QCheckBox" name="highPrecisionNormalsCheckBox">
@@ -543,6 +514,9 @@
     </property>
     <property name="decimals">
      <number>2</number>
+    </property>
+    <property name="minimum">
+     <double>0.010000000000000</double>
     </property>
     <property name="singleStep">
      <double>0.010000000000000</double>
@@ -714,20 +688,20 @@
     <property name="geometry">
      <rect>
       <x>1280</x>
-      <y>250</y>
+      <y>230</y>
       <width>127</width>
       <height>26</height>
      </rect>
     </property>
     <property name="text">
-     <string>Downsample Factor</string>
+     <string>Downsample Level</string>
     </property>
    </widget>
    <widget class="QDoubleSpinBox" name="downSampleFactorSpinBox_2">
     <property name="geometry">
      <rect>
       <x>1420</x>
-      <y>250</y>
+      <y>230</y>
       <width>126</width>
       <height>26</height>
      </rect>
@@ -739,7 +713,7 @@
      <double>0.010000000000000</double>
     </property>
     <property name="value">
-     <double>12.000000000000000</double>
+     <double>1.000000000000000</double>
     </property>
    </widget>
    <widget class="QPushButton" name="recalcDownsampleButton">
