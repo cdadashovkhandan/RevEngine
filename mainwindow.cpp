@@ -114,13 +114,6 @@ void MainWindow::on_toggleNormalsCheckBox_toggled(bool checked)
 }
 
 
-void MainWindow::on_scaleFactorSpinBox_valueChanged(double arg1)
-{
-    settings.scaleFactor = arg1;
-    ui->viewport->update();
-}
-
-
 void MainWindow::on_highPrecisionNormalsCheckBox_toggled(bool checked)
 {
     settings.highPrecisionNormals = checked;
@@ -132,21 +125,6 @@ void MainWindow::on_normalNeighborsSpinBox_valueChanged(int arg1)
 {
     settings.normalsNeighborCount = arg1;
 }
-
-
-//TODO: REMOVE ON RELEASE
-void MainWindow::on_lazyImportButton_clicked()
-{
-    // QString fileName = "/home/chingiz/Documents/uni/intproj/Fit4CAD/dataset/training_set/PC6.txt";
-    QString fileName = "/home/chingiz/Documents/uni/intproj/Fit4CAD/dataset/training_set/PC" + QString::number(settings.lazyId) + ".txt";
-    // QString fileName = "/home/chingiz/Documents/uni/intproj/fitting_geometric_primitives/test/pointCloud/pointCloud" + QString::number(settings.lazyId) + ".txt";
-    Model* model = modelManager->createModel(fileName);
-    ui->viewport->showModel(model);
-
-    updateInfoText();
-    ui->detectedShapesListWidget->clear();
-}
-
 
 void MainWindow::on_comboBox_currentIndexChanged(int index)
 {
@@ -235,22 +213,6 @@ bool MainWindow::enforceStatus(ModelStatus modelStatus)
     return true;
 }
 
-void MainWindow::on_lazyIdSpinBox_valueChanged(int arg1)
-{
-    settings.lazyId = arg1;
-}
-
-
-void MainWindow::on_showDownsampledCheckBox_toggled(bool checked)
-{
-    // settings.showDownsampledVersion = checked;
-
-    // Model* model = modelManager->getActiveModel();
-    // if (modelManager->model != nullptr) // Redundant but wouldn't hurt to prevent a segfault.
-    //     ui->viewport->showModel(model);
-}
-
-
 void MainWindow::on_downSampleFactorSpinBox_2_valueChanged(double arg1)
 {
     settings.downSampleFactor = arg1;
@@ -287,7 +249,6 @@ void MainWindow::on_toggleRunOnDownsampledCloudCheckBox_toggled(bool checked)
     Model* model = modelManager->model;
     if (model != nullptr) // Redundant but wouldn't hurt to prevent a segfault.
     {
-        //TODO: move this to Model or ModelManager.
         // This must be cleared to avoid mismatches and segfaults.
         if (model->clusterIndices != nullptr && !model->clusterIndices->empty())
             model->clusterIndices->clear();

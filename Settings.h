@@ -75,10 +75,6 @@ struct Settings
         { PrimitiveType::CONE, false },
     };
 
-    //TODO: remove on release
-
-    int lazyId = 5;
-
 };
 
 #endif //SETTINGS_H

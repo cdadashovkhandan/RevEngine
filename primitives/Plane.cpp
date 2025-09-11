@@ -97,7 +97,7 @@ float Plane::calculateMFE(pcl::PointCloud<pcl::PointXYZ>::Ptr const cloud)
     }
 
     if (parameters.empty())
-        throw "Tried to calculate MFE with unitialized parameters."; //TODO: proper exception handling
+        throw "Tried to calculate MFE with unitialized parameters.";
 
     Eigen::Vector3f maxPoint(0,0,0);
     Eigen::Vector3f minPoint(0,0,0);

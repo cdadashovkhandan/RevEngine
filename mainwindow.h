@@ -37,13 +37,9 @@ private slots:
 
     void on_toggleNormalsCheckBox_toggled(bool checked);
 
-    void on_scaleFactorSpinBox_valueChanged(double arg1);
-
     void on_highPrecisionNormalsCheckBox_toggled(bool checked);
 
     void on_normalNeighborsSpinBox_valueChanged(int arg1);
-
-    void on_lazyImportButton_clicked();
 
     void on_comboBox_currentIndexChanged(int index);
 
@@ -60,10 +56,6 @@ private slots:
     void on_forceRansacCheckBox_toggled(bool checked);
 
     void on_recognizeShapesButton_clicked();
-
-    void on_lazyIdSpinBox_valueChanged(int arg1);
-
-    void on_showDownsampledCheckBox_toggled(bool checked);
 
     void on_downSampleFactorSpinBox_2_valueChanged(double arg1);
 

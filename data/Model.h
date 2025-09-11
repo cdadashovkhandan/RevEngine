@@ -20,7 +20,7 @@ public:
 
     float scaleFactor = 1.0f;
     PointCloud::Ptr pointCloud; // Model cannot exist without pcloud.
-    PointCloud::Ptr pointCloudDownsampled = nullptr; //TODO: replace with indices?
+    PointCloud::Ptr pointCloudDownsampled = nullptr;
 
     std::vector<PrimitiveShape*>* shapes = nullptr; // Model can exist without shapes.
     std::vector<pcl::PointIndices::Ptr>* clusterIndices = nullptr;

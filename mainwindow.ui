@@ -454,22 +454,6 @@
      <string># Neighbors </string>
     </property>
    </widget>
-   <widget class="QPushButton" name="lazyImportButton">
-    <property name="enabled">
-     <bool>true</bool>
-    </property>
-    <property name="geometry">
-     <rect>
-      <x>1150</x>
-      <y>320</y>
-      <width>61</width>
-      <height>25</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>lazy</string>
-    </property>
-   </widget>
    <widget class="QComboBox" name="comboBox">
     <property name="geometry">
      <rect>
@@ -666,22 +650,6 @@
     </property>
     <property name="text">
      <string>Recognize Shapes</string>
-    </property>
-   </widget>
-   <widget class="QSpinBox" name="lazyIdSpinBox">
-    <property name="enabled">
-     <bool>true</bool>
-    </property>
-    <property name="geometry">
-     <rect>
-      <x>1220</x>
-      <y>320</y>
-      <width>42</width>
-      <height>26</height>
-     </rect>
-    </property>
-    <property name="value">
-     <number>5</number>
     </property>
    </widget>
    <widget class="QLabel" name="downSampleFactorLabel">
