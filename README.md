@@ -12,13 +12,13 @@ For additional information, see this project's report.
  
 
 - Click the `Import` button and choose a point cloud from file.
-- Click `Preprocess` to perform all the pre-processing steps
-- If needed, tweak the parameters and re-run individual steps (top right) to fine-tune the pre-processing
+- Click `Preprocess` to perform all the pre-processing steps.
+- If needed, tweak the parameters and re-run individual steps (top right) to fine-tune the pre-processing.
     - clicking `Preprocess` again is NOT recommended. It's best to import the point cloud again instead.
-- When ready, click `Recognize Shapes`
+- When ready, click `Recognize Shapes`.
 - wait for the execution to finish
-- Click `Finalize` to undo the pre-processing and bring the cloud back to its original scale
-- Click `Export`
+- Click `Finalize` to undo the pre-processing and bring the cloud back to its original scale.
+- Click `Export` and choose a directory to save all the recognized shapes to.
 
 ### Buttons & Parameters
 
@@ -50,6 +50,6 @@ TODO
     
 # Future work
 
-Currently the application only supports planes. The implementations this work is based on support more shapes. Each of these shapes needs to be implemented as a separate class, inheriting from `PrimitiveShape`.=
+Currently the application only supports planes. The implementations this work is based on support more shapes. Each of these shapes needs to be implemented as a separate class, inheriting from `PrimitiveShape`.
 
-
+The pre-process step has some parts disabled, namely the rotation, due to bugs. This is not a big deal for individual primitives or any components in the fit4cad dataset as they are already z-aligned, but this issue should be addressed first before any further expansions.
