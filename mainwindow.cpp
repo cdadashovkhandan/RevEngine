@@ -92,7 +92,7 @@ void MainWindow::on_recalcClusterButton_clicked()
 
 void MainWindow::recalculateClusters()
 {
-    if (enforceStatus(ModelStatus::PREPROCESSED))
+    if (enforceStatus(ModelStatus::PREPROCESSED, "Please pre-process the point cloud first."))
     {
         modelManager->recalculateClusters();
         ui->viewport->showModel(modelManager->model);
@@ -140,7 +140,7 @@ void MainWindow::on_normalSearchRadiusSpinBox_valueChanged(double arg1)
 
 void MainWindow::on_recalcNormalsButton_clicked()
 {
-    if (enforceStatus(ModelStatus::PREPROCESSED))
+    if (enforceStatus(ModelStatus::PREPROCESSED, "Please pre-process the point cloud first."))
     {
         if (modelManager->model != nullptr) // Redundant but wouldn't hurt to prevent a segfault.
         {
@@ -182,7 +182,7 @@ void MainWindow::on_forceRansacCheckBox_toggled(bool checked)
 
 void MainWindow::on_recognizeShapesButton_clicked()
 {
-    if (enforceStatus(ModelStatus::PREPROCESSED))
+    if (enforceStatus(ModelStatus::PREPROCESSED, "Please pre-process the point cloud first."))
     {
         if (modelManager->model != nullptr) // Redundant but wouldn't hurt to prevent a segfault.
         {
@@ -200,12 +200,12 @@ void MainWindow::on_recognizeShapesButton_clicked()
     }
 }
 
-bool MainWindow::enforceStatus(ModelStatus modelStatus)
+bool MainWindow::enforceStatus(ModelStatus modelStatus, QString message)
 {
     if (modelManager->modelStatus < modelStatus)
     {
         QMessageBox errorMessage;
-        errorMessage.warning(this, "Point Cloud not ready", "Please pre-process the point cloud first.");
+        errorMessage.warning(this, "Point Cloud not ready", message);
         errorMessage.show();
         return false;
     }
@@ -221,7 +221,7 @@ void MainWindow::on_downSampleFactorSpinBox_2_valueChanged(double arg1)
 
 void MainWindow::on_recalcDownsampleButton_clicked()
 {
-    if (enforceStatus(ModelStatus::PREPROCESSED))
+    if (enforceStatus(ModelStatus::PREPROCESSED, "Please pre-process the point cloud first."))
     {
         Model* model = modelManager->model;
         if (model != nullptr) // Redundant but wouldn't hurt to prevent a segfault.
@@ -278,10 +278,7 @@ void MainWindow::updateInfoText()
         {
             ui->infoTextEdit->append(QString("Detected shape count: %1").arg(QString::number(model->shapes->size())));
         }
-
-        // ui->infoTextEdit->append(QString("Model status: %1").arg(Util::QtEnumToString(modelManager->modelStatus)));
     }
-
 }
 
 
@@ -304,7 +301,7 @@ void MainWindow::on_liveClusteringPreviewCheckBox_toggled(bool checked)
 
 void MainWindow::on_exportModelButton_clicked()
 {
-    if (enforceStatus(ModelStatus::ANALYZED))
+    if (enforceStatus(ModelStatus::ANALYZED, "Please run shape recognition first."))
     {
         QString dirName = QFileDialog::getExistingDirectory(this, "Select Directory to Save...", QString(), QFileDialog::ShowDirsOnly);
 

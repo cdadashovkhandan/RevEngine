@@ -73,7 +73,7 @@ private:
     Ui::MainWindow *ui;
     ModelManager* modelManager;
     Settings settings;
-    bool enforceStatus(ModelStatus modelStatus);
+    bool enforceStatus(ModelStatus modelStatus, QString message);
     void updateInfoText();
     void recalculateClusters();
 };

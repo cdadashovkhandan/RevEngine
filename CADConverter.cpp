@@ -403,8 +403,8 @@ void CADConverter::alignCloudWithZAxis(PointCloud::Ptr cloudPtr, std::vector<Eig
     qDebug("Aligning with z-axis...");
     Eigen::Vector3f average = std::accumulate(normals.begin(), normals.end(), Eigen::Vector3f(0.0f, 0.0f, 0.0f));
     average /= float(normals.size());
-    // Align major normal direction with z-axis
 
+    // Align major normal direction with z-axis
     Eigen::Vector3f zAxis(0.0f, 0.0f, 1.0f);
     Eigen::Matrix4f rotationMatrix = buildRotationMatrix(zAxis, average.normalized());
 
@@ -412,9 +412,15 @@ void CADConverter::alignCloudWithZAxis(PointCloud::Ptr cloudPtr, std::vector<Eig
     qDebug("Alignment complete");
 }
 
+/**
+ * @brief CADConverter::buildRotationMatrix Build a rotation matrix for rotating from one vector to another
+ * NOTE: I don't like this implementation and would instead use Quaternions, but I'm afraid of changing this and breaking everything close to submission.
+ * @param target
+ * @param source
+ * @return
+ */
 Eigen::Matrix4f CADConverter::buildRotationMatrix(Eigen::Vector3f const target, Eigen::Vector3f const source) const
 {
-    //TODO: proper variable names, this ain't MATLAB
     Eigen::Matrix3f GG{
         {target.dot(source),             -target.cross(source).norm(),   0.0f},
         {target.cross(source).norm(),    target.dot(source),             0.0f},
