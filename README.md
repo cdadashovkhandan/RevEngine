@@ -3,14 +3,12 @@
 
 A tool for automatically recognizing primitives in a point cloud, based on the work of [Raffo et al. (2022)](https://doi.org/10.1016/j.cagd.2022.102123) and [Romanengo et al (2023)](https://doi.org/10.1016/j.cad.2023.103479).
 
-
 RevEngine employes the Hough Transform in order to detect shapes in a parallel fashion. The project is currently hardcoded to run on 8 threads.
 
 For additional information, see this project's report.
 
 ## Usage
  
-
 - Click the `Import` button and choose a point cloud from file.
 - Click `Preprocess` to perform all the pre-processing steps.
 - If needed, tweak the parameters and re-run individual steps (top right) to fine-tune the pre-processing.
@@ -46,10 +44,20 @@ TODO
     - Estimation Method: Choose between PCA-based and Nearest-Neighbor-based normal estimation methods.
     - Search radius: Determine the radius to search within for PCA.
     - \#Neighbors: Determine the number of neighbors to consider per point for Nearest Nighbors.
-    
-    
+
+# Testing
+
+RevEngine was primarily tested with the [Fit4CAD dataset](https://github.com/chiararomanengo/Fit4CAD) and the test data in [Raffo et al. (2022)'s implementation repository](https://github.com/chiararomanengo/fitting_geometric_primitives).
+
+# Dependencies
+
+This application fundamentally relies on the [Point Cloud Library (PCL)](https://pointclouds.org/) and the libraries PCL depends on, namely [Boost, Eigen, and FLANN](https://pcl.readthedocs.io/projects/tutorials/en/latest/compiling_pcl_posix.html).
+
+In addition, a [modified implementation of DBSCAN by Eleobert](https://github.com/Eleobert/dbscan) is used under the MIT license.
+
 # Future work
 
-Currently the application only supports planes. The implementations this work is based on support more shapes. Each of these shapes needs to be implemented as a separate class, inheriting from `PrimitiveShape`.
+Although the implementations this work is based on support various shapes, the application currently only supports planes. Each of these shapes needs to be implemented as a separate class, inheriting from `PrimitiveShape`.
 
-The pre-process step has some parts disabled, namely the rotation, due to bugs. This is not a big deal for individual primitives or any components in the fit4cad dataset as they are already z-aligned, but this issue should be addressed first before any further expansions.
+Due to bugs, one part of the pre-process step is disabled, namely the rotation. This is not a big deal for individual primitives or any components in the Fit4CAD dataset as they are already z-aligned, but this issue should be addressed first before any further expansions.
+
