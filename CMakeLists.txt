@@ -9,10 +9,14 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
-find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets OpenGLWidgets)
-find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS OpenGL)
-find_package(PCL 1.15 REQUIRED)
+find_package(Qt6 COMPONENTS Widgets OpenGLWidgets OpenGL QUIET)
+if(Qt6_FOUND)
+    set(QT_VERSION_MAJOR 6)
+else()
+    find_package(Qt5 REQUIRED COMPONENTS Widgets OpenGLWidgets OpenGL)
+    set(QT_VERSION_MAJOR 5)
+endif()
+find_package(PCL 1.15 REQUIRED COMPONENTS COMMON KDTREE FILTERS FEATURES SEGMENTATION)
 find_package(OpenMP)
 
 set(PROJECT_SOURCES
@@ -92,7 +96,9 @@ target_link_libraries(RevEngine
     ${PCL_KDTREE_LIBRARIES}
     ${PCL_FILTERS_LIBRARIES}
     ${PCL_FEATURES_LIBRARIES}
-    ${PCL_SEGMENTATION_LIBRARIES})
+    ${PCL_SEGMENTATION_LIBRARIES}
+)
+
 
 if(OpenMP_CXX_FOUND)
     target_link_libraries(RevEngine
@@ -106,9 +112,9 @@ endif()
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
 # If you are developing for iOS or macOS you should consider setting an
 # explicit, fixed bundle identifier manually though.
-if(${QT_VERSION} VERSION_LESS 6.1.0)
-  set(BUNDLE_ID_OPTION MACOSX_BUNDLE_GUI_IDENTIFIER com.example.RevEngine)
-endif()
+# if(${QT_VERSION} VERSION_LESS 6.1.0)
+#   set(BUNDLE_ID_OPTION MACOSX_BUNDLE_GUI_IDENTIFIER com.example.RevEngine)
+# endif()
 set_target_properties(RevEngine PROPERTIES
     ${BUNDLE_ID_OPTION}
     MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
