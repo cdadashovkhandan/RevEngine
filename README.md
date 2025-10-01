@@ -8,6 +8,8 @@ RevEngine employes the Hough Transform in order to detect shapes in a parallel f
 For additional information, see this project's report.
 
 ## Usage
+
+<img width="1591" height="795" alt="revengineui" src="https://github.com/user-attachments/assets/cb30e9e2-79d9-401e-a327-37a09e2669a5" />
  
 - Click the `Import` button and choose a point cloud from file.
 - Click `Preprocess` to perform all the pre-processing steps.
@@ -19,6 +21,7 @@ For additional information, see this project's report.
 - Click `Export` and choose a directory to save all the recognized shapes to.
 
 ### Buttons & Parameters
+
 
 - **Display**
 All the checkboxes are self explanatory, with one exception:
