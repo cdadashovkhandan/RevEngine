@@ -45,17 +45,17 @@ TODO
     - Search radius: Determine the radius to search within for PCA.
     - \#Neighbors: Determine the number of neighbors to consider per point for Nearest Nighbors.
 
-# Testing
+## Testing
 
 RevEngine was primarily tested with the [Fit4CAD dataset](https://github.com/chiararomanengo/Fit4CAD) and the test data in [Raffo et al. (2022)'s implementation repository](https://github.com/chiararomanengo/fitting_geometric_primitives).
 
-# Dependencies
+## Dependencies
 
 This application fundamentally relies on the [Point Cloud Library (PCL)](https://pointclouds.org/) and the libraries PCL depends on, namely [Boost, Eigen, and FLANN](https://pcl.readthedocs.io/projects/tutorials/en/latest/compiling_pcl_posix.html).
 
 In addition, a [modified implementation of DBSCAN by Eleobert](https://github.com/Eleobert/dbscan) is used under the MIT license.
 
-# Future work
+## Future work
 
 Although the implementations this work is based on support various shapes, the application currently only supports planes. Each of these shapes needs to be implemented as a separate class, inheriting from `PrimitiveShape`.
 
