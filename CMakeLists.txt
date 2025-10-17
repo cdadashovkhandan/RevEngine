@@ -10,7 +10,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(Eigen3 REQUIRED)
-find_package(PCL 1.15 REQUIRED COMPONENTS SEARCH COMMON KDTREE FILTERS FEATURES SEGMENTATION)
+find_package(PCL 1.15 REQUIRED COMPONENTS common filters kdtree features segmentation search)
 find_package(Qt6 COMPONENTS Widgets OpenGLWidgets OpenGL QUIET)
 if(Qt6_FOUND)
     set(QT_VERSION_MAJOR 6)
