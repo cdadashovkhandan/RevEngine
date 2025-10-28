@@ -3,21 +3,17 @@ cmake_minimum_required(VERSION 3.16)
 project(RevEngine VERSION 0.1 LANGUAGES CXX)
 
 set(CMAKE_AUTOUIC ON)
+include(GNUInstallDirs)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Eigen3 REQUIRED)
-find_package(PCL 1.15 REQUIRED COMPONENTS common filters kdtree features segmentation search)
-find_package(Qt6 COMPONENTS Widgets OpenGLWidgets OpenGL QUIET)
-if(Qt6_FOUND)
-    set(QT_VERSION_MAJOR 6)
-else()
-    find_package(Qt5 REQUIRED COMPONENTS Widgets OpenGLWidgets OpenGL)
-    set(QT_VERSION_MAJOR 5)
-endif()
+find_package(Qt NAMES Qt6 REQUIRED COMPONENTS Core)
+find_package(Qt6 REQUIRED COMPONENTS Gui)
+find_package(Qt6 OPTIONAL_COMPONENTS OpenGL OpenGLWidgets Widgets)
+find_package(PCL 1.15 REQUIRED COMPONENTS common filters kdtree features segmentation)
 find_package(OpenMP)
 
 set(PROJECT_SOURCES
@@ -27,79 +23,54 @@ set(PROJECT_SOURCES
         mainwindow.ui
 )
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR})
-
-if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
-    qt_add_executable(RevEngine
-        MANUAL_FINALIZATION
-        ${PROJECT_SOURCES}
-        Viewport.h Viewport.cpp
-        data/Model.h data/Model.cpp
+qt_add_executable(RevEngine
+    ${PROJECT_SOURCES}
+    Viewport.h Viewport.cpp
+    data/Model.h data/Model.cpp
 
 
-        ModelManager.h ModelManager.cpp
-        Scene.h Scene.cpp
-        renderers/Renderer.h renderers/Renderer.cpp
-        Camera.h Camera.cpp
-        renderers/ModelRenderer.h renderers/ModelRenderer.cpp
-        Settings.h
-        resources/shaders/pointcloud.vert
-        resources/shaders/pointcloud.frag
-        materials/Material.cpp materials/Material.h materials/Phong.cpp materials/Phong.h
-        materials/PointCloudMaterial.h materials/PointCloudMaterial.cpp
-        resources.qrc
-        CADConverter.h CADConverter.cpp
-        primitives/PrimitiveShape.cpp primitives/PrimitiveShape.h
-        primitives/PrimitiveType.h
-        primitives/Plane.h primitives/Plane.cpp
-        resources/shaders/normals.geom
-        materials/NormalsMaterial.h materials/NormalsMaterial.cpp
-        resources/shaders/normals.frag resources/shaders/normals.geom resources/shaders/normals.vert
-        dbscan/vendor/nanoflann/nanoflann.hpp dbscan/dbscan.cpp dbscan/dbscan.hpp  dbscan/LICENSE
-        materials/WorldMaterial.h materials/WorldMaterial.cpp
-        resources/shaders/world.vert resources/shaders/world.geom resources/shaders/world.frag
-        Util.h
-        primitives/RenderShape.h
-        materials/ShapeMaterial.h materials/ShapeMaterial.cpp
-        resources/shaders/shape.frag  resources/shaders/shape.vert
-        primitives/Cylinder.h
-        primitives/Cylinder.cpp
-        primitives/Circle.h primitives/Circle.cpp
+    ModelManager.h ModelManager.cpp
+    Scene.h Scene.cpp
+    renderers/Renderer.h renderers/Renderer.cpp
+    Camera.h Camera.cpp
+    renderers/ModelRenderer.h renderers/ModelRenderer.cpp
+    Settings.h
+    materials/Material.cpp materials/Material.h materials/Phong.cpp materials/Phong.h
+    materials/PointCloudMaterial.h materials/PointCloudMaterial.cpp
+    resources.qrc
+    CADConverter.h CADConverter.cpp
+    primitives/PrimitiveShape.cpp primitives/PrimitiveShape.h
+    primitives/PrimitiveType.h
+    primitives/Plane.h primitives/Plane.cpp
+    materials/NormalsMaterial.h materials/NormalsMaterial.cpp
+    dbscan/vendor/nanoflann/nanoflann.hpp dbscan/dbscan.cpp dbscan/dbscan.hpp  dbscan/LICENSE
+    materials/WorldMaterial.h materials/WorldMaterial.cpp
+    Util.h
+    primitives/RenderShape.h
+    materials/ShapeMaterial.h materials/ShapeMaterial.cpp
+    primitives/Cylinder.h
+    primitives/Cylinder.cpp
+    primitives/Circle.h primitives/Circle.cpp
+    data/BoundingBox.h
+    data/ModelStatus.h
+    exceptions/FileReadException.h
+)
 
-        data/BoundingBox.h
-        data/ModelStatus.h
-        exceptions/FileReadException.h
-    )
-# Define target properties for Android with Qt 6 as:
-#    set_property(TARGET RevEngine APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
-#                 ${CMAKE_CURRENT_SOURCE_DIR}/android)
-# For more information, see https://doc.qt.io/qt-6/qt-add-executable.html#target-creation
-else()
-    if(ANDROID)
-        add_library(RevEngine SHARED
-            ${PROJECT_SOURCES}
-        )
-# Define properties for Android with Qt 5 after find_package() calls as:
-#    set(ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android")
-    else()
-        add_executable(RevEngine
-            ${PROJECT_SOURCES}
-        )
-    endif()
-endif()
+target_include_directories(RevEngine PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
 target_link_libraries(RevEngine
     PRIVATE
-    Qt${QT_VERSION_MAJOR}::Widgets
-    Qt${QT_VERSION_MAJOR}::OpenGLWidgets
-    Qt${QT_VERSION_MAJOR}::OpenGL
+    Qt::Core
+    Qt::Gui
+    Qt::OpenGL
+    Qt::OpenGLWidgets
+    Qt::Widgets
     ${PCL_COMMON_LIBRARIES}
-    ${PCL_SEARCH_LIBRARIES}
     ${PCL_KDTREE_LIBRARIES}
     ${PCL_FILTERS_LIBRARIES}
     ${PCL_FEATURES_LIBRARIES}
     ${PCL_SEGMENTATION_LIBRARIES}
-    Eigen3::Eigen
+    # Eigen3::Eigen
 )
 
 
@@ -112,27 +83,8 @@ else()
     message(SEND_ERROR "OpenMP not found!")
 endif()
 
-# Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
-# If you are developing for iOS or macOS you should consider setting an
-# explicit, fixed bundle identifier manually though.
-# if(${QT_VERSION} VERSION_LESS 6.1.0)
-#   set(BUNDLE_ID_OPTION MACOSX_BUNDLE_GUI_IDENTIFIER com.example.RevEngine)
-# endif()
-set_target_properties(RevEngine PROPERTIES
-    ${BUNDLE_ID_OPTION}
-    MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
-    MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
-    MACOSX_BUNDLE TRUE
-    WIN32_EXECUTABLE TRUE
-)
-
-include(GNUInstallDirs)
-install(TARGETS RevEngine
-    BUNDLE DESTINATION .
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-)
-
-if(QT_VERSION_MAJOR EQUAL 6)
-    qt_finalize_executable(RevEngine)
-endif()
+# install(TARGETS RevEngine
+#     BUNDLE DESTINATION .
+#     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+#     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+# )
